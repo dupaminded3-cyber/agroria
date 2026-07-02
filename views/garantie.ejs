@@ -1,0 +1,62 @@
+<%- include('partials/head', { titel: 'Garantie & zekerheid' }) %>
+<%- include('partials/header') %>
+
+<section class="pagehead">
+  <div class="wrap">
+    <span class="eyebrow light">Garantie &amp; zekerheid</span>
+    <h1>Échte zekerheid,<br>geen kleine lettertjes</h1>
+    <p>Bij Agroria Landbouwvoertuigen begrijpen we dat de aankoop van een trekker een belangrijke investering is. Daarom bieden wij niet zomaar een garantie, maar échte zekerheid. Onze toewijding aan transparantie en kwaliteit zorgt ervoor dat u met een gerust hart investeert in betrouwbaarheid.</p>
+  </div>
+</section>
+
+<section class="sec">
+  <div class="wrap">
+    <div class="valuegrid">
+      <div class="valuecard rv"><div class="ico"><svg width="30" height="30" viewBox="0 0 24 24" fill="none"><path d="M12 3l7 3v5c0 5-3.5 7.5-7 9-3.5-1.5-7-4-7-9V6l7-3z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M9 12l2 2 4-4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></div><h4>12 maanden garantie</h4><p>Standaard volledige garantie op al onze trekkers. Geen halve dekking, maar échte zekerheid.</p></div>
+      <div class="valuecard rv"><div class="ico"><svg width="30" height="30" viewBox="0 0 24 24" fill="none"><path d="M3 13h2l2-5h8l2 5h2M5 13v4h14v-4M7 17a2 2 0 11.001 0M17 17a2 2 0 11.001 0" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></div><h4>Gratis transport</h4><p>Levering door heel Nederland, Duitsland en België — kosteloos, tot bij u op het erf.</p></div>
+      <div class="valuecard rv"><div class="ico"><svg width="30" height="30" viewBox="0 0 24 24" fill="none"><path d="M9 14l-4-4 4-4M5 10h9a5 5 0 015 5v1" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></div><h4>Niet goed, geld terug</h4><p>6 maanden niet-goed-geld-terug-garantie. Volledige gemoedsrust bij uw aankoop.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="sec band-moss">
+  <div class="wrap">
+    <div class="center" style="max-width:680px;margin:0 auto 46px">
+      <span class="eyebrow">Uw gemoedsrust, onze prioriteit</span>
+      <h2 class="dh">Vragen over garantie<br>en zekerheid</h2>
+      <p style="color:var(--muted);margin-top:14px">Hier beantwoorden we de meest gestelde vragen over de garantie en de zekerheid die wij bieden bij de aankoop van een trekker of landbouwvoertuig.</p>
+    </div>
+    <div class="qa-grid">
+      <div class="qa-card rv">
+        <h3>Als klanten maar één ding zouden onthouden over jullie garantie, wat zou dat dan zijn?</h3>
+        <p>Dat u bij Agroria een trekker koopt met échte zekerheid, niet alleen een belofte. Wij geven 12 maanden volledige garantie en zijn volledig transparant over de staat en historie van de machine. Geen kleine lettertjes en geen verzwegen gebreken.</p>
+      </div>
+      <div class="qa-card rv">
+        <h3>Welke twijfels bij het kopen van een gebruikte trekker neemt jullie garantie weg?</h3>
+        <p>Bij een gebruikte trekker spelen vaak dezelfde vragen: klopt de historie, zijn de draaiuren betrouwbaar, en wat als er iets stukgaat? Wij zijn transparant over herkomst en eigenaarschap, elke trekker wordt vooraf technisch nagekeken, en met 12 maanden volledige garantie lossen wij het op als er iets speelt. Geen discussie achteraf, maar duidelijkheid vooraf.</p>
+      </div>
+      <div class="qa-card rv">
+        <h3>Wat maakt jullie garantie uniek ten opzichte van andere verkopers?</h3>
+        <p>Bij ons is garantie geen marketingmiddel, maar een gevolg van hoe wij werken. Veel aanbieders beperken hun garantie of sluiten onderdelen uit — wij niet. Wij bieden volledige garantie omdat we alleen streng geselecteerde, gecontroleerde trekkers verkopen. Het verschil zit in de combinatie van selectie, transparantie en verantwoordelijkheid, ook ná de overdracht.</p>
+      </div>
+      <div class="qa-card rv qa-contact">
+        <h3>Neem contact op voor meer informatie</h3>
+        <p>Heeft u nog vragen over onze garantie of wilt u meer weten over een specifieke trekker? Wij staan klaar om u te adviseren.</p>
+        <div class="qa-links">
+          <% if (contact && contact.telefoon){ %><a href="tel:<%= (contact.telefoon||'').replace(/\s/g,'') %>"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M5 4h3l2 5-2 1c1 2 2 3 4 4l1-2 5 2v3a2 2 0 01-2 2A14 14 0 013 6a2 2 0 012-2z" stroke="currentColor" stroke-width="1.6"/></svg> <%= contact.telefoon %></a><% } %>
+          <% if (contact && contact.email){ %><a href="mailto:<%= contact.email %>"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M3 7l9 6 9-6M4 5h16a1 1 0 011 1v12a1 1 0 01-1 1H4a1 1 0 01-1-1V6a1 1 0 011-1z" stroke="currentColor" stroke-width="1.6"/></svg> <%= contact.email %></a><% } %>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="split-cta">
+  <div class="wrap center rv" style="max-width:680px;margin:0 auto">
+    <span class="eyebrow light" style="justify-content:center">Kies voor zekerheid</span>
+    <h2 class="dh" style="color:var(--paper)">Bij Agroria investeert u in gemoedsrust</h2>
+    <p style="color:#D3DBCC;margin:14px 0 26px">Bij ons investeert u in meer dan alleen een trekker. Ontdek onze zorgvuldig geselecteerde collectie en ervaar zelf de kwaliteit, transparantie en volledige garantie die wij bieden.</p>
+    <a class="btn btn-gold" href="/aanbod">Bekijk onze selectie</a>
+  </div>
+</section>
+<%- include('partials/footer') %>

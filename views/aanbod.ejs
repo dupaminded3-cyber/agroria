@@ -1,0 +1,90 @@
+<%- include('partials/head', { titel: 'Ons aanbod' }) %>
+<%- include('partials/header') %>
+
+<section class="pagehead">
+  <div class="wrap">
+    <span class="eyebrow light">Ons aanbod</span>
+    <h1>Ontdek ons<br>uitzonderlijk aanbod</h1>
+    <p>Welkom bij Agroria Landbouwvoertuigen — dé plek voor uitzonderlijke trekkers en landbouwvoertuigen. Wij garanderen scherpe prijzen en levering door heel Europa. Neem contact op of bestel direct online. Uw nieuwe machine wacht op u!</p>
+  </div>
+</section>
+
+<section class="sec" id="aanbod-grid">
+  <div class="wrap">
+    <form class="filters" method="get" action="/aanbod">
+      <input type="text" name="q" placeholder="Zoek op merk of type…" value="<%= filter.q || '' %>">
+      <select name="merk" onchange="this.form.submit()"><option value="">Alle merken</option><% merken.forEach(function(m){ %><option value="<%= m %>" <%= filter.merk===m?'selected':'' %>><%= m %></option><% }) %></select>
+      <select name="sort" onchange="this.form.submit()"><option value="">Sorteer op</option><option value="jaar" <%= filter.sort==='jaar'?'selected':'' %>>Bouwjaar (nieuwste)</option><option value="prijs-op" <%= filter.sort==='prijs-op'?'selected':'' %>>Prijs (laag → hoog)</option><option value="prijs-af" <%= filter.sort==='prijs-af'?'selected':'' %>>Prijs (hoog → laag)</option></select>
+      <button class="btn btn-fill" type="submit">Zoek</button>
+      <span class="telling"><%= lijst.length %> trekker<%= lijst.length===1?'':'s' %></span>
+    </form>
+    <% if (lijst.length === 0) { %><p style="color:var(--muted)">Geen trekkers gevonden. <a href="/aanbod" style="color:var(--green)">Bekijk het hele aanbod</a>.</p><% } %>
+    <div class="grid4"><% lijst.forEach(function(t){ %><%- include('partials/card', { t: t }) %><% }) %></div>
+  </div>
+</section>
+
+<!-- WAAROM KIEZEN VOOR AGRORIA -->
+<section class="sec band-moss">
+  <div class="wrap">
+    <div class="center" style="max-width:640px;margin:0 auto 44px">
+      <span class="eyebrow">Waarom kiezen voor Agroria</span>
+      <h2 class="dh">De voordelen op een rij</h2>
+      <p style="color:var(--muted);margin-top:14px">Bij Agroria bent u verzekerd van kwaliteit en service. Wij bieden niet alleen betrouwbaarheid en garantie, maar ook snelle levering en voertuigen van de eerste of tweede eigenaar.</p>
+    </div>
+    <div class="valuegrid">
+      <div class="valuecard rv"><div class="ico"><svg width="30" height="30" viewBox="0 0 24 24" fill="none"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></div><h4>Scherpe prijzen</h4><p>Wij bieden de meest competitieve prijzen voor hoogwaardige trekkers en landbouwvoertuigen, zodat u altijd de beste deal krijgt.</p></div>
+      <div class="valuecard rv"><div class="ico"><svg width="30" height="30" viewBox="0 0 24 24" fill="none"><path d="M3 13h2l2-5h8l2 5h2M5 13v4h14v-4M7 17a2 2 0 11.001 0M17 17a2 2 0 11.001 0" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></div><h4>Levering in heel Europa</h4><p>Ongeacht waar u gevestigd bent in Europa, wij zorgen voor een snelle en efficiënte levering van uw aankoop.</p></div>
+      <div class="valuecard rv"><div class="ico"><svg width="30" height="30" viewBox="0 0 24 24" fill="none"><path d="M12 3l7 3v5c0 5-3.5 7.5-7 9-3.5-1.5-7-4-7-9V6l7-3z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M9 12l2 2 4-4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></div><h4>Voertuigen van 1e/2e eigenaar</h4><p>U ontvangt trekkers en landbouwvoertuigen met een heldere geschiedenis, vaak van de eerste of tweede eigenaar, voor maximale zekerheid.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- VIND UW PERFECTE MACHINE -->
+<section class="sec center band-cream">
+  <div class="wrap" style="max-width:660px">
+    <span class="eyebrow" style="justify-content:center">Vind uw perfecte machine</span>
+    <h2 class="dh">Blader door ons uitgebreide aanbod</h2>
+    <p style="color:var(--muted);margin:14px 0 26px">Blader door ons uitgebreide aanbod van trekkers en landbouwvoertuigen. Elke machine is zorgvuldig geselecteerd en klaar voor gebruik. Gebruik de filters om snel te vinden wat u zoekt.</p>
+    <a class="btn btn-fill" href="#aanbod-grid">Bekijk alle trekkers</a>
+  </div>
+</section>
+
+<!-- DIRECT BESCHIKBAAR -->
+<section class="sec">
+  <div class="wrap feature">
+    <div class="vis rv">
+      <% if (page.foto1) { %><img src="<%= page.foto1 %>" alt="Direct beschikbaar"><% } else { %>
+      <svg class="tractor" viewBox="0 0 460 280" style="width:74%"><rect x="20" y="205" width="420" height="6" rx="3" fill="#C0A063" opacity=".5"/><path class="t-fender" d="M262 168 A 78 78 0 0 1 398 168" fill="none"/><path class="t-cab" d="M196 152 L212 98 Q214 90 223 90 L290 90 Q299 90 301 99 L309 152 Z"/><path class="t-glass" d="M220 144 L231 100 L284 100 L294 144 Z"/><rect class="t-accent" x="184" y="92" width="9" height="62" rx="4"/><rect class="t-body" x="50" y="150" width="262" height="56" rx="7"/><path class="t-body" d="M50 158 L30 158 Q22 158 22 168 L22 190 Q22 200 32 200 L50 200 Z"/><circle class="t-tyre" cx="120" cy="222" r="46"/><circle class="t-rim" cx="120" cy="222" r="23"/><circle class="t-hub" cx="120" cy="222" r="7"/><circle class="t-tyre" cx="330" cy="205" r="72"/><circle class="t-rim" cx="330" cy="205" r="41"/><circle class="t-hub" cx="330" cy="205" r="12"/></svg>
+      <% } %>
+    </div>
+    <div class="txt rv">
+      <span class="eyebrow">Direct beschikbaar</span>
+      <h2 class="dh">Altijd klaar voor<br>het werk</h2>
+      <p>Ons assortiment wordt continu bijgewerkt met de nieuwste en meest betrouwbare trekkers en landbouwvoertuigen. Alle voertuigen zijn grondig geïnspecteerd en direct leverbaar, klaar om uw werk efficiënter te maken.</p>
+      <a class="btn btn-fill" href="#aanbod-grid">Naar het aanbod</a>
+    </div>
+  </div>
+</section>
+
+<!-- GEÏNTERESSEERD IN EEN VOERTUIG -->
+<section class="sec" style="padding-top:0">
+  <div class="wrap">
+    <div class="split rv">
+      <div class="copy">
+        <span class="eyebrow light">Geïnteresseerd in een voertuig?</span>
+        <h2>Wij helpen u<br>graag verder</h2>
+        <p>Heeft u een interessant voertuig gevonden op deze pagina? Neem dan direct contact met ons op<% if (contact && contact.telefoon){ %> via <b style="color:var(--paper)"><%= contact.telefoon %></b><% } %>, of plaats uw bestelling eenvoudig online. Wij helpen u graag verder met uw aankoop.</p>
+        <div class="btns">
+          <a class="btn btn-gold" href="/contact">Neem contact op</a>
+          <a class="btn btn-out" href="#aanbod-grid" style="color:var(--paper)">Bekijk trekkers</a>
+        </div>
+      </div>
+      <div class="visual">
+        <% if (page.foto2) { %><img src="<%= page.foto2 %>" alt="Geïnteresseerd in een voertuig"><% } else { %>
+        <svg viewBox="0 0 400 300" style="width:72%"><rect x="120" y="70" width="160" height="150" rx="16" fill="#25402A" opacity=".12"/><rect x="140" y="92" width="120" height="90" rx="6" fill="#56863F" opacity=".5"/><circle cx="200" cy="205" r="7" fill="#C0A063"/><path d="M165 250 h70" stroke="#25402A" stroke-width="5" stroke-linecap="round"/></svg>
+        <% } %>
+      </div>
+    </div>
+  </div>
+</section>
+<%- include('partials/footer') %>

@@ -1,0 +1,22 @@
+<%- include('partials/head', { titel: 'Contact' }) %>
+<%- include('partials/header') %>
+<section class="pagehead"><div class="wrap"><span class="eyebrow light">Aanvraag &amp; vragen</span><h1>Stel uw vraag, wij denken mee</h1><p>Interesse in een trekker, vraag over inruil of advies nodig? Wij reageren persoonlijk, vaak nog dezelfde dag.</p></div></section>
+<section class="sec"><div class="wrap" style="display:grid;grid-template-columns:.9fr 1.1fr;gap:50px;align-items:start">
+  <div class="rv">
+    <div class="contactcard"><span class="ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M3 7l9 6 9-6M4 5h16a1 1 0 011 1v12a1 1 0 01-1 1H4a1 1 0 01-1-1V6a1 1 0 011-1z" stroke="currentColor" stroke-width="1.6"/></svg></span><div><b><%= contact.email %></b><span>Reactie meestal binnen enkele uren</span></div></div>
+    <% if (contact.telefoon) { %>
+    <div class="contactcard"><span class="ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M5 4h3l2 5-2 1c1 2 2 3 4 4l1-2 5 2v3a2 2 0 01-2 2A14 14 0 013 6a2 2 0 012-2z" stroke="currentColor" stroke-width="1.6"/></svg></span><div><b><%= contact.telefoon %></b><span>Ma–za bereikbaar</span></div></div>
+    <% } %>
+    <div class="contactcard"><span class="ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M12 21s7-5.5 7-11a7 7 0 10-14 0c0 5.5 7 11 7 11z" stroke="currentColor" stroke-width="1.6"/><circle cx="12" cy="10" r="2.4" stroke="currentColor" stroke-width="1.6"/></svg></span><div><b><%= contact.adres %></b><span><%= contact.plaatsnaam || 'Op afspraak langskomen' %></span></div></div>
+    <div class="contactcard"><span class="ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M9 3h6a2 2 0 012 2v14a2 2 0 01-2 2H9a2 2 0 01-2-2V5a2 2 0 012-2z" stroke="currentColor" stroke-width="1.6"/><path d="M10 8h4M10 12h4M10 16h2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></span><div><b>KvK <%= contact.kvk %></b><% if (contact.btw) { %><span>BTW <%= contact.btw %></span><% } %></div></div>
+  </div>
+  <form class="form-card" method="post" action="/aanvraag">
+    <div class="field row"><div><label>Naam</label><input name="naam" required placeholder="Voor- en achternaam"></div><div><label>Telefoon</label><input type="tel" name="telefoon" placeholder="06 …"></div></div>
+    <div class="field"><label>E-mailadres</label><input type="email" name="email" required placeholder="naam@bedrijf.nl"></div>
+    <div class="field"><label>Onderwerp</label><select name="onderwerp"><option>Vraag over een trekker</option><option>Inruil-taxatie aanvragen</option><option>Algemene vraag</option></select></div>
+    <div class="field"><label>Uw bericht</label><textarea name="bericht" rows="4" placeholder="Waar kunnen we u mee helpen?"></textarea></div>
+    <button class="btn btn-fill" type="submit" style="justify-content:center">Aanvraag versturen</button>
+    <div class="note">Uw aanvraag komt direct binnen in het Agroria-beheerportaal.</div>
+  </form>
+</div></section>
+<%- include('partials/footer') %>

@@ -1,0 +1,66 @@
+<%- include('partials/head', { titel: 'Over ons' }) %>
+<%- include('partials/header') %>
+
+<section class="pagehead">
+  <div class="wrap">
+    <span class="eyebrow light">Over Agroria</span>
+    <h1>Onze passie voor landbouw</h1>
+    <p>Bij Agroria Landbouwvoertuigen ademt alles respect voor het vak. Een trekker is voor ons meer dan een machine; het is het kloppend hart van uw agrarische bedrijf. Wij zagen in de markt een gebrek aan duidelijkheid en zekerheid bij investeringen. Daarom zijn we begonnen: om u de transparantie en garantie te bieden die u verdient. Welkom bij een partner die bouwt op vertrouwen, niet op volume.</p>
+  </div>
+</section>
+
+<section class="sec">
+  <div class="wrap intro-grid">
+    <div class="rv">
+      <span class="eyebrow">Onze missie</span>
+      <h2 class="dh">Van passie naar praktijk</h2>
+      <p>Onze reis begon met een diep respect voor de landbouw en het besef dat betrouwbaarheid cruciaal is. Waar andere aanbieders kiezen voor snelle handel, kiezen wij voor bewuste selectie. Elke trekker bij Agroria heeft een gecontroleerde herkomst, vaak van de eerste of tweede eigenaar, en is technisch grondig nagekeken.</p>
+      <p>Wij willen uw betrouwbare partner zijn voor landbouwers in Nederland en heel Europa — met kwaliteit, duidelijkheid en langdurige relaties als onze fundamenten.</p>
+      <a class="btn btn-fill" href="/aanbod" style="margin-top:8px">Ontdek onze selectie</a>
+    </div>
+    <div class="intro-art rv">
+      <% if (page.foto) { %><img src="<%= page.foto %>" alt="Agroria"><% } else { %>
+      <svg class="tractor dark" viewBox="0 0 460 280" style="width:74%"><path class="t-fender" d="M262 168 A 78 78 0 0 1 398 168" fill="none"/><path class="t-cab" d="M196 152 L212 98 Q214 90 223 90 L290 90 Q299 90 301 99 L309 152 Z"/><path class="t-glass" d="M220 144 L231 100 L284 100 L294 144 Z"/><rect class="t-accent" x="184" y="92" width="9" height="62" rx="4"/><rect class="t-body" x="50" y="150" width="262" height="56" rx="7"/><path class="t-body" d="M50 158 L30 158 Q22 158 22 168 L22 190 Q22 200 32 200 L50 200 Z"/><circle class="t-tyre" cx="120" cy="222" r="46"/><circle class="t-rim" cx="120" cy="222" r="23"/><circle class="t-hub" cx="120" cy="222" r="7"/><circle class="t-tyre" cx="330" cy="205" r="72"/><circle class="t-rim" cx="330" cy="205" r="41"/><circle class="t-hub" cx="330" cy="205" r="12"/></svg>
+      <% } %>
+    </div>
+  </div>
+</section>
+
+<section class="sec band-moss">
+  <div class="wrap intro-grid">
+    <div class="intro-art rv" style="order:-1">
+      <% if (page.foto2) { %><img src="<%= page.foto2 %>" alt="Persoonlijke service"><% } else { %>
+      <svg viewBox="0 0 400 300" style="width:70%"><circle cx="200" cy="120" r="46" fill="#56863F" opacity=".18"/><circle cx="200" cy="112" r="26" fill="#25402A"/><path d="M150 210 q50 -58 100 0 z" fill="#25402A"/><path d="M120 250 h160" stroke="#C0A063" stroke-width="4" stroke-linecap="round"/></svg>
+      <% } %>
+    </div>
+    <div class="rv">
+      <span class="eyebrow">Merkbaar verschil</span>
+      <h2 class="dh">Persoonlijke service</h2>
+      <p>Betrouwbaarheid en persoonlijke service zijn geen loze kreten, maar onze dagelijkse praktijk. We controleren de historie en technische staat van elke machine minutieus. Geen verkooppraat, maar eerlijke informatie. Wij nemen de tijd om te begrijpen waarvoor u de trekker nodig heeft.</p>
+      <p>Akkerbouw, veehouderij, loonwerk of export — ons advies is altijd op maat. Klanten merken dit aan directe antwoorden, duidelijke afspraken, eerlijke inruilvoorstellen en onze blijvende betrokkenheid, ook ná de aankoop. Wij denken in langdurige samenwerking, niet in snelle deals.</p>
+      <a class="btn btn-fill" href="/contact" style="margin-top:8px">Vraag advies aan</a>
+    </div>
+  </div>
+</section>
+
+<!-- FILMISCHE AFSLUITER -->
+<section class="closer">
+  <div class="closer-bg fallback"></div>
+  <div class="closer-scrim"></div>
+  <div class="wrap center closer-inner rv">
+    <span class="eyebrow light" style="justify-content:center">Klaar om samen te werken?</span>
+    <h2>Ontdek wat Agroria<br>voor u kan betekenen</h2>
+    <p>Of u nu een krachtige trekker zoekt of advies op maat — wij denken met u mee, van de eerste vraag tot levering met volledige garantie.</p>
+    <div class="closer-cta">
+      <a class="btn btn-gold" href="/aanbod">Bekijk het aanbod</a>
+      <a class="btn btn-out" href="/contact" style="color:var(--paper)">Neem contact op</a>
+    </div>
+    <div class="closer-trust">
+      <span><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17l-5-5" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg> 12 maanden garantie</span>
+      <span><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17l-5-5" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg> Gratis transport NL · DE · BE</span>
+      <span><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17l-5-5" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg> 1e/2e eigenaar</span>
+      <span><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17l-5-5" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg> Historie gecontroleerd</span>
+    </div>
+  </div>
+</section>
+<%- include('partials/footer') %>

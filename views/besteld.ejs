@@ -1,0 +1,27 @@
+<%- include('partials/head', { titel: 'Bestelling ontvangen' }) %>
+<%- include('partials/header') %>
+<section class="besteld-wrap">
+  <div class="wrap">
+    <div class="besteld-card">
+      <div class="ic-xl"><svg width="40" height="40" viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17l-5-5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      <span class="eyebrow" style="justify-content:center">Bestelling ontvangen</span>
+      <h1>Bedankt voor uw bestelling</h1>
+      <p class="lead-msg">Een van onze specialisten neemt contact met u op voor een koopovereenkomst.</p>
+      <div class="besteld-sum">
+        <span class="lbl">Uw bestelling</span>
+        <b><%= trekker %></b>
+        <% if (prijs) { %><span class="p"><%= euro(prijs) %></span><% } %>
+      </div>
+      <div class="steps3">
+        <div><b>1</b>We bekijken uw bestelling en de beschikbaarheid.</div>
+        <div><b>2</b>Een specialist belt of mailt u persoonlijk.</div>
+        <div><b>3</b>Koopovereenkomst opmaken en levering inplannen.</div>
+      </div>
+      <div class="bt-actions">
+        <a class="btn btn-fill" href="/aanbod">Verder kijken in het aanbod</a>
+        <a class="btn btn-out" href="/">Naar de homepage</a>
+      </div>
+    </div>
+  </div>
+</section>
+<%- include('partials/footer') %>

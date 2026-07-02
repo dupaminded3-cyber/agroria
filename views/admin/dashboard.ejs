@@ -1,0 +1,34 @@
+<%- include('_head', { titel: 'Overzicht' }) %>
+<%- include('_side') %>
+<div class="topbar">
+  <div><h1>Welkom terug</h1><div class="sub">Hier zie je in één oogopslag hoe je voorraad en aanvragen ervoor staan.</div></div>
+  <a class="btn btn-fill" href="/uadmin/trekkers/nieuw">+ Trekker plaatsen</a>
+</div>
+<div class="cards">
+  <div class="stat"><div class="n"><%= stats.trekkers %></div><div class="l">Trekkers in beheer</div></div>
+  <div class="stat"><div class="n"><%= stats.beschikbaar %></div><div class="l">Beschikbaar</div></div>
+  <div class="stat <%= stats.nieuweAanvragen>0?'alert':'' %>"><div class="n"><%= stats.nieuweAanvragen %></div><div class="l">Nieuwe aanvragen</div></div>
+  <div class="stat"><div class="n"><%= stats.totaalAanvragen %></div><div class="l">Aanvragen totaal</div></div>
+</div>
+<div class="panel">
+  <div class="ph">Laatste aanvragen <a class="btn btn-out btn-sm" href="/uadmin/aanvragen">Alles bekijken</a></div>
+  <% if (laatste.length===0){ %>
+    <div style="padding:34px 22px;color:var(--muted)">Nog geen aanvragen binnengekomen.</div>
+  <% } else { %>
+    <table class="list">
+      <thead><tr><th>Type</th><th>Naam</th><th>Onderwerp</th><th>Datum</th><th></th></tr></thead>
+      <tbody>
+      <% laatste.forEach(function(i){ %>
+        <tr>
+          <td><span class="tag-type <%= i.type %>"><%= i.type %></span></td>
+          <td><%= i.naam || '—' %><% if(!i.gelezen){ %> <span class="pill nieuw">nieuw</span><% } %></td>
+          <td><%= i.onderwerp %></td>
+          <td><%= new Date(i.createdAt).toLocaleDateString('nl-NL') %></td>
+          <td style="text-align:right"><a class="btn btn-out btn-sm" href="/uadmin/aanvragen">Bekijk</a></td>
+        </tr>
+      <% }) %>
+      </tbody>
+    </table>
+  <% } %>
+</div>
+<%- include('_foot') %>

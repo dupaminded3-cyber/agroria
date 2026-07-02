@@ -1,0 +1,61 @@
+<%- include('_head', { titel: trekker ? 'Trekker bewerken' : 'Trekker plaatsen' }) %>
+<%- include('_side') %>
+<div class="topbar">
+  <div><h1><%= trekker ? 'Trekker bewerken' : 'Nieuwe trekker plaatsen' %></h1>
+    <div class="sub"><a href="/uadmin/trekkers" style="color:var(--muted)">← Terug naar overzicht</a></div></div>
+</div>
+<div class="panel" style="padding:28px">
+  <form method="post" action="/uadmin/trekkers<%= trekker ? '/'+trekker.id : '' %>" enctype="multipart/form-data">
+    <div class="formgrid">
+      <div class="field"><label>Merk</label><input name="merk" required value="<%= trekker ? trekker.merk : '' %>" placeholder="Bijv. Fendt"></div>
+      <div class="field"><label>Model / type</label><input name="model" required value="<%= trekker ? trekker.model : '' %>" placeholder="Bijv. 724 Vario"></div>
+      <div class="field"><label>Bouwjaar</label><input type="number" name="bouwjaar" value="<%= trekker ? trekker.bouwjaar : '' %>" placeholder="2019"></div>
+      <div class="field"><label>Draaiuren</label><input type="number" name="uren" value="<%= trekker ? trekker.uren : '' %>" placeholder="3250"></div>
+      <div class="field"><label>Vermogen (pk)</label><input type="number" name="pk" value="<%= trekker ? trekker.pk : '' %>" placeholder="240"></div>
+      <div class="field"><label>Transmissie</label><input name="transmissie" value="<%= trekker ? trekker.transmissie : '' %>" placeholder="Vario / Powershift …"></div>
+      <div class="field"><label>Prijs (€)</label><input type="number" name="prijs" value="<%= trekker ? trekker.prijs : '' %>" placeholder="22500"></div>
+      <div class="field"><label>Oude prijs (€) — optioneel</label><input type="number" name="oudePrijs" value="<%= trekker ? (trekker.oudePrijs||'') : '' %>" placeholder="30000"><div class="hint">Vul je hier een hoger bedrag in, dan toont de trekker automatisch een "Sale!"-label met doorgestreepte oude prijs.</div></div>
+      <div class="field"><label>Categorie</label>
+        <select name="categorie">
+          <% ['Trekker','Smalspoor','Compact','Werktuig'].forEach(function(c){ %>
+            <option <%= trekker && trekker.categorie===c ? 'selected':'' %>><%= c %></option>
+          <% }) %>
+        </select>
+      </div>
+      <div class="field"><label>Status</label>
+        <select name="status">
+          <% [['beschikbaar','Beschikbaar'],['gereserveerd','Gereserveerd'],['verkocht','Verkocht']].forEach(function(s){ %>
+            <option value="<%= s[0] %>" <%= trekker && trekker.status===s[0] ? 'selected':'' %>><%= s[1] %></option>
+          <% }) %>
+        </select>
+      </div>
+      <div class="field full"><div class="check"><input type="checkbox" name="uitgelicht" id="uit" <%= trekker && trekker.uitgelicht ? 'checked':'' %>><label for="uit" style="margin:0">Tonen als uitgelichte trekker op de homepage</label></div></div>
+      <div class="field full"><div class="check"><input type="checkbox" name="voorlader" id="vl" <%= trekker && trekker.voorlader ? 'checked':'' %>><label for="vl" style="margin:0">Voorzien van voorlader</label></div></div>
+      <div class="field full"><label>Omschrijving</label><textarea name="omschrijving" rows="5" placeholder="Vertel over de staat, opties en bijzonderheden…"><%= trekker ? trekker.omschrijving : '' %></textarea></div>
+
+      <div class="field full">
+        <label>Foto's toevoegen</label>
+        <input type="file" name="fotos" accept="image/*" multiple>
+        <div class="hint">Je kunt meerdere foto's tegelijk selecteren. De eerste foto wordt de hoofdfoto.</div>
+        <% if (trekker && trekker.fotos && trekker.fotos.length){ %>
+          <div class="fotostrip">
+            <% trekker.fotos.forEach(function(f){ %>
+              <div class="f">
+                <img src="/uploads/<%= f %>">
+                <form method="post" action="/uadmin/trekkers/<%= trekker.id %>/foto/delete" onsubmit="return confirm('Foto verwijderen?')">
+                  <input type="hidden" name="foto" value="<%= f %>">
+                  <button type="submit" title="Verwijder foto">×</button>
+                </form>
+              </div>
+            <% }) %>
+          </div>
+        <% } %>
+      </div>
+      <div class="formactions">
+        <button class="btn btn-fill" type="submit"><%= trekker ? 'Wijzigingen opslaan' : 'Trekker plaatsen' %></button>
+        <a class="btn btn-out" href="/uadmin/trekkers">Annuleren</a>
+      </div>
+    </div>
+  </form>
+</div>
+<%- include('_foot') %>

@@ -1,0 +1,146 @@
+<%- include('_head', { titel: "Pagina's & foto's" }) %>
+<%- include('_side') %>
+<div class="topbar"><div><h1>Pagina's &amp; foto's</h1><div class="sub">Pas de teksten en de foto's per pagina aan zonder de code aan te raken.</div></div></div>
+<% if (opgeslagen){ %><div class="melding ok">Opgeslagen. De wijzigingen staan meteen live op de website.</div><% } %>
+
+<style>
+  .fotoslot{border:1px solid var(--line,#e5e2d8);border-radius:12px;padding:18px;margin-bottom:14px}
+  .fotoslot .slot-top b{font-size:1rem}
+  .fotoslot .hint2{display:block;color:var(--muted,#6b7363);font-size:.85rem;margin:4px 0 12px}
+  .fotoslot .slot-row{display:flex;gap:18px;align-items:center;flex-wrap:wrap}
+  .fotoslot .prev{width:200px;height:120px;border-radius:8px;overflow:hidden;background:#eee;flex-shrink:0}
+  .fotoslot .prev img{width:100%;height:100%;object-fit:cover;display:block}
+  .fotoslot .slot-actions{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+  .inline-up{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+</style>
+
+<div class="panel" style="padding:26px;margin-bottom:22px">
+  <div class="ph" style="border:none;padding:0 0 18px">Bedrijfslogo</div>
+  <% if (settings.logo){ %>
+    <div style="display:flex;align-items:center;gap:22px;flex-wrap:wrap">
+      <div style="background:#27432B;border-radius:12px;padding:16px 20px;display:inline-flex;align-items:center">
+        <img src="<%= settings.logo %>" alt="Huidig logo" style="max-height:54px;width:auto;max-width:240px;display:block">
+      </div>
+      <div style="color:var(--muted);font-size:.9rem">Dit logo staat nu in de kop van je website en in dit beheerpaneel.</div>
+    </div>
+    <div style="display:flex;gap:12px;margin-top:18px;flex-wrap:wrap">
+      <form method="post" action="/uadmin/paginas" enctype="multipart/form-data" style="display:flex;gap:12px;align-items:center;flex-wrap:wrap">
+        <input type="file" name="logo" accept="image/png,image/svg+xml,image/jpeg,image/webp" required>
+        <button class="btn btn-fill" type="submit">Logo vervangen</button>
+      </form>
+      <form method="post" action="/uadmin/logo/delete" onsubmit="return confirm('Logo verwijderen? De site valt dan terug op de standaardstijl.')">
+        <button class="btn btn-danger" type="submit">Logo verwijderen</button>
+      </form>
+    </div>
+  <% } else { %>
+    <form method="post" action="/uadmin/paginas" enctype="multipart/form-data">
+      <div class="field full" style="margin:0">
+        <input type="file" name="logo" accept="image/png,image/svg+xml,image/jpeg,image/webp" required>
+        <div class="hint">Gebruik bij voorkeur een PNG met transparante achtergrond of een SVG. Het logo verschijnt automatisch in de kop van de site.</div>
+      </div>
+      <button class="btn btn-fill" type="submit" style="margin-top:16px">Logo uploaden</button>
+    </form>
+  <% } %>
+</div>
+
+<div class="panel" style="padding:26px;margin-bottom:22px">
+  <div class="ph" style="border:none;padding:0 0 6px">Foto's op de homepage</div>
+  <div style="color:var(--muted);font-size:.9rem;margin-bottom:18px">Elke plek op de homepage heeft een eigen foto. Je kunt ze los uploaden, vervangen of verwijderen. Leeg = nette illustratie.</div>
+  <% [
+      {k:'heroFoto',     t:'1. Grote hero-foto (helemaal bovenaan)', h:'Vult de hele kop van de homepage. Een liggende foto werkt het best, bijvoorbeeld een trekker in het veld.'},
+      {k:'introFoto',    t:"2. Foto bij \u2018Betrouwbaarheid begint hier\u2019", h:'Staat naast de tekst \u201cGeen verrassingen, wel zekerheid\u201d.'},
+      {k:'garantieFoto', t:"3. Foto bij \u2018Garantie & inruil\u2019", h:'Staat naast het groene garantie-blok.'},
+      {k:'nieuwFoto',    t:"4. Foto bij \u2018Nieuw binnen\u2019", h:'Staat naast \u201cDe nieuwste aanwinsten\u201d.'},
+      {k:'closerFoto',   t:'5. Grote afsluitfoto (onderaan)', h:'Vult de hele donkere slotsectie \u201cVind \u00faw trekker bij Agroria\u201d. Liggende sfeerfoto werkt het best; leeg = strakke donkere achtergrond.'}
+    ].forEach(function(s){ %>
+    <div class="fotoslot">
+      <div class="slot-top"><b><%= s.t %></b><span class="hint2"><%= s.h %></span></div>
+      <% if (pages.home[s.k]){ %>
+        <div class="slot-row">
+          <div class="prev"><img src="<%= pages.home[s.k] %>"></div>
+          <div class="slot-actions">
+            <form method="post" action="/uadmin/paginas" enctype="multipart/form-data" class="inline-up">
+              <input type="file" name="home_<%= s.k %>" accept="image/*" required>
+              <button class="btn btn-fill" type="submit">Vervangen</button>
+            </form>
+            <form method="post" action="/uadmin/paginas/foto/delete" onsubmit="return confirm('Deze foto verwijderen? De plek valt terug op de illustratie.')">
+              <input type="hidden" name="veld" value="home.<%= s.k %>">
+              <button class="btn btn-danger" type="submit">Verwijderen</button>
+            </form>
+          </div>
+        </div>
+      <% } else { %>
+        <form method="post" action="/uadmin/paginas" enctype="multipart/form-data" class="inline-up">
+          <input type="file" name="home_<%= s.k %>" accept="image/*" required>
+          <button class="btn btn-fill" type="submit">Uploaden</button>
+        </form>
+      <% } %>
+    </div>
+  <% }) %>
+</div>
+
+<div class="panel" style="padding:26px;margin-bottom:22px">
+  <div class="ph" style="border:none;padding:0 0 6px">Foto's op de pagina 'Over ons'</div>
+  <div style="color:var(--muted);font-size:.9rem;margin-bottom:18px">Twee foto's naast de tekstblokken. Leeg = nette illustratie.</div>
+  <% var ov = pages.overons || {}; %>
+  <%- include('_fotoslot', { slot: { veld:'overons.foto',  naam:'overons_foto',  huidige: ov.foto,  titel:"1. Foto bij \u2018Van passie naar praktijk\u2019", hint:'Rechts naast het eerste tekstblok.' } }) %>
+  <%- include('_fotoslot', { slot: { veld:'overons.foto2', naam:'overons_foto2', huidige: ov.foto2, titel:"2. Foto bij \u2018Persoonlijke service\u2019", hint:'Links naast het tweede tekstblok.' } }) %>
+</div>
+
+<div class="panel" style="padding:26px;margin-bottom:22px">
+  <div class="ph" style="border:none;padding:0 0 6px">Foto's op de pagina 'Selectie &amp; kwaliteit'</div>
+  <div style="color:var(--muted);font-size:.9rem;margin-bottom:18px">Drie foto's naast de tekstblokken. Leeg = nette illustratie.</div>
+  <% var se = pages.selectie || {}; %>
+  <%- include('_fotoslot', { slot: { veld:'selectie.foto1', naam:'selectie_foto1', huidige: se.foto1, titel:"1. Foto bij \u2018De kunst van selectie\u2019", hint:'' } }) %>
+  <%- include('_fotoslot', { slot: { veld:'selectie.foto2', naam:'selectie_foto2', huidige: se.foto2, titel:"2. Foto bij \u2018Transparantie en vertrouwen\u2019", hint:'' } }) %>
+  <%- include('_fotoslot', { slot: { veld:'selectie.foto3', naam:'selectie_foto3', huidige: se.foto3, titel:"3. Foto bij \u2018Onze belofte\u2019", hint:'' } }) %>
+</div>
+
+<div class="panel" style="padding:26px;margin-bottom:22px">
+  <div class="ph" style="border:none;padding:0 0 6px">Foto's op de pagina 'Ons aanbod'</div>
+  <div style="color:var(--muted);font-size:.9rem;margin-bottom:18px">Twee sfeerfoto's onder het trekker-overzicht. Leeg = nette illustratie.</div>
+  <% var aa = pages.aanbod || {}; %>
+  <%- include('_fotoslot', { slot: { veld:'aanbod.foto1', naam:'aanbod_foto1', huidige: aa.foto1, titel:"1. Foto bij \u2018Direct beschikbaar\u2019", hint:'' } }) %>
+  <%- include('_fotoslot', { slot: { veld:'aanbod.foto2', naam:'aanbod_foto2', huidige: aa.foto2, titel:"2. Foto bij \u2018Ge\u00efnteresseerd in een voertuig?\u2019", hint:'' } }) %>
+</div>
+
+<form method="post" action="/uadmin/paginas" enctype="multipart/form-data">
+  <div class="panel" style="padding:26px;margin-bottom:22px">
+    <div class="ph" style="border:none;padding:0 0 18px">Homepage — teksten</div>
+    <div class="formgrid">
+      <div class="field full"><label>Titel bovenaan</label><input name="home_heroTitel" value="<%= pages.home.heroTitel %>"></div>
+      <div class="field full"><label>Introtekst</label><textarea name="home_heroTekst" rows="3"><%= pages.home.heroTekst %></textarea></div>
+      <div class="field full"><label>Merken in de merkenbalk</label><textarea name="settings_merken" rows="2"><%= settings.merken || 'Fendt, John Deere, Case IH, New Holland, Claas, Deutz-Fahr, Massey Ferguson, Valtra' %></textarea><div class="hint">De merken die je voert, gescheiden door komma's. Ze verschijnen in de balk onder de homepage ("Wij handelen in alle topmerken"). Voorbeeld: Fendt, John Deere, Case IH, Valtra</div></div>
+    </div>
+  </div>
+
+  <div class="panel" style="padding:26px;margin-bottom:22px">
+    <div class="ph" style="border:none;padding:0 0 18px">Inruil-pagina</div>
+    <div class="formgrid">
+      <div class="field full"><label>Titel</label><input name="inruil_titel" value="<%= pages.inruil.titel %>"></div>
+      <div class="field full"><label>Tekst</label><textarea name="inruil_tekst" rows="3"><%= pages.inruil.tekst %></textarea></div>
+    </div>
+  </div>
+
+  <div class="panel" style="padding:26px;margin-bottom:22px">
+    <div class="ph" style="border:none;padding:0 0 18px">Over ons</div>
+    <div class="formgrid">
+      <div class="field full"><label>Titel</label><input name="overons_titel" value="<%= pages.overons.titel %>"></div>
+      <div class="field full"><label>Tekst</label><textarea name="overons_tekst" rows="4"><%= pages.overons.tekst %></textarea></div>
+    </div>
+  </div>
+
+  <div class="panel" style="padding:26px;margin-bottom:22px">
+    <div class="ph" style="border:none;padding:0 0 18px">Contactgegevens</div>
+    <div class="formgrid">
+      <div class="field"><label>Adres</label><input name="contact_adres" value="<%= pages.contact.adres %>"></div>
+      <div class="field"><label>Vestiging (bijv. Hoofdvestiging)</label><input name="contact_plaatsnaam" value="<%= pages.contact.plaatsnaam || '' %>"></div>
+      <div class="field"><label>Telefoon</label><input name="contact_telefoon" value="<%= pages.contact.telefoon %>" placeholder="Laat leeg tot je een nummer hebt"></div>
+      <div class="field"><label>E-mail</label><input name="contact_email" value="<%= pages.contact.email %>"></div>
+      <div class="field"><label>KvK-nummer</label><input name="contact_kvk" value="<%= pages.contact.kvk %>"></div>
+      <div class="field"><label>BTW-nummer</label><input name="contact_btw" value="<%= pages.contact.btw || '' %>"></div>
+    </div>
+  </div>
+  <button class="btn btn-fill" type="submit">Teksten opslaan</button>
+</form>
+<%- include('_foot') %>

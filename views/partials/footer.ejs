@@ -1,0 +1,38 @@
+<footer class="site">
+  <div class="wrap">
+    <div class="foot">
+      <div class="about">
+        <%- include('brand') %>
+        <p>Dé specialist in betrouwbare, zorgvuldig geselecteerde trekkers en landbouwvoertuigen. Transparant, gecontroleerd en met ongeëvenaarde service.</p>
+      </div>
+      <div><h5>Aanbod</h5><a href="/aanbod">Alle trekkers</a><a href="/aanbod?sort=jaar">Nieuw binnen</a><a href="/inruil">Inruil</a></div>
+      <div><h5>Bedrijf</h5><a href="/over-ons">Over ons</a><a href="/selectie">Selectie &amp; kwaliteit</a><a href="/garantie">Garantie</a><a href="/faq">Veelgestelde vragen</a></div>
+      <div><h5>Contact</h5>
+        <a href="mailto:<%= contact.email %>"><%= contact.email %></a>
+        <% if (contact.telefoon) { %><a href="tel:<%= (contact.telefoon||'').replace(/\s/g,'') %>"><%= contact.telefoon %></a><% } %>
+        <span style="color:var(--muted-2);font-size:.9rem"><%= contact.adres %></span>
+      </div>
+    </div>
+    <div class="copyr"><span>© <%= new Date().getFullYear() %> Agroria Landbouwvoertuigen</span><span>KvK <%= contact.kvk %><% if (contact.btw) { %> · BTW <%= contact.btw %><% } %></span></div>
+  </div>
+</footer>
+<script>
+  // Mobiel menu
+  (function(){
+    var h=document.getElementById('hamb'), m=document.getElementById('menu');
+    if(h&&m){h.addEventListener('click',function(){m.classList.toggle('open')});
+      m.querySelectorAll('a').forEach(function(a){a.addEventListener('click',function(){m.classList.remove('open')})});}
+  })();
+  // Reveal bij scrollen — met vangnet zodat content nooit verborgen blijft
+  (function(){
+    var els=[].slice.call(document.querySelectorAll('.rv'));
+    if(!els.length) return;
+    function showAll(){els.forEach(function(e){e.classList.add('in')});}
+    if(!('IntersectionObserver'in window)){showAll();return;}
+    var io=new IntersectionObserver(function(en){en.forEach(function(x){if(x.isIntersecting){x.target.classList.add('in');io.unobserve(x.target);}})},{threshold:0,rootMargin:'0px 0px -6% 0px'});
+    els.forEach(function(e){io.observe(e)});
+    // Vangnet: toon alles wat na 4s nog niet zichtbaar is
+    setTimeout(showAll,4000);
+  })();
+</script>
+</body></html>

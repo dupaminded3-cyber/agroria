@@ -1,0 +1,14 @@
+<%- include('_head', { titel: 'Account' }) %>
+<%- include('_side') %>
+<div class="topbar"><div><h1>Account</h1><div class="sub">Wijzig hier je wachtwoord voor het beheerpaneel.</div></div></div>
+<% if (melding==='ok'){ %><div class="melding ok">Je wachtwoord is gewijzigd.</div><% } %>
+<% if (melding==='fout'){ %><div class="melding fout">Je huidige wachtwoord klopt niet.</div><% } %>
+<% if (melding==='kort'){ %><div class="melding fout">Kies een nieuw wachtwoord van minimaal 5 tekens.</div><% } %>
+<div class="panel" style="padding:28px;max-width:520px">
+  <form method="post" action="/uadmin/account">
+    <div class="field" style="margin-bottom:16px"><label>Huidig wachtwoord</label><input type="password" name="huidig" required></div>
+    <div class="field" style="margin-bottom:16px"><label>Nieuw wachtwoord</label><input type="password" name="nieuw" required></div>
+    <button class="btn btn-fill" type="submit">Wachtwoord wijzigen</button>
+  </form>
+</div>
+<%- include('_foot') %>

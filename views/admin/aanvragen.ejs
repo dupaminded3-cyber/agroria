@@ -1,0 +1,42 @@
+<%- include('_head', { titel: 'Aanvragen' }) %>
+<%- include('_side') %>
+<div class="topbar"><div><h1>Aanvragen</h1><div class="sub">Bestellingen, vragen en inruil-taxaties die via de website binnenkomen.</div></div></div>
+<div class="panel">
+  <% if (lijst.length===0){ %>
+    <div style="padding:40px 22px;color:var(--muted)">Nog geen aanvragen binnengekomen. Zodra iemand het contact- of inruilformulier invult, verschijnt het hier.</div>
+  <% } else { %>
+    <% lijst.forEach(function(i){ %>
+      <div class="aanvraag-item <%= i.gelezen ? '' : 'ongelezen' %>">
+        <div class="kop">
+          <div class="links">
+            <span class="tag-type <%= i.type %>"><%= i.type==='bestelling'?'Bestelling':(i.type==='inruil'?'Inruil':'Vraag') %></span>
+            <span class="naam"><%= i.naam || 'Onbekend' %></span>
+            <% if(!i.gelezen){ %><span class="pill nieuw">nieuw</span><% } %>
+          </div>
+          <span style="color:var(--muted);font-size:.85rem"><%= new Date(i.createdAt).toLocaleString('nl-NL') %></span>
+        </div>
+        <div class="meta">
+          <%= i.onderwerp %>
+          <% if (i.email){ %> · <a href="mailto:<%= i.email %>" style="color:var(--green)"><%= i.email %></a><% } %>
+          <% if (i.telefoon){ %> · <a href="tel:<%= i.telefoon %>" style="color:var(--green)"><%= i.telefoon %></a><% } %>
+        </div>
+        <% if (i.type==='inruil'){ %>
+          <div class="meta">Machine: <b><%= i.machine || '—' %></b> · Bouwjaar: <%= i.bouwjaar||'—' %> · Uren: <%= i.uren||'—' %></div>
+        <% } %>
+        <% if (i.type==='bestelling'){ %>
+          <div class="meta">Trekker: <b><%= i.trekker || '—' %></b><% if (i.prijs){ %> · Prijs: <b><%= euro(i.prijs) %></b><% } %><% if (i.bedrijf){ %> · Bedrijf: <%= i.bedrijf %><% } %></div>
+          <% if (i.adres || i.postcode || i.plaats){ %><div class="meta">Adres: <%= [i.adres, [i.postcode, i.plaats].filter(Boolean).join(' ')].filter(Boolean).join(', ') %></div><% } %>
+        <% } %>
+        <% if (i.bericht){ %><div class="bericht"><%= i.bericht %></div><% } %>
+        <div class="acties">
+          <% if(!i.gelezen){ %>
+          <form method="post" action="/uadmin/aanvragen/<%= i.id %>/gelezen"><button class="btn btn-out btn-sm" type="submit">Markeer als gelezen</button></form>
+          <% } %>
+          <% if (i.email){ %><a class="btn btn-fill btn-sm" href="mailto:<%= i.email %>?subject=Re: <%= encodeURIComponent(i.onderwerp) %>">Beantwoorden</a><% } %>
+          <form method="post" action="/uadmin/aanvragen/<%= i.id %>/delete" onsubmit="return confirm('Verwijderen?')"><button class="btn btn-danger btn-sm" type="submit">Verwijder</button></form>
+        </div>
+      </div>
+    <% }) %>
+  <% } %>
+</div>
+<%- include('_foot') %>

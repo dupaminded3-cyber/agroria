@@ -1,0 +1,113 @@
+/* Agroria — beheerpaneel (uadmin) */
+:root{
+  --bg:#F4F3EE; --panel:#fff; --ink:#1D261C; --forest:#27432B; --green:#4E7B3E;
+  --soil:#8A6E4B; --muted:#6B7464; --line:#E2DFD4; --danger:#B23A2E;
+  --display:'Fraunces',Georgia,serif; --body:'Hanken Grotesk',system-ui,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);-webkit-font-smoothing:antialiased}
+a{color:inherit;text-decoration:none}
+.layout{display:grid;grid-template-columns:248px 1fr;min-height:100vh}
+
+/* SIDEBAR */
+.side{background:var(--forest);color:#E7EBE2;padding:26px 18px;display:flex;flex-direction:column;gap:6px;position:sticky;top:0;height:100vh}
+.side .brand{display:flex;align-items:center;gap:11px;margin-bottom:28px;padding:0 8px}
+.side .brand .mark{width:38px;height:38px;background:rgba(255,255,255,.12);border-radius:10px;display:grid;place-items:center}
+.side .brand b{font-family:var(--display);font-weight:600;font-size:1.25rem;color:#fff;display:block;line-height:1}
+.side .brand small{font-size:.56rem;letter-spacing:.22em;text-transform:uppercase;color:#A9B6A2}
+.side nav a{display:flex;align-items:center;gap:12px;padding:11px 14px;border-radius:9px;color:#C6D0BF;font-weight:500;font-size:.94rem;transition:.18s}
+.side nav a:hover{background:rgba(255,255,255,.07);color:#fff}
+.side nav a.on{background:rgba(255,255,255,.14);color:#fff}
+.side nav a .badge{margin-left:auto;background:var(--soil);color:#fff;font-size:.7rem;font-weight:700;padding:2px 8px;border-radius:20px}
+.side .spacer{flex:1}
+.side .uit{color:#A9B6A2;font-size:.88rem;padding:11px 14px;border-top:1px solid rgba(255,255,255,.12);margin-top:8px}
+
+/* MAIN */
+.main{padding:34px 40px}
+.topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:30px;flex-wrap:wrap;gap:14px}
+.topbar h1{font-family:var(--display);font-weight:500;font-size:1.9rem}
+.topbar .sub{color:var(--muted);font-size:.92rem;margin-top:2px}
+
+.btn{font-family:var(--body);font-weight:600;padding:11px 20px;border-radius:9px;display:inline-flex;align-items:center;gap:8px;border:none;cursor:pointer;font-size:.92rem;transition:.18s}
+.btn-fill{background:var(--forest);color:#fff}.btn-fill:hover{background:var(--green)}
+.btn-out{background:#fff;border:1px solid var(--line);color:var(--ink)}.btn-out:hover{border-color:var(--green);color:var(--green)}
+.btn-danger{background:#fff;border:1px solid #E4C7C3;color:var(--danger)}.btn-danger:hover{background:var(--danger);color:#fff;border-color:var(--danger)}
+.btn-sm{padding:7px 13px;font-size:.85rem}
+
+.cards{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;margin-bottom:34px}
+.stat{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:22px}
+.stat .n{font-family:var(--display);font-weight:600;font-size:2.2rem;line-height:1;color:var(--forest)}
+.stat .l{color:var(--muted);font-size:.86rem;margin-top:8px}
+.stat.alert .n{color:var(--soil)}
+
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+.panel .ph{padding:18px 22px;border-bottom:1px solid var(--line);font-family:var(--display);font-weight:600;font-size:1.15rem;display:flex;justify-content:space-between;align-items:center}
+
+table.list{width:100%;border-collapse:collapse}
+table.list th{text-align:left;font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);padding:13px 22px;border-bottom:1px solid var(--line)}
+table.list td{padding:14px 22px;border-bottom:1px solid var(--line);font-size:.93rem;vertical-align:middle}
+table.list tr:last-child td{border-bottom:none}
+table.list tr:hover td{background:#FAFAF7}
+.thumb{width:64px;height:48px;border-radius:7px;object-fit:cover;background:#ECEAE0;display:inline-block}
+.pill{font-size:.72rem;font-weight:700;padding:3px 10px;border-radius:20px;text-transform:uppercase;letter-spacing:.04em}
+.pill.beschikbaar{background:#E3EFE0;color:var(--green)}
+.pill.verkocht{background:#F0E6D9;color:var(--soil)}
+.pill.gereserveerd{background:#EAE7DD;color:var(--muted)}
+.pill.nieuw{background:#FBE9C8;color:#9A6B16}
+
+/* FORMULIER */
+.formgrid{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.field{margin-bottom:4px}
+.field.full{grid-column:1/-1}
+.field label{display:block;font-size:.8rem;font-weight:600;margin-bottom:7px}
+.field input,.field select,.field textarea{width:100%;background:#fff;border:1px solid var(--line);padding:12px 13px;border-radius:9px;font-family:var(--body);font-size:.94rem;color:var(--ink)}
+.field input:focus,.field select:focus,.field textarea:focus{outline:none;border-color:var(--green)}
+.field .hint{font-size:.78rem;color:var(--muted);margin-top:6px}
+.check{display:flex;align-items:center;gap:10px;background:#F7F6F1;border:1px solid var(--line);padding:13px 15px;border-radius:9px}
+.check input{width:auto}
+.formactions{display:flex;gap:12px;margin-top:24px;grid-column:1/-1}
+
+.fotostrip{display:flex;gap:12px;flex-wrap:wrap;margin-top:10px}
+.fotostrip .f{position:relative;width:110px}
+.fotostrip .f img{width:110px;height:84px;object-fit:cover;border-radius:9px;border:1px solid var(--line)}
+.fotostrip .f button{position:absolute;top:-8px;right:-8px;width:24px;height:24px;border-radius:50%;border:none;background:var(--danger);color:#fff;cursor:pointer;font-size:.9rem;line-height:1}
+
+.melding{padding:13px 18px;border-radius:10px;margin-bottom:20px;font-size:.92rem}
+.melding.ok{background:#E3EFE0;color:var(--green)}
+.melding.fout{background:#F6E3E0;color:var(--danger)}
+
+/* LOGIN */
+.login-wrap{min-height:100vh;display:grid;place-items:center;background:var(--forest);padding:24px}
+.login-card{background:#fff;border-radius:18px;padding:42px;width:100%;max-width:400px;box-shadow:0 30px 80px -30px rgba(0,0,0,.5)}
+.login-card .brand{display:flex;align-items:center;gap:11px;margin-bottom:8px}
+.login-card .brand .mark{width:42px;height:42px;background:var(--forest);color:#fff;border-radius:11px;display:grid;place-items:center}
+.login-card .brand b{font-family:var(--display);font-weight:600;font-size:1.4rem;display:block;line-height:1}
+.login-card .brand small{font-size:.56rem;letter-spacing:.22em;text-transform:uppercase;color:var(--muted)}
+.login-card h2{font-family:var(--display);font-weight:500;font-size:1.5rem;margin:22px 0 6px}
+.login-card p.s{color:var(--muted);font-size:.9rem;margin-bottom:24px}
+
+.aanvraag-item{padding:20px 22px;border-bottom:1px solid var(--line)}
+.aanvraag-item:last-child{border-bottom:none}
+.aanvraag-item.ongelezen{background:#FBFAF4;border-left:3px solid var(--soil)}
+.aanvraag-item .kop{display:flex;align-items:center;gap:10px;justify-content:space-between;flex-wrap:wrap}
+.aanvraag-item .kop .links{display:flex;align-items:center;gap:10px}
+.aanvraag-item .naam{font-weight:700}
+.aanvraag-item .meta{color:var(--muted);font-size:.85rem;margin-top:4px}
+.aanvraag-item .bericht{margin-top:10px;color:#3A4137;font-size:.94rem;background:#F7F6F1;padding:12px 14px;border-radius:9px}
+.aanvraag-item .acties{display:flex;gap:8px;margin-top:12px}
+.tag-type{font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.04em;padding:3px 9px;border-radius:6px}
+.tag-type.vraag{background:#E3EFE0;color:var(--green)}
+.tag-type.inruil{background:#FBE9C8;color:#9A6B16}
+
+@media(max-width:860px){
+  .layout{grid-template-columns:1fr}
+  .side{position:static;height:auto;flex-direction:row;flex-wrap:wrap;align-items:center}
+  .side nav{display:flex;flex-wrap:wrap;gap:4px}
+  .side .spacer,.side .uit{display:none}
+  .cards{grid-template-columns:1fr 1fr}
+  .formgrid{grid-template-columns:1fr}
+  .main{padding:24px}
+}
+
+/* Bestelling-label in de inbox */
+.tag-type.bestelling{background:#C0A063;color:#14180F}

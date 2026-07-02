@@ -1,0 +1,129 @@
+{
+  "users": [
+    {
+      "id": "mr3erzs41ghdcx",
+      "username": "root",
+      "email": "info@agroria.nl",
+      "name": "Beheerder",
+      "passwordHash": "$2a$10$UE3W1vRk3finl/LRWuKFIuMj8elcrYKVJT/9Hmx9fqZNxkvruFq4i",
+      "createdAt": "2026-07-02T11:15:52.536Z"
+    }
+  ],
+  "tractors": [
+    {
+      "id": "mr3erzvdmrkg8d",
+      "merk": "Case IH",
+      "model": "Puma 165 CVX",
+      "bouwjaar": 2011,
+      "uren": 7003,
+      "pk": 165,
+      "transmissie": "CVX traploos",
+      "prijs": 27500,
+      "oudePrijs": 35000,
+      "voorlader": false,
+      "categorie": "Trekker",
+      "status": "beschikbaar",
+      "uitgelicht": true,
+      "omschrijving": "Krachtige Case IH Puma 165 CVX met traploze transmissie. Afkomstig van eerste eigenaar, historie volledig gecontroleerd. Technisch gekeurd en klaar voor het werk.",
+      "fotos": [],
+      "createdAt": "2026-07-02T11:15:52.537Z"
+    },
+    {
+      "id": "mr3erzvdmsc2wy",
+      "merk": "Fendt",
+      "model": "711 Vario",
+      "bouwjaar": 2002,
+      "uren": 7537,
+      "pk": 125,
+      "transmissie": "Vario traploos",
+      "prijs": 22500,
+      "oudePrijs": 27500,
+      "voorlader": false,
+      "categorie": "Trekker",
+      "status": "beschikbaar",
+      "uitgelicht": true,
+      "omschrijving": "Betrouwbare Fendt 711 Vario, bekend om zijn legendarische traploze transmissie. Goed onderhouden en in nette staat.",
+      "fotos": [],
+      "createdAt": "2026-07-02T11:15:52.537Z"
+    },
+    {
+      "id": "mr3erzvd6lbd4j",
+      "merk": "John Deere",
+      "model": "6100",
+      "bouwjaar": 1995,
+      "uren": 9234,
+      "pk": 100,
+      "transmissie": "PowrQuad",
+      "prijs": 9500,
+      "oudePrijs": 12000,
+      "voorlader": false,
+      "categorie": "Trekker",
+      "status": "verkocht",
+      "uitgelicht": true,
+      "omschrijving": "Robuuste John Deere 6100 — een werkpaard dat zich keer op keer bewijst. Inmiddels verkocht; vraag naar vergelijkbare modellen.",
+      "fotos": [],
+      "createdAt": "2026-07-02T11:15:52.537Z"
+    },
+    {
+      "id": "mr3erzvdigslym",
+      "merk": "New Holland",
+      "model": "T5.110 met voorlader",
+      "bouwjaar": 2018,
+      "uren": 6322,
+      "pk": 110,
+      "transmissie": "Electro Command",
+      "prijs": 22500,
+      "oudePrijs": 30000,
+      "voorlader": true,
+      "categorie": "Trekker",
+      "status": "beschikbaar",
+      "uitgelicht": true,
+      "omschrijving": "Complete New Holland T5.110 inclusief voorlader. Veelzijdig inzetbaar op het erf en op het land. Eerste/tweede eigenaar, historie gecontroleerd.",
+      "fotos": [],
+      "createdAt": "2026-07-02T11:15:52.537Z"
+    }
+  ],
+  "pages": {
+    "home": {
+      "heroTitel": "Uw partner in landbouwsucces",
+      "heroTekst": "Welkom bij Agroria Landbouwvoertuigen, dé specialist in betrouwbare, zorgvuldig geselecteerde trekkers en landbouwvoertuigen. Wij begrijpen dat kwaliteit en vertrouwen essentieel zijn voor uw bedrijf. Daarom bieden wij transparantie, controle en een ongeëvenaarde service.",
+      "heroFoto": "",
+      "introFoto": "",
+      "garantieFoto": "",
+      "nieuwFoto": "",
+      "closerFoto": ""
+    },
+    "inruil": {
+      "titel": "Garantie & inruil",
+      "tekst": "Wij bieden standaard 12 maanden volledige garantie op al onze trekkers. Geen halve dekking, maar échte zekerheid. Daarnaast profiteert u van een gunstig inruilvoordeel: wilt u overstappen naar een andere trekker, dan zorgen wij voor een eerlijke en realistische inruilprijs.",
+      "foto": ""
+    },
+    "overons": {
+      "titel": "Over Agroria",
+      "tekst": "Agroria Landbouwvoertuigen is dé specialist in betrouwbare trekkers en landbouwvoertuigen. Het merendeel van onze machines is afkomstig van de eerste of tweede eigenaar, met een grondig gecontroleerde historie. Geen onduidelijkheden, geen verrassingen achteraf — wij investeren in de zekerheid van uw aankoop.",
+      "foto": "",
+      "foto2": ""
+    },
+    "selectie": {
+      "foto1": "",
+      "foto2": "",
+      "foto3": ""
+    },
+    "aanbod": {
+      "foto1": "",
+      "foto2": ""
+    },
+    "contact": {
+      "adres": "Vechtensteinlaan 12, Utrecht",
+      "plaatsnaam": "Hoofdvestiging",
+      "telefoon": "",
+      "email": "info@agroria.nl",
+      "kvk": "90610601",
+      "btw": "NL004829455B96"
+    }
+  },
+  "inquiries": [],
+  "settings": {
+    "merken": "Fendt, John Deere, Case IH, New Holland, Claas, Deutz-Fahr, Massey Ferguson, Valtra"
+  }
+}

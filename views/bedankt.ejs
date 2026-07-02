@@ -1,0 +1,9 @@
+<%- include('partials/head', { titel: 'Bedankt' }) %>
+<%- include('partials/header') %>
+<div class="wrap"><div class="bedankt">
+  <div class="ic"><svg width="34" height="34" viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17l-5-5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+  <h1>Bedankt voor je <%= soort === 'inruil' ? 'inruil-aanvraag' : 'bericht' %></h1>
+  <p>We hebben je <%= soort === 'inruil' ? 'gegevens' : 'aanvraag' %> ontvangen en nemen zo snel mogelijk contact met je op — meestal nog dezelfde dag.</p>
+  <a class="btn btn-fill" href="/">Terug naar home</a>
+</div></div>
+<%- include('partials/footer') %>

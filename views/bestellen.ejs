@@ -1,0 +1,72 @@
+<%- include('partials/head', { titel: 'Bestellen — ' + trekker.merk + ' ' + trekker.model }) %>
+<%- include('partials/header') %>
+<section class="pagehead" style="padding:54px 0 46px">
+  <div class="wrap">
+    <a href="/trekker/<%= trekker.id %>" style="color:#cfcfc2;font-size:.9rem">← Terug naar de trekker</a>
+    <span class="eyebrow light" style="margin-top:16px">Bestelling plaatsen</span>
+    <h1 style="font-size:clamp(2rem,4vw,3rem)"><%= trekker.merk %> <%= trekker.model %></h1>
+    <p>Vul uw gegevens in. Eén van onze specialisten neemt persoonlijk contact met u op voor de koopovereenkomst — u zit nergens aan vast tot die rond is.</p>
+  </div>
+</section>
+
+<section class="sec" style="padding-top:54px">
+  <div class="wrap order-grid">
+    <form class="form-card order-form" method="post" action="/bestelling">
+      <input type="hidden" name="trekkerId" value="<%= trekker.id %>">
+      <input type="hidden" name="trekker" value="<%= trekker.merk %> <%= trekker.model %>">
+      <input type="hidden" name="prijs" value="<%= trekker.prijs %>">
+      <h3 class="order-h">Uw gegevens</h3>
+      <div class="field row">
+        <div><label>Naam *</label><input name="naam" required placeholder="Voor- en achternaam"></div>
+        <div><label>Bedrijf (optioneel)</label><input name="bedrijf" placeholder="Bedrijfsnaam"></div>
+      </div>
+      <div class="field row">
+        <div><label>E-mailadres *</label><input type="email" name="email" required placeholder="naam@bedrijf.nl"></div>
+        <div><label>Telefoon *</label><input type="tel" name="telefoon" required placeholder="06 …"></div>
+      </div>
+      <div class="field"><label>Straat en huisnummer</label><input name="adres" placeholder="Voorbeeldstraat 12"></div>
+      <div class="field row">
+        <div><label>Postcode</label><input name="postcode" placeholder="1234 AB"></div>
+        <div><label>Plaats</label><input name="plaats" placeholder="Plaatsnaam"></div>
+      </div>
+      <div class="field"><label>Opmerking (optioneel)</label><textarea name="bericht" rows="3" placeholder="Bijv. gewenste leverdatum, vragen of bijzonderheden…"></textarea></div>
+      <label class="akkoord"><input type="checkbox" required> Ik wil deze trekker bestellen en ga ermee akkoord dat een specialist contact met mij opneemt voor een koopovereenkomst.</label>
+      <button class="btn btn-gold" type="submit" style="justify-content:center;font-size:1.02rem;padding:17px 28px">Bestelling bevestigen</button>
+      <div class="note"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M12 3l7 3v5c0 5-3.5 7.5-7 9-3.5-1.5-7-4-7-9V6l7-3z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg> Geen verplichting tot aankoop — u bevestigt definitief pas bij de koopovereenkomst.</div>
+    </form>
+
+    <aside class="order-summary">
+      <div class="os-card">
+        <div class="os-pic">
+          <% if (firstFoto(trekker)) { %>
+            <img src="<%= firstFoto(trekker) %>" alt="<%= trekker.merk %> <%= trekker.model %>">
+          <% } else { %>
+            <svg class="tractor dark" viewBox="0 0 460 280" style="width:74%"><path class="t-fender" d="M262 168 A 78 78 0 0 1 398 168" fill="none"/><path class="t-cab" d="M196 152 L212 98 Q214 90 223 90 L290 90 Q299 90 301 99 L309 152 Z"/><path class="t-glass" d="M220 144 L231 100 L284 100 L294 144 Z"/><rect class="t-accent" x="184" y="92" width="9" height="62" rx="4"/><rect class="t-body" x="50" y="150" width="262" height="56" rx="7"/><path class="t-body" d="M50 158 L30 158 Q22 158 22 168 L22 190 Q22 200 32 200 L50 200 Z"/><circle class="t-tyre" cx="120" cy="222" r="46"/><circle class="t-rim" cx="120" cy="222" r="23"/><circle class="t-hub" cx="120" cy="222" r="7"/><circle class="t-tyre" cx="330" cy="205" r="72"/><circle class="t-rim" cx="330" cy="205" r="41"/><circle class="t-hub" cx="330" cy="205" r="12"/></svg>
+          <% } %>
+          <% if (trekker.oudePrijs && trekker.oudePrijs > trekker.prijs) { %><span class="badge">Sale!</span><% } %>
+        </div>
+        <div class="os-body">
+          <span class="os-cat"><%= trekker.categorie || 'Trekker' %> · <%= trekker.bouwjaar %></span>
+          <h4><%= trekker.merk %> <%= trekker.model %></h4>
+          <div class="os-prices">
+            <span class="now"><%= euro(trekker.prijs) %></span>
+            <% if (trekker.oudePrijs && trekker.oudePrijs > trekker.prijs) { %><span class="was"><%= euro(trekker.oudePrijs) %></span><% } %>
+          </div>
+          <table class="spectable os-spec">
+            <tr><td>Bouwjaar</td><td><%= trekker.bouwjaar %></td></tr>
+            <tr><td>Werkuren</td><td><%= getal(trekker.uren) %></td></tr>
+            <tr><td>Vermogen</td><td><%= trekker.pk %> pk</td></tr>
+            <tr><td>Transmissie</td><td><%= trekker.transmissie || '—' %></td></tr>
+            <% if (trekker.voorlader) { %><tr><td>Voorlader</td><td>Ja</td></tr><% } %>
+          </table>
+        </div>
+        <ul class="os-trust">
+          <li><svg width="17" height="17" viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17l-5-5" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg> 12 maanden volledige garantie</li>
+          <li><svg width="17" height="17" viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17l-5-5" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg> Gratis transport in Nederland, Duitsland &amp; België</li>
+          <li><svg width="17" height="17" viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17l-5-5" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg> 6 maanden niet-goed-geld-terug</li>
+        </ul>
+      </div>
+    </aside>
+  </div>
+</section>
+<%- include('partials/footer') %>

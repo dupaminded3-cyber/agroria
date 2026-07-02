@@ -1,0 +1,23 @@
+<div class="announce">
+  <div class="wrap">
+    <span class="a"><svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17l-5-5" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg> 12 maanden volledige garantie</span>
+    <span class="a"><svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17l-5-5" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg> Gratis transport in Nederland, Duitsland &amp; België</span>
+    <span class="a"><svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17l-5-5" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg> 6 maanden niet-goed-geld-terug</span>
+  </div>
+</div>
+<header class="site">
+  <div class="wrap nav">
+    <%- include('brand') %>
+    <nav class="menu" id="menu">
+      <a href="/" class="<%= path==='/' ? 'on' : '' %>">Home</a>
+      <a href="/over-ons" class="<%= path==='/over-ons' ? 'on' : '' %>">Over ons</a>
+      <a href="/selectie" class="<%= path==='/selectie' ? 'on' : '' %>">Selectie &amp; kwaliteit</a>
+      <a href="/garantie" class="<%= path==='/garantie' ? 'on' : '' %>">Garantie &amp; zekerheid</a>
+      <a href="/aanbod" class="<%= path.startsWith('/aanbod')||path.startsWith('/trekker') ? 'on' : '' %>">Ons aanbod</a>
+      <a href="/inruil" class="<%= path==='/inruil' ? 'on' : '' %>">Inruil</a>
+      <a href="/faq" class="<%= path==='/faq' ? 'on' : '' %>">Veelgestelde vragen</a>
+    </nav>
+    <a class="btn btn-fill nav-cta" href="/contact">Contact</a>
+    <button class="hamb" id="hamb" aria-label="Menu"><svg width="26" height="26" viewBox="0 0 24 24" fill="none"><path d="M4 7h16M4 12h16M4 17h16" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>
+  </div>
+</header>

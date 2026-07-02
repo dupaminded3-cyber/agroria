@@ -1,0 +1,67 @@
+<%- include('partials/head', { titel: 'Selectie & kwaliteit' }) %>
+<%- include('partials/header') %>
+
+<section class="pagehead">
+  <div class="wrap">
+    <span class="eyebrow light">Onze selectie &amp; kwaliteit</span>
+    <h1>Waarom wij doen<br>wat we doen</h1>
+    <p>Bij Agroria Landbouwvoertuigen draait alles om betrouwbaarheid en vertrouwen. Wij begrijpen dat een investering in een landbouwvoertuig een belangrijke beslissing is. Daarom selecteren wij elke trekker met de grootste zorg. Ontdek hoe onze strenge selectiecriteria en onovertroffen kwaliteitsstandaarden u de zekerheid bieden die u zoekt.</p>
+  </div>
+</section>
+
+<section class="sec">
+  <div class="wrap intro-grid">
+    <div class="rv">
+      <span class="eyebrow">De kunst van selectie</span>
+      <h2 class="dh">Meer dan alleen een merk</h2>
+      <p>Wat onze trekkers speciaal maakt, is niet het merk of het bouwjaar, maar de doordachte selectie erachter. Wij kopen niet blind in. Elke trekker wordt grondig beoordeeld op herkomst, eigenaarschap en onderhoudshistorie. Het merendeel is afkomstig van de eerste of tweede eigenaar — dat geeft ons een veel duidelijker beeld van het verdere gebruik en onderhoud.</p>
+      <p>Daarnaast kijken wij kritisch naar de technische staat en slijtage, de draaiuren in verhouding tot het gebruik, de onderhoudsdocumentatie en de algemene verzorging van de machine. Alleen trekkers waar wij volledig vertrouwen in hebben, komen in ons aanbod. Twijfelen wij? Dan kopen we hem niet. Wij kiezen bewust voor kwaliteit boven volume: liever minder machines die kloppen, dan veel aanbod met vraagtekens.</p>
+    </div>
+    <div class="intro-art rv">
+      <% if (page.foto1) { %><img src="<%= page.foto1 %>" alt="Selectie"><% } else { %><svg class="tractor dark" viewBox="0 0 460 280" style="width:74%"><path class="t-fender" d="M262 168 A 78 78 0 0 1 398 168" fill="none"/><path class="t-cab" d="M196 152 L212 98 Q214 90 223 90 L290 90 Q299 90 301 99 L309 152 Z"/><path class="t-glass" d="M220 144 L231 100 L284 100 L294 144 Z"/><rect class="t-accent" x="184" y="92" width="9" height="62" rx="4"/><rect class="t-body" x="50" y="150" width="262" height="56" rx="7"/><path class="t-body" d="M50 158 L30 158 Q22 158 22 168 L22 190 Q22 200 32 200 L50 200 Z"/><circle class="t-tyre" cx="120" cy="222" r="46"/><circle class="t-rim" cx="120" cy="222" r="23"/><circle class="t-hub" cx="120" cy="222" r="7"/><circle class="t-tyre" cx="330" cy="205" r="72"/><circle class="t-rim" cx="330" cy="205" r="41"/><circle class="t-hub" cx="330" cy="205" r="12"/></svg><% } %>
+      
+    </div>
+  </div>
+</section>
+
+<section class="sec band-moss">
+  <div class="wrap intro-grid">
+    <div class="intro-art rv" style="order:-1">
+      <% if (page.foto2) { %><img src="<%= page.foto2 %>" alt="Transparantie"><% } else { %>
+      <svg viewBox="0 0 400 300" style="width:74%"><rect x="60" y="70" width="280" height="170" rx="10" fill="#25402A" opacity=".1"/><path d="M110 150 l40 40 l90 -90" stroke="#56863F" stroke-width="14" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <% } %>
+    </div>
+    <div class="rv">
+      <span class="eyebrow">Transparantie en vertrouwen</span>
+      <h2 class="dh">Geen verrassingen achteraf</h2>
+      <p>Klanten kunnen erop vertrouwen dat ze bij Agroria een trekker van topkwaliteit kopen, zonder verrassingen. Elke trekker die wij aanbieden wordt vooraf beoordeeld op herkomst, eigenaarschap en onderhoudshistorie. Wij controleren de beschikbare documentatie en kijken kritisch naar het gebruik en de staat van de machine.</p>
+      <p>Daarnaast worden al onze trekkers technisch nagekeken voordat ze verkocht worden. Eventuele aandachtspunten bespreken we altijd vooraf, zodat u volledig geïnformeerd bent. Geen verrassingen achteraf, maar duidelijkheid vóór uw aankoop. Wij durven 12 maanden volledige garantie te geven, omdat wij alleen machines verkopen waar wij zelf vertrouwen in hebben.</p>
+    </div>
+  </div>
+</section>
+
+<section class="sec">
+  <div class="wrap intro-grid">
+    <div class="rv">
+      <span class="eyebrow">Onze belofte</span>
+      <h2 class="dh">Een doordachte investering</h2>
+      <p>Het allerbelangrijkste dat u zich moet onthouden over Agroria is dit: wij verkopen alleen trekkers die wij zelf met volledig vertrouwen durven te leveren. Elke machine wordt geselecteerd op herkomst, historie en technische staat. Het merendeel is afkomstig van de eerste of tweede eigenaar en wordt altijd vooraf grondig gecontroleerd. Twijfelen wij over een trekker, dan komt hij niet in ons aanbod.</p>
+      <p>Wij kiezen bewust voor kwaliteit boven kwantiteit. Dat is ook de reden dat wij u 12 maanden volledige garantie kunnen bieden: wij staan immers volledig achter wat we verkopen. Bij ons koopt u geen gok, maar een doordachte investering in betrouwbaarheid en duurzaamheid voor uw bedrijf.</p>
+      <a class="btn btn-fill" href="/aanbod" style="margin-top:8px">Bekijk ons huidige aanbod</a>
+    </div>
+    <div class="intro-art rv">
+      <% if (page.foto3) { %><img src="<%= page.foto3 %>" alt="Kwaliteit"><% } else { %><svg class="tractor dark" viewBox="0 0 460 280" style="width:74%"><path class="t-fender" d="M262 168 A 78 78 0 0 1 398 168" fill="none"/><path class="t-cab" d="M196 152 L212 98 Q214 90 223 90 L290 90 Q299 90 301 99 L309 152 Z"/><path class="t-glass" d="M220 144 L231 100 L284 100 L294 144 Z"/><rect class="t-accent" x="184" y="92" width="9" height="62" rx="4"/><rect class="t-body" x="50" y="150" width="262" height="56" rx="7"/><path class="t-body" d="M50 158 L30 158 Q22 158 22 168 L22 190 Q22 200 32 200 L50 200 Z"/><circle class="t-tyre" cx="120" cy="222" r="46"/><circle class="t-rim" cx="120" cy="222" r="23"/><circle class="t-hub" cx="120" cy="222" r="7"/><circle class="t-tyre" cx="330" cy="205" r="72"/><circle class="t-rim" cx="330" cy="205" r="41"/><circle class="t-hub" cx="330" cy="205" r="12"/></svg><% } %>
+      
+    </div>
+  </div>
+</section>
+
+<section class="split-cta">
+  <div class="wrap center rv" style="max-width:680px;margin:0 auto">
+    <span class="eyebrow light" style="justify-content:center">Kies voor zekerheid</span>
+    <h2 class="dh" style="color:var(--paper)">Ervaar zelf de kwaliteit van Agroria</h2>
+    <p style="color:#D3DBCC;margin:14px 0 26px">Bij ons investeert u in meer dan alleen een trekker; u investeert in gemoedsrust. Ontdek onze zorgvuldig geselecteerde collectie en ervaar zelf de kwaliteit, transparantie en volledige garantie die wij bieden.</p>
+    <a class="btn btn-gold" href="/aanbod">Bekijk onze selectie</a>
+  </div>
+</section>
+<%- include('partials/footer') %>

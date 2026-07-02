@@ -1,0 +1,23 @@
+<div class="fotoslot">
+  <div class="slot-top"><b><%= slot.titel %></b><% if (slot.hint){ %><span class="hint2"><%= slot.hint %></span><% } %></div>
+  <% if (slot.huidige){ %>
+    <div class="slot-row">
+      <div class="prev"><img src="<%= slot.huidige %>"></div>
+      <div class="slot-actions">
+        <form method="post" action="/uadmin/paginas" enctype="multipart/form-data" class="inline-up">
+          <input type="file" name="<%= slot.naam %>" accept="image/*" required>
+          <button class="btn btn-fill" type="submit">Vervangen</button>
+        </form>
+        <form method="post" action="/uadmin/paginas/foto/delete" onsubmit="return confirm('Deze foto verwijderen? De plek valt terug op de illustratie.')">
+          <input type="hidden" name="veld" value="<%= slot.veld %>">
+          <button class="btn btn-danger" type="submit">Verwijderen</button>
+        </form>
+      </div>
+    </div>
+  <% } else { %>
+    <form method="post" action="/uadmin/paginas" enctype="multipart/form-data" class="inline-up">
+      <input type="file" name="<%= slot.naam %>" accept="image/*" required>
+      <button class="btn btn-fill" type="submit">Uploaden</button>
+    </form>
+  <% } %>
+</div>

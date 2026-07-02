@@ -1,0 +1,147 @@
+<%- include('partials/head', { titel: '' }) %>
+<%- include('partials/header') %>
+
+<!-- HERO -->
+<section class="hero">
+  <% if (page.heroFoto) { %>
+    <div class="bg" style="background-image:url('<%= page.heroFoto %>')"></div>
+  <% } else { %>
+    <div class="bg fallback"></div>
+  <% } %>
+  <div class="scrim"></div>
+  <div class="wrap">
+    <span class="eyebrow light">Agroria Landbouwvoertuigen · betrouwbaar sinds jaar en dag</span>
+    <h1><%= page.heroTitel %></h1>
+    <p class="lead"><%= page.heroTekst %></p>
+    <div class="hero-cta">
+      <a class="btn btn-gold" href="/aanbod">Bekijk onze selectie</a>
+      <a class="btn btn-out" href="/contact" style="color:var(--paper)">Stel uw vraag</a>
+    </div>
+    <div class="trust-row">
+      <div class="t"><b>12 mnd</b><span>volledige garantie</span></div>
+      <div class="t"><b>NL · DE · BE</b><span>gratis transport</span></div>
+      <div class="t"><b>1e/2e</b><span>eigenaar, historie gecheckt</span></div>
+    </div>
+  </div>
+  <% if (!page.heroFoto) { %>
+    <svg class="tractor fallback-tractor" viewBox="0 0 460 280" aria-hidden="true">
+      <path class="t-fender" d="M262 168 A 78 78 0 0 1 398 168" fill="none"/>
+      <path class="t-cab" d="M196 152 L212 98 Q214 90 223 90 L290 90 Q299 90 301 99 L309 152 Z"/>
+      <path class="t-glass" d="M220 144 L231 100 L284 100 L294 144 Z"/>
+      <rect class="t-accent" x="184" y="92" width="9" height="62" rx="4"/>
+      <rect class="t-body" x="50" y="150" width="262" height="56" rx="7"/>
+      <path class="t-body" d="M50 158 L30 158 Q22 158 22 168 L22 190 Q22 200 32 200 L50 200 Z"/>
+      <circle class="t-accent" cx="36" cy="172" r="5"/>
+      <circle class="t-tyre" cx="120" cy="222" r="46"/><circle class="t-rim" cx="120" cy="222" r="23"/><circle class="t-hub" cx="120" cy="222" r="7"/>
+      <circle class="t-tyre" cx="330" cy="205" r="72"/><circle class="t-rim" cx="330" cy="205" r="41"/><circle class="t-hub" cx="330" cy="205" r="12"/>
+    </svg>
+  <% } %>
+</section>
+
+<!-- BETROUWBAARHEID BEGINT HIER -->
+<section class="sec band-cream">
+  <div class="wrap intro-grid">
+    <div class="rv">
+      <span class="eyebrow">Betrouwbaarheid begint hier</span>
+      <h2 class="dh">Geen verrassingen,<br>wel zekerheid</h2>
+      <p>Bij Agroria Landbouwvoertuigen bent u verzekerd van kwaliteit. Het merendeel van onze trekkers is afkomstig van de eerste of tweede eigenaar. De historie wordt altijd grondig gecontroleerd, zodat u precies weet wat u koopt. Geen onduidelijkheden, geen verrassingen achteraf.</p>
+      <a class="btn btn-fill" href="/selectie">Lees over onze kwaliteitsstandaarden</a>
+    </div>
+    <div class="intro-art rv">
+      <% if (page.introFoto) { %><img src="<%= page.introFoto %>" alt="Agroria"><% } else { %>
+        <svg class="tractor dark" viewBox="0 0 460 280" style="width:74%"><path class="t-fender" d="M262 168 A 78 78 0 0 1 398 168" fill="none"/><path class="t-cab" d="M196 152 L212 98 Q214 90 223 90 L290 90 Q299 90 301 99 L309 152 Z"/><path class="t-glass" d="M220 144 L231 100 L284 100 L294 144 Z"/><rect class="t-accent" x="184" y="92" width="9" height="62" rx="4"/><rect class="t-body" x="50" y="150" width="262" height="56" rx="7"/><path class="t-body" d="M50 158 L30 158 Q22 158 22 168 L22 190 Q22 200 32 200 L50 200 Z"/><circle class="t-tyre" cx="120" cy="222" r="46"/><circle class="t-rim" cx="120" cy="222" r="23"/><circle class="t-hub" cx="120" cy="222" r="7"/><circle class="t-tyre" cx="330" cy="205" r="72"/><circle class="t-rim" cx="330" cy="205" r="41"/><circle class="t-hub" cx="330" cy="205" r="12"/></svg>
+      <% } %>
+    </div>
+  </div>
+</section>
+
+<!-- TOPMODELLEN -->
+<section class="sec band-moss">
+  <div class="wrap">
+    <div class="center" style="max-width:680px;margin:0 auto 50px">
+      <span class="eyebrow">Onze topmodellen</span>
+      <h2 class="dh">Zorgvuldig samengesteld</h2>
+      <p style="color:var(--muted);margin-top:14px">Elk voertuig in onze selectie staat voor kwaliteit, functionaliteit en duurzaamheid. Bekijk de details, specificaties en voordelen.</p>
+    </div>
+    <div class="grid4">
+      <% uitgelicht.forEach(function(t){ %><%- include('partials/card', { t: t }) %><% }) %>
+    </div>
+    <div class="center" style="margin-top:46px"><a class="btn btn-fill" href="/aanbod">Bekijk het volledige aanbod</a></div>
+  </div>
+</section>
+
+<!-- GARANTIE & INRUIL -->
+<section class="sec">
+  <div class="wrap">
+    <div class="split rv">
+      <div class="copy">
+        <span class="eyebrow light">Garantie &amp; inruil</span>
+        <h2>Wij staan achter<br>wat we verkopen</h2>
+        <p>Standaard 12 maanden volledige garantie op al onze trekkers. Geen halve dekking, maar échte zekerheid. Daarnaast profiteert u van een gunstig inruilvoordeel — wij denken mee en zorgen voor een eerlijke, realistische inruilprijs.</p>
+        <div class="btns">
+          <a class="btn btn-gold" href="/garantie">Meer over garantie</a>
+          <a class="btn btn-out" href="/inruil" style="color:var(--paper)">Meer over inruil</a>
+        </div>
+      </div>
+      <div class="visual">
+        <% if (page.garantieFoto) { %><img src="<%= page.garantieFoto %>" alt="Agroria"><% } else { %>
+        <svg class="tractor ill" viewBox="0 0 460 280"><path class="t-fender" d="M262 168 A 78 78 0 0 1 398 168" fill="none"/><path class="t-cab" d="M196 152 L212 98 Q214 90 223 90 L290 90 Q299 90 301 99 L309 152 Z"/><path class="t-glass" d="M220 144 L231 100 L284 100 L294 144 Z"/><rect class="t-accent" x="184" y="92" width="9" height="62" rx="4"/><rect class="t-body" x="50" y="150" width="262" height="56" rx="7"/><path class="t-body" d="M50 158 L30 158 Q22 158 22 168 L22 190 Q22 200 32 200 L50 200 Z"/><circle class="t-tyre" cx="120" cy="222" r="46"/><circle class="t-rim" cx="120" cy="222" r="23"/><circle class="t-hub" cx="120" cy="222" r="7"/><circle class="t-tyre" cx="330" cy="205" r="72"/><circle class="t-rim" cx="330" cy="205" r="41"/><circle class="t-hub" cx="330" cy="205" r="12"/></svg>
+        <% } %>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- NIEUW BINNEN -->
+<section class="band-cream">
+  <div class="wrap feature">
+    <div class="vis">
+      <% if (page.nieuwFoto) { %><img src="<%= page.nieuwFoto %>" alt="Nieuw binnen"><% } else { %>
+      <svg class="tractor dark" viewBox="0 0 460 280" style="width:72%"><path class="t-fender" d="M262 168 A 78 78 0 0 1 398 168" fill="none"/><path class="t-cab" d="M196 152 L212 98 Q214 90 223 90 L290 90 Q299 90 301 99 L309 152 Z"/><path class="t-glass" d="M220 144 L231 100 L284 100 L294 144 Z"/><rect class="t-accent" x="184" y="92" width="9" height="62" rx="4"/><rect class="t-body" x="50" y="150" width="262" height="56" rx="7"/><path class="t-body" d="M50 158 L30 158 Q22 158 22 168 L22 190 Q22 200 32 200 L50 200 Z"/><circle class="t-tyre" cx="120" cy="222" r="46"/><circle class="t-rim" cx="120" cy="222" r="23"/><circle class="t-hub" cx="120" cy="222" r="7"/><circle class="t-tyre" cx="330" cy="205" r="72"/><circle class="t-rim" cx="330" cy="205" r="41"/><circle class="t-hub" cx="330" cy="205" r="12"/></svg>
+      <% } %>
+    </div>
+    <div class="txt rv">
+      <span class="eyebrow">Nieuw binnen</span>
+      <h2 class="dh">De nieuwste<br>aanwinsten</h2>
+      <p>Altijd de meest gewilde modellen op voorraad. Grijp uw kans om te investeren in de toekomst van uw bedrijf en profiteer van de beste landbouwmachines — zolang de voorraad strekt.</p>
+      <a class="btn btn-fill" href="/aanbod?sort=jaar">Bekijk nieuw aanbod</a>
+    </div>
+  </div>
+</section>
+
+<!-- MERKENBALK -->
+<section class="merkenbalk">
+  <div class="wrap center rv">
+    <span class="eyebrow" style="justify-content:center">Wij handelen in alle topmerken</span>
+    <div class="merken-row">
+      <% (topmerken || '').split(',').map(function(m){ return m.trim(); }).filter(Boolean).forEach(function(m){ %><span><%= m %></span><% }) %>
+    </div>
+  </div>
+</section>
+
+<!-- FILMISCHE AFSLUITER -->
+<section class="closer">
+  <% if (page.closerFoto) { %>
+    <div class="closer-bg" style="background-image:url('<%= page.closerFoto %>')"></div>
+  <% } else { %>
+    <div class="closer-bg fallback"></div>
+  <% } %>
+  <div class="closer-scrim"></div>
+  <div class="wrap center closer-inner rv">
+    <span class="eyebrow light" style="justify-content:center">Klaar voor de volgende stap?</span>
+    <h2>Vind úw trekker bij Agroria</h2>
+    <p>Bekijk ons aanbod of stel direct uw vraag. Wij reageren persoonlijk, vaak nog dezelfde dag — en leveren met volledige garantie.</p>
+    <div class="closer-cta">
+      <a class="btn btn-gold" href="/aanbod">Bekijk het aanbod</a>
+      <a class="btn btn-out" href="/contact" style="color:var(--paper)">Neem contact op</a>
+    </div>
+    <div class="closer-trust">
+      <span><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17l-5-5" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg> 12 maanden garantie</span>
+      <span><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17l-5-5" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg> Gratis transport NL · DE · BE</span>
+      <span><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17l-5-5" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg> 6 maanden geld terug</span>
+      <span><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17l-5-5" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg> 1e/2e eigenaar, historie gecheckt</span>
+    </div>
+  </div>
+</section>
+
+<%- include('partials/footer') %>

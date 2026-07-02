@@ -1,0 +1,34 @@
+<%- include('_head', { titel: 'Trekkers' }) %>
+<%- include('_side') %>
+<div class="topbar">
+  <div><h1>Trekkers</h1><div class="sub"><%= lijst.length %> trekker<%= lijst.length===1?'':'s' %> in beheer</div></div>
+  <a class="btn btn-fill" href="/uadmin/trekkers/nieuw">+ Trekker plaatsen</a>
+</div>
+<div class="panel">
+  <% if (lijst.length===0){ %>
+    <div style="padding:40px 22px;color:var(--muted)">Je hebt nog geen trekkers geplaatst. <a href="/uadmin/trekkers/nieuw" style="color:var(--green);font-weight:600">Plaats je eerste trekker →</a></div>
+  <% } else { %>
+  <table class="list">
+    <thead><tr><th>Foto</th><th>Trekker</th><th>Jaar</th><th>Uren</th><th>Prijs</th><th>Status</th><th></th></tr></thead>
+    <tbody>
+    <% lijst.forEach(function(t){ %>
+      <tr>
+        <td><% if (t.fotos && t.fotos[0]){ %><img class="thumb" src="/uploads/<%= t.fotos[0] %>"><% } else { %><span class="thumb"></span><% } %></td>
+        <td><b><%= t.merk %> <%= t.model %></b><% if(t.uitgelicht){ %> <span class="pill nieuw">uitgelicht</span><% } %></td>
+        <td><%= t.bouwjaar %></td>
+        <td><%= getal(t.uren) %></td>
+        <td><%= euro(t.prijs) %></td>
+        <td><span class="pill <%= t.status %>"><%= t.status %></span></td>
+        <td style="text-align:right;white-space:nowrap">
+          <a class="btn btn-out btn-sm" href="/uadmin/trekkers/<%= t.id %>">Bewerk</a>
+          <form method="post" action="/uadmin/trekkers/<%= t.id %>/delete" style="display:inline" onsubmit="return confirm('Deze trekker definitief verwijderen?')">
+            <button class="btn btn-danger btn-sm" type="submit">Verwijder</button>
+          </form>
+        </td>
+      </tr>
+    <% }) %>
+    </tbody>
+  </table>
+  <% } %>
+</div>
+<%- include('_foot') %>

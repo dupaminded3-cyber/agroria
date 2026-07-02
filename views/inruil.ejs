@@ -1,0 +1,45 @@
+<%- include('partials/head', { titel: 'Inruil' }) %>
+<%- include('partials/header') %>
+
+<section class="pagehead">
+  <div class="wrap">
+    <span class="eyebrow light">Inruil</span>
+    <h1>Ruil uw trekker<br>eerlijk in</h1>
+    <p>Wilt u overstappen naar een andere trekker? Wij denken met u mee en zorgen voor een eerlijke, realistische inruilprijs. Stuur de gegevens van uw huidige machine en ontvang binnen 24 uur een vrijblijvende taxatie.</p>
+  </div>
+</section>
+
+<section class="sec">
+  <div class="wrap" style="display:grid;grid-template-columns:.9fr 1.1fr;gap:50px;align-items:start" id="inruil-grid">
+    <div class="rv">
+      <span class="eyebrow">Zo werkt het</span>
+      <h2 class="dh" style="margin:14px 0 26px">In drie stappen geregeld</h2>
+      <div class="valuecard" style="margin-bottom:14px"><div class="ico"><b style="font-family:var(--display);font-size:1.4rem;color:var(--green)">1</b></div><h4>Gegevens insturen</h4><p>Merk, type, bouwjaar en werkuren — plus eventueel een paar foto's van uw machine.</p></div>
+      <div class="valuecard" style="margin-bottom:14px"><div class="ico"><b style="font-family:var(--display);font-size:1.4rem;color:var(--green)">2</b></div><h4>Taxatie binnen 24 uur</h4><p>Onze specialist bepaalt een reële, eerlijke inruilwaarde — zonder verrassingen.</p></div>
+      <div class="valuecard"><div class="ico"><b style="font-family:var(--display);font-size:1.4rem;color:var(--green)">3</b></div><h4>Inruilen &amp; rijden</h4><p>Wij verrekenen de waarde direct met uw nieuwe trekker. Gemak van begin tot eind.</p></div>
+    </div>
+    <form class="form-card" method="post" action="/inruil">
+      <h3 style="font-family:var(--display);font-weight:600;font-size:1.5rem">Vraag uw taxatie aan</h3>
+      <div class="field row"><div><label>Merk *</label><input name="merk" required placeholder="Bijv. John Deere"></div><div><label>Type / model</label><input name="model" placeholder="Bijv. 6155R"></div></div>
+      <div class="field row"><div><label>Bouwjaar</label><input type="number" name="bouwjaar" placeholder="2017"></div><div><label>Werkuren</label><input type="number" name="uren" placeholder="4200"></div></div>
+      <div class="field row"><div><label>Naam *</label><input name="naam" required placeholder="Voor- en achternaam"></div><div><label>Telefoon</label><input type="tel" name="telefoon" placeholder="06 …"></div></div>
+      <div class="field"><label>E-mailadres *</label><input type="email" name="email" required placeholder="naam@bedrijf.nl"></div>
+      <div class="field"><label>Toelichting</label><textarea name="bericht" rows="3" placeholder="Bijzonderheden, opties of de staat van de machine…"></textarea></div>
+      <button class="btn btn-fill" type="submit" style="justify-content:center">Taxatie aanvragen</button>
+      <div class="note"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M12 3l7 3v5c0 5-3.5 7.5-7 9-3.5-1.5-7-4-7-9V6l7-3z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg> Uw aanvraag komt direct binnen bij Agroria — vrijblijvend en zonder verplichting.</div>
+    </form>
+  </div>
+</section>
+
+<section class="split-cta">
+  <div class="wrap center rv" style="max-width:680px;margin:0 auto">
+    <span class="eyebrow light" style="justify-content:center">Eerlijk &amp; realistisch</span>
+    <h2 class="dh" style="color:var(--paper)">Een eerlijke prijs voor uw huidige machine</h2>
+    <p style="color:#D3DBCC;margin:14px 0 26px">Bekijk eerst ons aanbod, of stel gerust uw vraag. Wij combineren een scherpe inruilwaarde met 12 maanden garantie op uw nieuwe trekker.</p>
+    <div style="display:flex;gap:14px;justify-content:center;flex-wrap:wrap">
+      <a class="btn btn-gold" href="/aanbod">Bekijk het aanbod</a>
+      <a class="btn btn-out" href="/contact" style="color:var(--paper)">Stel uw vraag</a>
+    </div>
+  </div>
+</section>
+<%- include('partials/footer') %>
