@@ -8,8 +8,8 @@
   --display:'Fraunces',Georgia,serif; --body:'Hanken Grotesk',system-ui,sans-serif;
 }
 *{box-sizing:border-box;margin:0;padding:0}
-html{scroll-behavior:smooth}
-body{background:var(--paper);color:var(--ink);font-family:var(--body);line-height:1.65;-webkit-font-smoothing:antialiased}
+html{scroll-behavior:smooth;overflow-x:clip}
+body{background:var(--paper);color:var(--ink);font-family:var(--body);line-height:1.65;-webkit-font-smoothing:antialiased;overflow-x:clip}
 a{color:inherit;text-decoration:none}
 img,svg{display:block;max-width:100%}
 .wrap{max-width:1200px;margin:0 auto;padding:0 36px}
@@ -227,8 +227,8 @@ footer.site{background:var(--ink);color:#C7C8B8;padding:70px 0 30px;margin-top:0
 }
 @media(max-width:960px){
   .hamb{display:block}
-  .menu{position:fixed;inset:0 0 0 auto;width:min(82vw,330px);background:var(--paper);flex-direction:column;gap:0;padding:90px 28px 28px;transform:translateX(100%);transition:transform .3s;box-shadow:-20px 0 60px -20px rgba(0,0,0,.4);z-index:55}
-  .menu.open{transform:none}
+  .menu{position:fixed;inset:0 0 0 auto;width:min(82vw,330px);max-width:100%;background:var(--paper);flex-direction:column;gap:0;padding:90px 28px 28px;opacity:0;visibility:hidden;pointer-events:none;transition:opacity .26s ease,visibility .26s ease;box-shadow:-20px 0 60px -20px rgba(0,0,0,.4);z-index:55}
+  .menu.open{opacity:1;visibility:visible;pointer-events:auto}
   .menu a{padding:16px 0;border-bottom:1px solid var(--line);width:100%;font-size:1rem}
   .nav-cta{display:none}
   .intro-grid,.split,.feature,.detail{grid-template-columns:1fr}
@@ -333,4 +333,15 @@ footer.site{background:var(--ink);color:#C7C8B8;padding:70px 0 30px;margin-top:0
   .closer{padding:88px 0}
   .merken-row{gap:12px 26px}
   .merken-row span{font-size:1.15rem}
+}
+
+/* ===== MOBIEL: foto's netjes bijgesneden op vaste hoogte (optie b) ===== */
+@media(max-width:600px){
+  .intro-art{aspect-ratio:16/10}
+  .feature .vis,.split .visual{min-height:0;height:240px}
+  .feature .vis img,.split .visual img{width:100%;height:100%;object-fit:cover}
+  .feature .vis svg,.split .visual svg,.intro-art svg{width:62%!important;height:auto}
+  .merkenbalk{padding:48px 0 42px}
+  .sec{padding:64px 0}
+  .quote{padding:64px 0}
 }
