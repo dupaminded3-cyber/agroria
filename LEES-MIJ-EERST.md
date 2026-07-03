@@ -84,3 +84,28 @@ Verder:
 - vul je echte contactgegevens in onder "Pagina's & foto's";
 - bewaar af en toe een kopie van de map `data` (daar staat alles in:
   je trekkers, foto's en aanvragen).
+
+## Je gegevens bewaren op Render (belangrijk!)
+
+Op het **gratis** Render-plan is de opslag tijdelijk: bij elke herstart of
+nieuwe versie verdwijnen je geüploade foto's en toegevoegde trekkers. Om alles
+blijvend te bewaren heb je een **persistente schijf** nodig — die is bij Render
+alleen beschikbaar op een **betaald plan**.
+
+Zo zet je het aan in het Render-dashboard (op je bestaande service):
+
+1. Ga naar je service op https://dashboard.render.com → open **agroria**.
+2. Kies bij **Settings → Instance Type** een **betaald plan** (bijv. Starter).
+3. Ga naar **Settings → Disks → Add Disk** en vul in:
+   - Name: `agroria-data`
+   - Mount Path: `/var/data`
+   - Size: `1 GB`
+4. Ga naar **Environment** en voeg deze variabele toe:
+   - `DATA_DIR` = `/var/data`
+   - (en, indien nog niet aanwezig: `NODE_ENV` = `production`,
+     `SITE_URL` = `https://agroria.onrender.com`)
+5. Klik **Save** — Render herstart de site. Vanaf nu blijven je foto's en
+   trekkers bewaard, ook na updates.
+
+> In het bestand `render.yaml` staat deze opzet ook kant-en-klaar beschreven,
+> voor als je Render via een "Blueprint" wilt instellen.
