@@ -367,8 +367,9 @@ footer.site{background:var(--ink);color:#C7C8B8;padding:70px 0 30px;margin-top:0
 /* ===== MOBIEL: foto's netjes bijgesneden op vaste hoogte (optie b) ===== */
 @media(max-width:600px){
   .intro-art{aspect-ratio:16/10}
-  .feature .vis,.split .visual{min-height:0;height:240px}
-  .feature .vis img,.split .visual img{width:100%;height:100%;object-fit:cover}
+  /* Op telefoon de HELE foto tonen (niet bijsnijden): hoogte volgt de foto */
+  .feature .vis,.split .visual{min-height:0;height:auto}
+  .feature .vis img,.split .visual img{width:100%;height:auto;object-fit:contain}
   .feature .vis svg,.split .visual svg,.intro-art svg{width:62%!important;height:auto}
   .merkenbalk{padding:48px 0 42px}
   .sec{padding:64px 0}
