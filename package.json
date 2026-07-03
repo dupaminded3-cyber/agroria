@@ -5,7 +5,8 @@
   "main": "server.js",
   "scripts": {
     "start": "node lib/seed.js && node server.js",
-    "seed": "node lib/seed.js"
+    "seed": "node lib/seed.js",
+    "wachtwoord": "node lib/reset-wachtwoord.js"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",

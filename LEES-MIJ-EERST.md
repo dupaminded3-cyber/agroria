@@ -18,16 +18,31 @@ is de server. Stoppen doe je met Ctrl + C in dat venster.
 
 ## Inloggen op het beheer (/uadmin)
 
-- Gebruikersnaam: root
-- Wachtwoord: dit wordt de **allereerste keer** dat je de site start automatisch
-  aangemaakt. Er zijn twee mogelijkheden:
-  - Je stelt vooraf zelf een wachtwoord in via de omgevingsvariabele
-    `ADMIN_PASSWORD` (aanbevolen), of
-  - je laat het leeg — dan genereert de site een willekeurig wachtwoord en
-    toont dit **éénmalig** in het opdrachtvenster. Schrijf het meteen op.
+- Gebruikersnaam: **root**
+- Wachtwoord: **agroria**
 
-Wijzig het wachtwoord daarna altijd onder "Account" in het beheerpaneel.
-Om veiligheidsredenen staat er nooit een wachtwoord in de code of dit bestand.
+**Belangrijk:** wijzig dit wachtwoord meteen na de eerste keer inloggen, onder
+"Account" in het beheerpaneel. Zolang het op `agroria` staat, kan iedereen die
+het weet inloggen.
+
+### Wachtwoord kwijt? Zo zet je het terug
+
+Kun je niet meer inloggen? Open het opdrachtvenster in de projectmap en typ:
+
+```
+npm run wachtwoord
+```
+
+Daarna staat het wachtwoord weer op **agroria** (gebruikersnaam `root`).
+Start de site vervolgens gewoon weer met `npm start` en log in.
+
+Wil je meteen je eigen wachtwoord kiezen? Typ het erachter, bijvoorbeeld:
+
+```
+npm run wachtwoord -- MijnWachtwoord
+```
+
+Dan is je wachtwoord `MijnWachtwoord`.
 
 ## Wat kun je in het beheer?
 
