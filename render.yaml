@@ -1,0 +1,31 @@
+# Render-configuratie voor Agroria.
+#
+# Belangrijk: een persistente schijf (waarop je foto's en trekkers blijven
+# bewaard) is bij Render alleen beschikbaar op een BETAALD plan. Het gratis
+# plan wist de opslag bij elke herstart.
+#
+# Deze schijf wordt gekoppeld op /var/data, en de app schrijft daar naartoe
+# dankzij de omgevingsvariabele DATA_DIR.
+
+services:
+  - type: web
+    name: agroria
+    runtime: node
+    plan: starter          # betaald plan; nodig voor een persistente schijf
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DATA_DIR
+        value: /var/data
+      - key: SITE_URL
+        value: https://agroria.onrender.com
+      - key: SESSION_SECRET
+        generateValue: true   # Render maakt automatisch een veilig geheim aan
+      - key: ADMIN_PASSWORD
+        sync: false           # stel dit zelf in het Render-dashboard in (optioneel)
+    disk:
+      name: agroria-data
+      mountPath: /var/data
+      sizeGB: 1
