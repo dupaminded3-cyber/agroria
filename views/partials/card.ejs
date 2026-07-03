@@ -4,7 +4,7 @@
     <% } else if (t.status === 'gereserveerd') { %><span class="badge reserved">Gereserveerd</span>
     <% } else if (t.oudePrijs && t.oudePrijs > t.prijs) { %><span class="badge sale">Sale!</span><% } %>
     <% if (firstFoto(t)) { %>
-      <img src="<%= firstFoto(t) %>" alt="<%= t.merk %> <%= t.model %>">
+      <img src="<%= firstFoto(t) %>" alt="<%= t.merk %> <%= t.model %>" loading="lazy" decoding="async" width="400" height="200">
     <% } else { %>
       <%- include('tractor-svg') %>
     <% } %>

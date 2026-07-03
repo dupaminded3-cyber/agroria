@@ -1,4 +1,8 @@
-<%- include('partials/head', { titel: trekker.merk + ' ' + trekker.model }) %>
+<%- include('partials/head', {
+  titel: trekker.merk + ' ' + trekker.model,
+  beschrijving: (trekker.merk + ' ' + trekker.model + ' — bouwjaar ' + trekker.bouwjaar + ', ' + getal(trekker.uren) + ' werkuren, ' + trekker.pk + ' pk. ' + euro(trekker.prijs) + '. 12 maanden garantie en gecontroleerde historie bij Agroria.'),
+  ogImage: firstFoto(trekker) || ''
+}) %>
 <%- include('partials/header') %>
 <section class="sec" style="padding-bottom:40px">
   <div class="wrap">
@@ -7,13 +11,13 @@
       <div class="gallery">
         <div class="main">
           <% if (trekker.fotos && trekker.fotos.length) { %>
-            <img id="mainimg" src="/uploads/<%= trekker.fotos[0] %>" alt="<%= trekker.merk %> <%= trekker.model %>">
+            <img id="mainimg" src="/uploads/<%= trekker.fotos[0] %>" alt="<%= trekker.merk %> <%= trekker.model %>" decoding="async" width="800" height="600" style="cursor:zoom-in" onclick="Lightbox.open(0)">
           <% } else { %>
             <svg class="tractor dark" viewBox="0 0 460 280" style="width:70%"><path class="t-fender" d="M262 168 A 78 78 0 0 1 398 168" fill="none"/><path class="t-cab" d="M196 152 L212 98 Q214 90 223 90 L290 90 Q299 90 301 99 L309 152 Z"/><path class="t-glass" d="M220 144 L231 100 L284 100 L294 144 Z"/><rect class="t-accent" x="184" y="92" width="9" height="62" rx="4"/><rect class="t-body" x="50" y="150" width="262" height="56" rx="7"/><path class="t-body" d="M50 158 L30 158 Q22 158 22 168 L22 190 Q22 200 32 200 L50 200 Z"/><circle class="t-tyre" cx="120" cy="222" r="46"/><circle class="t-rim" cx="120" cy="222" r="23"/><circle class="t-hub" cx="120" cy="222" r="7"/><circle class="t-tyre" cx="330" cy="205" r="72"/><circle class="t-rim" cx="330" cy="205" r="41"/><circle class="t-hub" cx="330" cy="205" r="12"/></svg>
           <% } %>
         </div>
         <% if (trekker.fotos && trekker.fotos.length > 1) { %>
-          <div class="thumbs"><% trekker.fotos.forEach(function(f){ %><img src="/uploads/<%= f %>" alt="foto" onclick="document.getElementById('mainimg').src=this.src"><% }) %></div>
+          <div class="thumbs"><% trekker.fotos.forEach(function(f, i){ %><img src="/uploads/<%= f %>" alt="<%= trekker.merk %> <%= trekker.model %> — foto <%= i+1 %>" loading="lazy" decoding="async" onclick="Lightbox.select(<%= i %>)"><% }) %></div>
         <% } %>
       </div>
       <div class="panel">
@@ -56,4 +60,53 @@
     <% } %>
   </div>
 </section>
+
+<% if (trekker.fotos && trekker.fotos.length) { %>
+<div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="Fotogalerij">
+  <button class="lb-close" aria-label="Sluiten" onclick="Lightbox.close()">&times;</button>
+  <% if (trekker.fotos.length > 1) { %>
+  <button class="lb-nav lb-prev" aria-label="Vorige foto" onclick="Lightbox.prev()">&#8249;</button>
+  <button class="lb-nav lb-next" aria-label="Volgende foto" onclick="Lightbox.next()">&#8250;</button>
+  <% } %>
+  <img class="lb-img" id="lb-img" alt="<%= trekker.merk %> <%= trekker.model %>">
+  <div class="lb-count" id="lb-count"></div>
+</div>
+<script>
+  var Lightbox = (function(){
+    var fotos = <%- JSON.stringify(trekker.fotos.map(function(f){ return '/uploads/' + f; })) %>;
+    var i = 0, box = document.getElementById('lightbox'), img = document.getElementById('lb-img'), count = document.getElementById('lb-count');
+    function show(){ img.src = fotos[i]; if(count) count.textContent = (i+1) + ' / ' + fotos.length; }
+    function open(n){ i = n||0; show(); box.classList.add('open'); document.body.style.overflow='hidden'; }
+    function close(){ box.classList.remove('open'); document.body.style.overflow=''; }
+    function next(){ i = (i+1) % fotos.length; show(); }
+    function prev(){ i = (i-1+fotos.length) % fotos.length; show(); }
+    function select(n){ var m=document.getElementById('mainimg'); if(m) m.src = fotos[n]; i=n; }
+    box.addEventListener('click', function(e){ if(e.target === box) close(); });
+    document.addEventListener('keydown', function(e){
+      if(!box.classList.contains('open')) return;
+      if(e.key==='Escape') close(); else if(e.key==='ArrowRight') next(); else if(e.key==='ArrowLeft') prev();
+    });
+    return { open:open, close:close, next:next, prev:prev, select:select };
+  })();
+</script>
+<% } %>
+
+<script type="application/ld+json">
+<%- JSON.stringify({
+  "@context": "https://schema.org",
+  "@type": "Product",
+  "name": trekker.merk + ' ' + trekker.model,
+  "description": trekker.omschrijving || (trekker.merk + ' ' + trekker.model),
+  "brand": { "@type": "Brand", "name": trekker.merk },
+  "category": trekker.categorie || 'Trekker',
+  "image": (trekker.fotos && trekker.fotos.length) ? trekker.fotos.map(function(f){ return SITE_URL + '/uploads/' + f; }) : undefined,
+  "offers": {
+    "@type": "Offer",
+    "price": trekker.prijs,
+    "priceCurrency": "EUR",
+    "availability": trekker.status === 'verkocht' ? "https://schema.org/SoldOut" : "https://schema.org/InStock",
+    "url": SITE_URL + '/trekker/' + trekker.id
+  }
+}) %>
+</script>
 <%- include('partials/footer') %>
