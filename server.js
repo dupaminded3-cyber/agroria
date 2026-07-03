@@ -100,6 +100,7 @@ app.use((req, res, next) => {
   res.locals.contact = (data.pages || {}).contact || {};
   res.locals.logo = (data.settings || {}).logo || '';
   res.locals.favicon = (data.settings || {}).favicon || '';
+  res.locals.persistent = db.persistent;
   res.locals.topmerken = ((data.settings || {}).merken) || 'Fendt, John Deere, Case IH, New Holland, Claas, Deutz-Fahr, Massey Ferguson, Valtra';
   res.locals.path = req.path;
   res.locals.SITE_URL = SITE_URL;
