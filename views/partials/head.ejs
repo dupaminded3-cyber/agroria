@@ -3,11 +3,60 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title><%= typeof titel !== 'undefined' ? titel + ' — ' : '' %>Agroria Landbouwvoertuigen</title>
+<%
+  var _titel = (typeof titel !== 'undefined' && titel) ? titel : '';
+  var _siteNaam = 'Agroria Landbouwvoertuigen';
+  var _volledigeTitel = _titel ? (_titel + ' — ' + _siteNaam) : (_siteNaam + ' — betrouwbare trekkers met garantie');
+  var _beschrijving = (typeof beschrijving !== 'undefined' && beschrijving)
+    ? beschrijving
+    : 'Agroria Landbouwvoertuigen: dé specialist in betrouwbare, zorgvuldig geselecteerde trekkers. 12 maanden garantie, gecontroleerde historie en gratis transport in NL, DE & BE.';
+  var _canonical = (typeof canonical !== 'undefined') ? canonical : '';
+  var _ogImage = (typeof ogImage !== 'undefined' && ogImage) ? ogImage : (logo || '');
+  if (_ogImage && _ogImage.indexOf('http') !== 0 && typeof SITE_URL !== 'undefined') _ogImage = SITE_URL + _ogImage;
+%>
+<title><%= _volledigeTitel %></title>
+<meta name="description" content="<%= _beschrijving %>">
+<% if (_canonical) { %><link rel="canonical" href="<%= _canonical %>"><% } %>
+<meta name="robots" content="index, follow">
+<meta name="theme-color" content="#25402A">
+<meta name="format-detection" content="telephone=no">
+
+<!-- Open Graph / social -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="<%= _siteNaam %>">
+<meta property="og:title" content="<%= _volledigeTitel %>">
+<meta property="og:description" content="<%= _beschrijving %>">
+<% if (_canonical) { %><meta property="og:url" content="<%= _canonical %>"><% } %>
+<meta property="og:locale" content="nl_NL">
+<% if (_ogImage) { %><meta property="og:image" content="<%= _ogImage %>"><% } %>
+<meta name="twitter:card" content="<%= _ogImage ? 'summary_large_image' : 'summary' %>">
+<meta name="twitter:title" content="<%= _volledigeTitel %>">
+<meta name="twitter:description" content="<%= _beschrijving %>">
+<% if (_ogImage) { %><meta name="twitter:image" content="<%= _ogImage %>"><% } %>
+
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/favicon.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Hanken+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/css/site.css">
 <script>document.documentElement.className='js';</script>
+
+<!-- Bedrijfsgegevens voor zoekmachines (schema.org) -->
+<script type="application/ld+json">
+<%- JSON.stringify({
+  "@context": "https://schema.org",
+  "@type": "AutoDealer",
+  "name": _siteNaam,
+  "description": _beschrijving,
+  "url": (typeof SITE_URL !== 'undefined' ? SITE_URL : ''),
+  "image": _ogImage || undefined,
+  "logo": _ogImage || undefined,
+  "email": (contact && contact.email) || undefined,
+  "telephone": (contact && contact.telefoon) || undefined,
+  "address": (contact && contact.adres) ? { "@type": "PostalAddress", "streetAddress": contact.adres, "addressCountry": "NL" } : undefined,
+  "areaServed": ["NL", "DE", "BE"]
+}) %>
+</script>
 </head>
 <body>
