@@ -29,6 +29,25 @@ is de server. Stoppen doe je met Ctrl + C in dat venster.
 Wijzig het wachtwoord daarna altijd onder "Account" in het beheerpaneel.
 Om veiligheidsredenen staat er nooit een wachtwoord in de code of dit bestand.
 
+### Wachtwoord kwijt of zelf een wachtwoord instellen?
+
+Je kunt op elk moment zelf het wachtwoord van "root" (opnieuw) instellen.
+Open het opdrachtvenster in de projectmap en typ dit (kies zelf een wachtwoord
+in plaats van `MijnWachtwoord`):
+
+- Windows (cmd):
+  ```
+  set ADMIN_PASSWORD=MijnWachtwoord && npm start
+  ```
+- Mac/Linux (terminal):
+  ```
+  ADMIN_PASSWORD=MijnWachtwoord npm start
+  ```
+
+Log daarna in met gebruikersnaam `root` en het wachtwoord dat je net koos.
+De volgende keren start je gewoon weer met `npm start` (zonder die regel) —
+je gekozen wachtwoord blijft dan gewoon werken.
+
 ## Wat kun je in het beheer?
 
 - **Trekkers**: toevoegen, wijzigen, verwijderen, met meerdere foto's.
