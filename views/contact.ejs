@@ -1,7 +1,7 @@
 <%- include('partials/head', { titel: 'Contact' }) %>
 <%- include('partials/header') %>
 <section class="pagehead"><div class="wrap"><span class="eyebrow light">Aanvraag &amp; vragen</span><h1>Stel uw vraag, wij denken mee</h1><p>Interesse in een trekker, vraag over inruil of advies nodig? Wij reageren persoonlijk, vaak nog dezelfde dag.</p></div></section>
-<section class="sec"><div class="wrap" style="display:grid;grid-template-columns:.9fr 1.1fr;gap:50px;align-items:start">
+<section class="sec"><div class="wrap two-col">
   <div class="rv">
     <div class="contactcard"><span class="ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M3 7l9 6 9-6M4 5h16a1 1 0 011 1v12a1 1 0 01-1 1H4a1 1 0 01-1-1V6a1 1 0 011-1z" stroke="currentColor" stroke-width="1.6"/></svg></span><div><b><%= contact.email %></b><span>Reactie meestal binnen enkele uren</span></div></div>
     <% if (contact.telefoon) { %>

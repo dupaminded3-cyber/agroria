@@ -171,14 +171,6 @@ app.get('/contact', (req, res) => {
   res.render('contact', {});
 });
 
-app.get('/privacy', (req, res) => {
-  res.render('privacy', { titel: 'Privacyverklaring' });
-});
-
-app.get('/voorwaarden', (req, res) => {
-  res.render('voorwaarden', { titel: 'Algemene voorwaarden' });
-});
-
 // --- SEO: robots.txt & sitemap.xml ---
 app.get('/robots.txt', (req, res) => {
   res.type('text/plain').send(
@@ -188,7 +180,7 @@ app.get('/robots.txt', (req, res) => {
 
 app.get('/sitemap.xml', (req, res) => {
   const data = db.read();
-  const statisch = ['/', '/aanbod', '/over-ons', '/selectie', '/garantie', '/inruil', '/faq', '/contact', '/privacy', '/voorwaarden'];
+  const statisch = ['/', '/aanbod', '/over-ons', '/selectie', '/garantie', '/inruil', '/faq', '/contact'];
   const urls = statisch.map(p => ({ loc: SITE_URL + p }));
   data.tractors
     .filter(t => t.status !== 'verwijderd')
