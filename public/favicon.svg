@@ -1,10 +1,12 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
-  <rect width="64" height="64" rx="12" fill="#25402A"/>
-  <g fill="none" stroke="#F7F6F1" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round">
-    <circle cx="22" cy="44" r="10"/>
-    <circle cx="45" cy="42" r="6"/>
-    <path d="M14 35V22h16l5 13"/>
-  </g>
-  <circle cx="22" cy="44" r="3.2" fill="#C0A063"/>
-  <circle cx="45" cy="42" r="2" fill="#C0A063"/>
+  <defs>
+    <linearGradient id="goud" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#E6CE92"/>
+      <stop offset="0.5" stop-color="#C0A063"/>
+      <stop offset="1" stop-color="#9A7B4F"/>
+    </linearGradient>
+  </defs>
+  <rect width="64" height="64" rx="12" fill="#14180F"/>
+  <path d="M32 12 L52 52 H41 L32 33 L23 52 H12 Z" fill="url(#goud)"/>
+  <rect x="26.5" y="41" width="11" height="5" rx="1.5" fill="#14180F"/>
 </svg>
