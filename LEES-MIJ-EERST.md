@@ -19,9 +19,15 @@ is de server. Stoppen doe je met Ctrl + C in dat venster.
 ## Inloggen op het beheer (/uadmin)
 
 - Gebruikersnaam: root
-- Wachtwoord:     Ajaxfreak11!
+- Wachtwoord: dit wordt de **allereerste keer** dat je de site start automatisch
+  aangemaakt. Er zijn twee mogelijkheden:
+  - Je stelt vooraf zelf een wachtwoord in via de omgevingsvariabele
+    `ADMIN_PASSWORD` (aanbevolen), of
+  - je laat het leeg — dan genereert de site een willekeurig wachtwoord en
+    toont dit **éénmalig** in het opdrachtvenster. Schrijf het meteen op.
 
-Verander dit wachtwoord zodra de site online staat (kan onder "Account").
+Wijzig het wachtwoord daarna altijd onder "Account" in het beheerpaneel.
+Om veiligheidsredenen staat er nooit een wachtwoord in de code of dit bestand.
 
 ## Wat kun je in het beheer?
 
@@ -50,8 +56,16 @@ Veelgestelde vragen · plus losse pagina's voor inruil en contact.
 ## Online zetten (later)
 
 De site draait op Node.js. Geschikte hosts zijn bijvoorbeeld Render of Railway.
-Voor het online gaat:
-- verander het wachtwoord van "root";
-- zet in `server.js` een eigen, geheime `SESSION_SECRET`;
+Voor het online gaat, zet deze omgevingsvariabelen (environment variables):
+- `NODE_ENV=production` — schakelt veilige cookies in;
+- `SESSION_SECRET` — een lange, willekeurige, geheime tekst (wordt anders
+  automatisch aangemaakt en bewaard in `data/db.json`);
+- `ADMIN_PASSWORD` — het beheerderswachtwoord bij de allereerste start;
+- `SITE_URL` — het volledige webadres van je site, bijvoorbeeld
+  `https://www.agroria.nl` (gebruikt voor SEO, de sitemap en social previews).
+
+Verder:
+- verander het wachtwoord van "root" na de eerste keer inloggen;
+- vul je echte contactgegevens in onder "Pagina's & foto's";
 - bewaar af en toe een kopie van de map `data` (daar staat alles in:
   je trekkers, foto's en aanvragen).
