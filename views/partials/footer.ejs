@@ -8,20 +8,42 @@
       <div><h5>Aanbod</h5><a href="/aanbod">Alle trekkers</a><a href="/aanbod?sort=jaar">Nieuw binnen</a><a href="/inruil">Inruil</a></div>
       <div><h5>Bedrijf</h5><a href="/over-ons">Over ons</a><a href="/selectie">Selectie &amp; kwaliteit</a><a href="/garantie">Garantie</a><a href="/faq">Veelgestelde vragen</a></div>
       <div><h5>Contact</h5>
-        <a href="mailto:<%= contact.email %>"><%= contact.email %></a>
+        <% if (contact.email) { %><a href="mailto:<%= contact.email %>"><%= contact.email %></a><% } %>
         <% if (contact.telefoon) { %><a href="tel:<%= (contact.telefoon||'').replace(/\s/g,'') %>"><%= contact.telefoon %></a><% } %>
-        <span style="color:var(--muted-2);font-size:.9rem"><%= contact.adres %></span>
+        <% if (contact.adres) { %><span style="color:var(--muted-2);font-size:.9rem"><%= contact.adres %></span><% } %>
       </div>
     </div>
-    <div class="copyr"><span>© <%= new Date().getFullYear() %> Agroria Landbouwvoertuigen</span><span>KvK <%= contact.kvk %><% if (contact.btw) { %> · BTW <%= contact.btw %><% } %></span></div>
+    <div class="copyr">
+      <span>© <%= new Date().getFullYear() %> Agroria Landbouwvoertuigen<% if (contact.kvk) { %> · KvK <%= contact.kvk %><% } %><% if (contact.btw) { %> · BTW <%= contact.btw %><% } %></span>
+      <span class="foot-legal"><a href="/privacy">Privacy</a> · <a href="/voorwaarden">Voorwaarden</a></span>
+    </div>
   </div>
 </footer>
+
+<!-- Zwevende snelcontact-knoppen -->
+<div class="floatcta" aria-label="Snel contact">
+  <% if (whatsapp) { %>
+  <a class="fc fc-wa" href="https://wa.me/<%= whatsapp.replace(/^\+/, '') %>" target="_blank" rel="noopener" aria-label="Stuur ons een WhatsApp-bericht" title="WhatsApp">
+    <svg width="26" height="26" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38a9.9 9.9 0 004.79 1.22h.01c5.46 0 9.91-4.45 9.91-9.91C21.96 6.45 17.5 2 12.04 2zm5.8 14.03c-.24.68-1.4 1.3-1.94 1.35-.5.05-.99.23-3.35-.7-2.82-1.11-4.62-3.98-4.76-4.17-.14-.19-1.14-1.52-1.14-2.9 0-1.38.72-2.06.98-2.34.24-.26.53-.33.71-.33.18 0 .35 0 .5.01.16.01.38-.06.59.45.24.58.79 2 .86 2.14.07.14.12.31.02.5-.09.19-.14.31-.28.48-.14.16-.29.36-.42.48-.14.14-.28.29-.12.57.16.28.72 1.19 1.55 1.93 1.06.95 1.96 1.24 2.24 1.38.28.14.44.12.6-.07.16-.19.69-.8.87-1.08.18-.28.36-.23.61-.14.25.09 1.6.75 1.87.89.28.14.46.21.53.32.07.12.07.66-.17 1.34z"/></svg>
+  </a>
+  <% } %>
+  <% if (contact.telefoon) { %>
+  <a class="fc fc-tel" href="tel:<%= (contact.telefoon||'').replace(/\s/g,'') %>" aria-label="Bel ons direct" title="Bel ons">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 4h3l2 5-2 1c1 2 2 3 4 4l1-2 5 2v3a2 2 0 01-2 2A14 14 0 013 6a2 2 0 012-2z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
+  </a>
+  <% } %>
+</div>
+
 <script>
-  // Mobiel menu
+  // Mobiel menu — met toegankelijkheid (aria-expanded + Escape sluit)
   (function(){
     var h=document.getElementById('hamb'), m=document.getElementById('menu');
-    if(h&&m){h.addEventListener('click',function(){m.classList.toggle('open')});
-      m.querySelectorAll('a').forEach(function(a){a.addEventListener('click',function(){m.classList.remove('open')})});}
+    if(!h||!m) return;
+    function open(){m.classList.add('open');h.setAttribute('aria-expanded','true');}
+    function close(){m.classList.remove('open');h.setAttribute('aria-expanded','false');}
+    h.addEventListener('click',function(){m.classList.contains('open')?close():open();});
+    m.querySelectorAll('a').forEach(function(a){a.addEventListener('click',close);});
+    document.addEventListener('keydown',function(e){if(e.key==='Escape')close();});
   })();
   // Reveal bij scrollen — met vangnet zodat content nooit verborgen blijft
   (function(){
