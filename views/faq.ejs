@@ -1,4 +1,4 @@
-<%- include('partials/head', { titel: 'Veelgestelde vragen' }) %>
+<%- include('partials/head', { titel: 'Veelgestelde vragen', beschrijving: 'Antwoord op veelgestelde vragen over garantie, herkomst, inruil, bezichtiging, kopen op afstand en transport bij Agroria Landbouwvoertuigen.' }) %>
 <%- include('partials/header') %>
 
 <section class="pagehead">
@@ -35,4 +35,19 @@
     </div>
   </div>
 </section>
+<script type="application/ld+json">
+<%- JSON.stringify({
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    ["Wat houdt de garantie precies in?", "Wij bieden standaard 12 maanden volledige garantie op al onze trekkers en landbouwvoertuigen. U bent gedekt voor onverwachte technische problemen. De exacte voorwaarden worden bij aankoop duidelijk gecommuniceerd."],
+    ["Wat is de herkomst van de trekker?", "Het merendeel van onze trekkers is afkomstig van de eerste of tweede eigenaar. De historie van elke machine wordt altijd gecontroleerd en is aantoonbaar, inclusief onderhoudsgegevens."],
+    ["Kan ik mijn huidige trekker inruilen?", "Ja, inruilen is bijna altijd mogelijk. Wij bieden een gunstig inruilvoordeel en een eerlijke, realistische inruilprijs voor uw huidige machine."],
+    ["Is bezichtiging of proefrijden mogelijk?", "Absoluut. Wij moedigen u aan om de machines te bezichtigen en proef te rijden voordat u een beslissing neemt. Neem contact op om een afspraak te maken."],
+    ["Hoe werkt kopen op afstand of online?", "Wij maken het online aankoopproces eenvoudig en transparant, met extra foto's en video's op aanvraag. Betaling, transport en levering worden zorgvuldig afgestemd."],
+    ["Is transport te regelen?", "Ja, wij regelen transport binnen Nederland en internationaal via betrouwbare transportpartners, veilig en op tijd."],
+    ["Wat is de echte staat van de trekker?", "Wij controleren elke trekker zorgvuldig en beschrijven de staat eerlijk, inclusief eventuele gebruikssporen. Bezichtiging is altijd welkom."]
+  ].map(function(qa){ return { "@type": "Question", "name": qa[0], "acceptedAnswer": { "@type": "Answer", "text": qa[1] } }; })
+}) %>
+</script>
 <%- include('partials/footer') %>
