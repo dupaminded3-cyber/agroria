@@ -99,6 +99,7 @@ app.use((req, res, next) => {
   res.locals.user = req.session.user || null;
   res.locals.contact = (data.pages || {}).contact || {};
   res.locals.logo = (data.settings || {}).logo || '';
+  res.locals.favicon = (data.settings || {}).favicon || '';
   res.locals.topmerken = ((data.settings || {}).merken) || 'Fendt, John Deere, Case IH, New Holland, Claas, Deutz-Fahr, Massey Ferguson, Valtra';
   res.locals.path = req.path;
   res.locals.SITE_URL = SITE_URL;
@@ -398,6 +399,7 @@ app.get('/uadmin/paginas', requireAuth, (req, res) => {
 
 const paginaUpload = upload.fields([
   { name: 'logo', maxCount: 1 },
+  { name: 'favicon', maxCount: 1 },
   { name: 'home_heroFoto', maxCount: 1 },
   { name: 'home_introFoto', maxCount: 1 },
   { name: 'home_garantieFoto', maxCount: 1 },
@@ -421,6 +423,7 @@ app.post('/uadmin/paginas', requireAuth, paginaUpload, verwerkUploads, (req, res
   const set = (obj, key, val) => { if (val !== undefined) obj[key] = val; };
 
   if (f.logo) data.settings.logo = '/uploads/' + f.logo[0].filename;
+  if (f.favicon) data.settings.favicon = '/uploads/' + f.favicon[0].filename;
   set(data.settings, 'merken', b.settings_merken);
   set(data.pages.home, 'heroTitel', b.home_heroTitel);
   set(data.pages.home, 'heroTekst', b.home_heroTekst);
@@ -462,6 +465,18 @@ app.post('/uadmin/logo/delete', requireAuth, (req, res) => {
     const p = path.join(db.DATA_DIR, 'uploads', fname);
     if (fs.existsSync(p)) try { fs.unlinkSync(p); } catch (e) {}
     data.settings.logo = '';
+    db.write(data);
+  }
+  res.redirect('/uadmin/paginas?ok=1');
+});
+
+app.post('/uadmin/favicon/delete', requireAuth, (req, res) => {
+  const data = db.read();
+  if (data.settings && data.settings.favicon) {
+    const fname = data.settings.favicon.replace('/uploads/', '');
+    const p = path.join(db.DATA_DIR, 'uploads', fname);
+    if (fs.existsSync(p)) try { fs.unlinkSync(p); } catch (e) {}
+    data.settings.favicon = '';
     db.write(data);
   }
   res.redirect('/uadmin/paginas?ok=1');
