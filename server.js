@@ -8,27 +8,66 @@ const express = require('express');
 const session = require('express-session');
 const multer = require('multer');
 const bcrypt = require('bcryptjs');
+const sharp = require('sharp');
 const db = require('./lib/db');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+const IS_PROD = process.env.NODE_ENV === 'production';
+const SITE_URL = (process.env.SITE_URL || `http://localhost:${PORT}`).replace(/\/$/, '');
+
+// Een stabiel sessie-geheim: uit de omgeving, of anders eenmalig genereren en
+// bewaren in data/db.json. Zo blijven ingelogde sessies geldig na herstart en
+// staat er nooit een geheim in de broncode.
+function sessionSecret() {
+  if (process.env.SESSION_SECRET) return process.env.SESSION_SECRET;
+  const data = db.read();
+  if (!data.settings) data.settings = {};
+  if (!data.settings.sessionSecret) {
+    data.settings.sessionSecret = require('crypto').randomBytes(32).toString('hex');
+    db.write(data);
+  }
+  return data.settings.sessionSecret;
+}
 
 // --- Uploads (foto's) ---
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => cb(null, path.join(db.DATA_DIR, 'uploads')),
-  filename: (req, file, cb) => {
-    const ext = (path.extname(file.originalname) || '.jpg').toLowerCase();
-    cb(null, db.id() + ext);
-  }
-});
+// We houden de foto eerst in het geheugen en optimaliseren hem daarna met sharp:
+// verkleinen naar max. 1600px breed en comprimeren naar webp. Dat scheelt fors
+// in laadtijd — belangrijk voor het high-end gevoel van de site.
 const upload = multer({
-  storage,
-  limits: { fileSize: 8 * 1024 * 1024 }, // 8 MB per foto
+  storage: multer.memoryStorage(),
+  limits: { fileSize: 12 * 1024 * 1024 }, // 12 MB per originele foto
   fileFilter: (req, file, cb) => {
     const ok = /jpe?g|png|webp|gif/i.test(file.mimetype);
-    cb(ok ? null : new Error('Alleen afbeeldingen toegestaan'), ok);
+    cb(ok ? null : new Error('Alleen afbeeldingen (JPG, PNG, WEBP of GIF) zijn toegestaan.'), ok);
   }
 });
+
+const UPLOAD_DIR = path.join(db.DATA_DIR, 'uploads');
+
+async function bewaarFoto(file) {
+  const naam = db.id() + '.webp';
+  const doel = path.join(UPLOAD_DIR, naam);
+  await sharp(file.buffer)
+    .rotate() // corrigeert stand op basis van EXIF
+    .resize({ width: 1600, height: 1600, fit: 'inside', withoutEnlargement: true })
+    .webp({ quality: 82 })
+    .toFile(doel);
+  return naam;
+}
+
+// Middleware: verwerkt alle geüploade foto's (zowel .array als .fields) en zet
+// per bestand file.filename klaar, precies zoals de rest van de code verwacht.
+function verwerkUploads(req, res, next) {
+  let files = [];
+  if (Array.isArray(req.files)) files = req.files;
+  else if (req.files) Object.keys(req.files).forEach(k => { files = files.concat(req.files[k]); });
+  else if (req.file) files = [req.file];
+  if (!files.length) return next();
+  Promise.all(files.map(async f => { f.filename = await bewaarFoto(f); }))
+    .then(() => next())
+    .catch(next);
+}
 
 // --- Basis-instellingen ---
 app.set('view engine', 'ejs');
@@ -36,11 +75,17 @@ app.set('views', path.join(__dirname, 'views'));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'public')));
 app.use('/uploads', express.static(path.join(db.DATA_DIR, 'uploads')));
+if (IS_PROD) app.set('trust proxy', 1);
 app.use(session({
-  secret: process.env.SESSION_SECRET || 'agroria-wijzig-dit-geheim-online',
+  secret: sessionSecret(),
   resave: false,
   saveUninitialized: false,
-  cookie: { maxAge: 1000 * 60 * 60 * 8 } // 8 uur
+  cookie: {
+    maxAge: 1000 * 60 * 60 * 8, // 8 uur
+    httpOnly: true,
+    sameSite: 'lax',
+    secure: IS_PROD
+  }
 }));
 
 // --- Hulpfuncties beschikbaar in alle templates ---
@@ -56,6 +101,11 @@ app.use((req, res, next) => {
   res.locals.logo = (data.settings || {}).logo || '';
   res.locals.topmerken = ((data.settings || {}).merken) || 'Fendt, John Deere, Case IH, New Holland, Claas, Deutz-Fahr, Massey Ferguson, Valtra';
   res.locals.path = req.path;
+  res.locals.SITE_URL = SITE_URL;
+  res.locals.canonical = SITE_URL + req.path;
+  // WhatsApp-nummer: apart veld, anders het telefoonnummer als terugval.
+  const ruw = res.locals.contact.whatsapp || res.locals.contact.telefoon || '';
+  res.locals.whatsapp = ruw.replace(/[^\d+]/g, '');
   next();
 });
 
@@ -119,6 +169,35 @@ app.get('/faq', (req, res) => {
 
 app.get('/contact', (req, res) => {
   res.render('contact', {});
+});
+
+app.get('/privacy', (req, res) => {
+  res.render('privacy', { titel: 'Privacyverklaring' });
+});
+
+app.get('/voorwaarden', (req, res) => {
+  res.render('voorwaarden', { titel: 'Algemene voorwaarden' });
+});
+
+// --- SEO: robots.txt & sitemap.xml ---
+app.get('/robots.txt', (req, res) => {
+  res.type('text/plain').send(
+    `User-agent: *\nDisallow: /uadmin\n\nSitemap: ${SITE_URL}/sitemap.xml\n`
+  );
+});
+
+app.get('/sitemap.xml', (req, res) => {
+  const data = db.read();
+  const statisch = ['/', '/aanbod', '/over-ons', '/selectie', '/garantie', '/inruil', '/faq', '/contact', '/privacy', '/voorwaarden'];
+  const urls = statisch.map(p => ({ loc: SITE_URL + p }));
+  data.tractors
+    .filter(t => t.status !== 'verwijderd')
+    .forEach(t => urls.push({ loc: SITE_URL + '/trekker/' + t.id }));
+  const xml = `<?xml version="1.0" encoding="UTF-8"?>\n` +
+    `<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n` +
+    urls.map(u => `  <url><loc>${u.loc}</loc></url>`).join('\n') +
+    `\n</urlset>\n`;
+  res.type('application/xml').send(xml);
 });
 
 // Aanvraag / vraag versturen (komt binnen in uadmin)
@@ -265,7 +344,7 @@ app.get('/uadmin/trekkers/:id', requireAuth, (req, res) => {
   res.render('admin/trekker-form', { trekker, active: 'trekkers' });
 });
 
-app.post('/uadmin/trekkers/:id?', requireAuth, upload.array('fotos', 12), (req, res) => {
+app.post('/uadmin/trekkers/:id?', requireAuth, upload.array('fotos', 12), verwerkUploads, (req, res) => {
   const data = db.read();
   const b = req.body;
   const velden = {
@@ -342,7 +421,7 @@ const paginaUpload = upload.fields([
   { name: 'aanbod_foto2', maxCount: 1 }
 ]);
 
-app.post('/uadmin/paginas', requireAuth, paginaUpload, (req, res) => {
+app.post('/uadmin/paginas', requireAuth, paginaUpload, verwerkUploads, (req, res) => {
   const data = db.read();
   const b = req.body;
   const f = req.files || {};
@@ -375,6 +454,7 @@ app.post('/uadmin/paginas', requireAuth, paginaUpload, (req, res) => {
   if (f.aanbod_foto2) data.pages.aanbod.foto2 = '/uploads/' + f.aanbod_foto2[0].filename;
   set(data.pages.contact, 'adres', b.contact_adres);
   set(data.pages.contact, 'telefoon', b.contact_telefoon);
+  set(data.pages.contact, 'whatsapp', b.contact_whatsapp);
   set(data.pages.contact, 'email', b.contact_email);
   set(data.pages.contact, 'kvk', b.contact_kvk);
   set(data.pages.contact, 'btw', b.contact_btw);
@@ -455,6 +535,25 @@ app.post('/uadmin/account', requireAuth, (req, res) => {
 
 // 404
 app.use((req, res) => res.status(404).render('404'));
+
+// Centrale foutafhandeling — nette melding i.p.v. een ruwe crash.
+app.use((err, req, res, next) => {
+  const isUpload = err instanceof multer.MulterError || /afbeelding/i.test(err.message || '');
+  let melding = 'Er ging iets mis. Probeer het later opnieuw.';
+  if (err instanceof multer.MulterError && err.code === 'LIMIT_FILE_SIZE') {
+    melding = 'De foto is te groot (maximaal 12 MB per foto). Kies een kleiner bestand.';
+  } else if (isUpload) {
+    melding = err.message;
+  } else {
+    console.error(err);
+  }
+  const status = isUpload ? 400 : 500;
+  // Ingelogde beheerders sturen we terug naar de vorige beheerpagina met de melding.
+  if (isUpload && req.session && req.session.user) {
+    return res.status(status).render('500', { melding, terug: req.get('Referer') || '/uadmin' });
+  }
+  res.status(status).render('500', { melding, terug: '/' });
+});
 
 app.listen(PORT, () => {
   console.log(`\n  Agroria draait op  http://localhost:${PORT}`);
