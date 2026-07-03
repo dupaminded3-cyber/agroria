@@ -1,0 +1,8 @@
+<%- include('partials/head', { titel: 'Er ging iets mis' }) %>
+<%- include('partials/header') %>
+<div class="wrap"><div class="bedankt">
+  <h1>Er ging iets mis</h1>
+  <p><%= typeof melding !== 'undefined' ? melding : 'Er is een onverwachte fout opgetreden. Probeer het later opnieuw.' %></p>
+  <a class="btn btn-fill" href="<%= typeof terug !== 'undefined' ? terug : '/' %>">Ga terug</a>
+</div></div>
+<%- include('partials/footer') %>
