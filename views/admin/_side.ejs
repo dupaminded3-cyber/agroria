@@ -20,3 +20,13 @@
   <a href="/uadmin/logout" class="uit">Uitloggen</a>
 </aside>
 <main class="main">
+<% if (typeof persistent !== 'undefined' && !persistent) { %>
+  <div style="background:#8a2b2b;color:#fff;padding:14px 18px;border-radius:10px;margin-bottom:18px;line-height:1.5">
+    <b>Let op — tijdelijke opslag.</b> Foto's en trekkers die je toevoegt worden nu <b>niet blijvend</b> bewaard en verdwijnen bij een herstart/update van de site.
+    Zet op Render een <b>schijf</b> (mount path <code>/var/data</code>) én de omgevingsvariabele <code>DATA_DIR</code> = <code>/var/data</code>. Sla op en wacht tot de site opnieuw "Live" is.
+  </div>
+<% } else if (typeof persistent !== 'undefined' && persistent) { %>
+  <div style="background:#1f5130;color:#fff;padding:10px 16px;border-radius:10px;margin-bottom:18px;font-size:.9rem">
+    ✓ Blijvende opslag actief — je foto's en gegevens blijven bewaard, ook na updates.
+  </div>
+<% } %>
