@@ -44,6 +44,34 @@
 </div>
 
 <div class="panel" style="padding:26px;margin-bottom:22px">
+  <div class="ph" style="border:none;padding:0 0 6px">Tab-icoon (favicon)</div>
+  <div style="color:var(--muted);font-size:.9rem;margin-bottom:16px">Het kleine icoontje in het browsertabblad. Gebruik bij voorkeur een <b>vierkante</b> afbeelding van alleen je embleem (zonder tekst) — die blijft klein goed herkenbaar.</div>
+  <% if (settings.favicon){ %>
+    <div style="display:flex;align-items:center;gap:22px;flex-wrap:wrap">
+      <div style="background:#27432B;border-radius:12px;padding:12px;display:inline-flex"><img src="<%= settings.favicon %>" alt="Huidig tab-icoon" style="width:48px;height:48px;object-fit:contain;display:block"></div>
+      <div style="color:var(--muted);font-size:.9rem">Dit icoontje staat nu in het browsertabblad.</div>
+    </div>
+    <div style="display:flex;gap:12px;margin-top:18px;flex-wrap:wrap">
+      <form method="post" action="/uadmin/paginas" enctype="multipart/form-data" style="display:flex;gap:12px;align-items:center;flex-wrap:wrap">
+        <input type="file" name="favicon" accept="image/png,image/svg+xml,image/jpeg,image/webp" required>
+        <button class="btn btn-fill" type="submit">Icoon vervangen</button>
+      </form>
+      <form method="post" action="/uadmin/favicon/delete" onsubmit="return confirm('Tab-icoon verwijderen? De site valt terug op het standaard-icoon.')">
+        <button class="btn btn-danger" type="submit">Icoon verwijderen</button>
+      </form>
+    </div>
+  <% } else { %>
+    <form method="post" action="/uadmin/paginas" enctype="multipart/form-data">
+      <div class="field full" style="margin:0">
+        <input type="file" name="favicon" accept="image/png,image/svg+xml,image/jpeg,image/webp" required>
+        <div class="hint">Vierkant werkt het best (bijv. 256×256). Na het uploaden zie je het nieuwe icoontje; ververs je browser met Ctrl+F5 als je nog het oude ziet.</div>
+      </div>
+      <button class="btn btn-fill" type="submit" style="margin-top:16px">Tab-icoon uploaden</button>
+    </form>
+  <% } %>
+</div>
+
+<div class="panel" style="padding:26px;margin-bottom:22px">
   <div class="ph" style="border:none;padding:0 0 6px">Foto's op de homepage</div>
   <div style="color:var(--muted);font-size:.9rem;margin-bottom:18px">Elke plek op de homepage heeft een eigen foto. Je kunt ze los uploaden, vervangen of verwijderen. Leeg = nette illustratie.</div>
   <% [
