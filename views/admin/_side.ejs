@@ -24,6 +24,12 @@
   <div style="background:#8a2b2b;color:#fff;padding:14px 18px;border-radius:10px;margin-bottom:18px;line-height:1.5">
     <b>Let op — tijdelijke opslag.</b> Foto's en trekkers die je toevoegt worden nu <b>niet blijvend</b> bewaard en verdwijnen bij een herstart/update van de site.
     Zet op Render een <b>schijf</b> (mount path <code>/var/data</code>) én de omgevingsvariabele <code>DATA_DIR</code> = <code>/var/data</code>. Sla op en wacht tot de site opnieuw "Live" is.
+    <div style="margin-top:10px;font-size:.82rem;opacity:.9;border-top:1px solid rgba(255,255,255,.25);padding-top:8px">
+      Technische details (voor de monteur):<br>
+      DATA_DIR ingesteld op: <code><%= (typeof storageConfigured !== 'undefined' && storageConfigured) ? storageConfigured : '(niet ingesteld)' %></code><br>
+      App gebruikt nu map: <code><%= typeof storageUsing !== 'undefined' ? storageUsing : '?' %></code><br>
+      <% if (typeof storageError !== 'undefined' && storageError) { %>Foutmelding: <code><%= storageError %></code><% } %>
+    </div>
   </div>
 <% } else if (typeof persistent !== 'undefined' && persistent) { %>
   <div style="background:#1f5130;color:#fff;padding:10px 16px;border-radius:10px;margin-bottom:18px;font-size:.9rem">
