@@ -194,7 +194,15 @@ header.site{position:sticky;top:0;z-index:60;background:var(--paper);border-bott
 .spectable td:first-child{color:var(--muted)}
 .spectable td:last-child{text-align:right;font-weight:600}
 .omschrijving h3{font-family:var(--display);font-weight:600;font-size:1.4rem;margin-bottom:10px}
-.omschrijving p{color:var(--muted)}
+.omschrijving .oms-inhoud{color:var(--muted);line-height:1.7}
+.omschrijving .oms-inhoud p{margin:0 0 14px}
+.omschrijving .oms-inhoud p:last-child{margin-bottom:0}
+.omschrijving .oms-inhoud h2,.omschrijving .oms-inhoud h3{font-family:var(--display);font-weight:600;color:var(--ink);font-size:1.15rem;margin:22px 0 10px}
+.omschrijving .oms-inhoud h2:first-child,.omschrijving .oms-inhoud h3:first-child{margin-top:0}
+.omschrijving .oms-inhoud ul,.omschrijving .oms-inhoud ol{margin:0 0 14px 22px;padding:0}
+.omschrijving .oms-inhoud li{margin-bottom:6px}
+.omschrijving .oms-inhoud strong,.omschrijving .oms-inhoud b{color:var(--ink);font-weight:700}
+.omschrijving .oms-inhoud a{color:var(--green);text-decoration:underline}
 
 /* AANBOD filters */
 .filters{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:32px;align-items:center}

@@ -46,7 +46,7 @@
 
 <!-- Bedrijfsgegevens voor zoekmachines (schema.org) -->
 <script type="application/ld+json">
-<%- JSON.stringify({
+<%- safeJsonLd({
   "@context": "https://schema.org",
   "@type": "AutoDealer",
   "name": _siteNaam,
