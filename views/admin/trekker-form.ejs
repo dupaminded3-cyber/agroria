@@ -31,7 +31,17 @@
       </div>
       <div class="field full"><div class="check"><input type="checkbox" name="uitgelicht" id="uit" <%= trekker && trekker.uitgelicht ? 'checked':'' %>><label for="uit" style="margin:0">Tonen als uitgelichte trekker op de homepage</label></div></div>
       <div class="field full"><div class="check"><input type="checkbox" name="voorlader" id="vl" <%= trekker && trekker.voorlader ? 'checked':'' %>><label for="vl" style="margin:0">Voorzien van voorlader</label></div></div>
-      <div class="field full"><label>Omschrijving</label><textarea name="omschrijving" rows="5" placeholder="Vertel over de staat, opties en bijzonderheden…"><%= trekker ? trekker.omschrijving : '' %></textarea></div>
+      <div class="field full">
+        <label>Omschrijving</label>
+        <textarea name="omschrijving" rows="9" placeholder="Vertel over de staat, opties en bijzonderheden…"><%= trekker ? trekker.omschrijving : '' %></textarea>
+        <div class="hint">
+          Gewone tekst met Enter mag gewoon — regels en witregels blijven behouden.<br>
+          Wil je een nettere advertentie met kopjes en lijstjes? Dan mag je ook deze HTML-tags gebruiken, die worden dan écht weergegeven:<br>
+          <code>&lt;h2&gt;Kopje&lt;/h2&gt;</code> · <code>&lt;p&gt;Alinea&lt;/p&gt;</code> · <code>&lt;strong&gt;vet&lt;/strong&gt;</code> · <code>&lt;br&gt;</code> (regeleinde) ·
+          <code>&lt;ul&gt;&lt;li&gt;Punt 1&lt;/li&gt;&lt;li&gt;Punt 2&lt;/li&gt;&lt;/ul&gt;</code> (lijstje)<br>
+          Bijvoorbeeld: <code>&lt;h2&gt;Uitrusting&lt;/h2&gt;&lt;ul&gt;&lt;li&gt;Airco&lt;/li&gt;&lt;li&gt;Voorlader&lt;/li&gt;&lt;/ul&gt;</code>
+        </div>
+      </div>
 
       <div class="field full">
         <label>Foto's toevoegen</label>

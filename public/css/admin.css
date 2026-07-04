@@ -63,6 +63,7 @@ table.list tr:hover td{background:#FAFAF7}
 .field input,.field select,.field textarea{width:100%;background:#fff;border:1px solid var(--line);padding:12px 13px;border-radius:9px;font-family:var(--body);font-size:.94rem;color:var(--ink)}
 .field input:focus,.field select:focus,.field textarea:focus{outline:none;border-color:var(--green)}
 .field .hint{font-size:.78rem;color:var(--muted);margin-top:6px}
+.field .hint code{background:var(--cream,#f1eee5);border:1px solid var(--line,#e5e2d8);border-radius:3px;padding:1px 5px;font-size:.76rem;color:var(--ink,#14180f)}
 .check{display:flex;align-items:center;gap:10px;background:#F7F6F1;border:1px solid var(--line);padding:13px 15px;border-radius:9px}
 .check input{width:auto}
 .formactions{display:flex;gap:12px;margin-top:24px;grid-column:1/-1}

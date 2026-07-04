@@ -10,6 +10,7 @@ const multer = require('multer');
 const bcrypt = require('bcryptjs');
 const sharp = require('sharp');
 const db = require('./lib/db');
+const { omschrijvingHtml, omschrijvingText } = require('./lib/format');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -92,6 +93,11 @@ app.use(session({
 app.locals.euro = (n) => '€ ' + Number(n || 0).toLocaleString('nl-NL');
 app.locals.getal = (n) => Number(n || 0).toLocaleString('nl-NL');
 app.locals.firstFoto = (t) => (t.fotos && t.fotos[0]) ? '/uploads/' + t.fotos[0] : null;
+app.locals.omschrijvingHtml = omschrijvingHtml;
+app.locals.omschrijvingText = omschrijvingText;
+// Veilig JSON in een <script>-blok zetten: escape "<" zodat een waarde als
+// "</script><script>...</script>" het blok niet kan doorbreken.
+app.locals.safeJsonLd = (obj) => JSON.stringify(obj).replace(/</g, '\\u003c');
 
 // Maakt sessie-info, contactgegevens en het logo beschikbaar in elke view
 app.use((req, res, next) => {

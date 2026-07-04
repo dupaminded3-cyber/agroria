@@ -41,7 +41,13 @@
       </div>
     </div>
     <div class="detail" style="padding-top:20px">
-      <div class="omschrijving"><h3>Omschrijving</h3><p><%= trekker.omschrijving || 'Geen omschrijving beschikbaar.' %></p></div>
+      <div class="omschrijving">
+        <h3>Omschrijving</h3>
+        <div class="oms-inhoud">
+          <% var omsHtml = omschrijvingHtml(trekker.omschrijving); %>
+          <% if (omsHtml) { %><%- omsHtml %><% } else { %><p>Geen omschrijving beschikbaar.</p><% } %>
+        </div>
+      </div>
       <div id="vraag">
         <h3 style="font-family:var(--display);font-weight:600;font-size:1.4rem;margin-bottom:14px">Stel uw vraag</h3>
         <form class="form-card" method="post" action="/aanvraag">
@@ -73,7 +79,7 @@
 </div>
 <script>
   var Lightbox = (function(){
-    var fotos = <%- JSON.stringify(trekker.fotos.map(function(f){ return '/uploads/' + f; })) %>;
+    var fotos = <%- safeJsonLd(trekker.fotos.map(function(f){ return '/uploads/' + f; })) %>;
     var i = 0, box = document.getElementById('lightbox'), img = document.getElementById('lb-img'), count = document.getElementById('lb-count');
     function show(){ img.src = fotos[i]; if(count) count.textContent = (i+1) + ' / ' + fotos.length; }
     function open(n){ i = n||0; show(); box.classList.add('open'); document.body.style.overflow='hidden'; }
@@ -92,11 +98,11 @@
 <% } %>
 
 <script type="application/ld+json">
-<%- JSON.stringify({
+<%- safeJsonLd({
   "@context": "https://schema.org",
   "@type": "Product",
   "name": trekker.merk + ' ' + trekker.model,
-  "description": trekker.omschrijving || (trekker.merk + ' ' + trekker.model),
+  "description": omschrijvingText(trekker.omschrijving) || (trekker.merk + ' ' + trekker.model),
   "brand": { "@type": "Brand", "name": trekker.merk },
   "category": trekker.categorie || 'Trekker',
   "image": (trekker.fotos && trekker.fotos.length) ? trekker.fotos.map(function(f){ return SITE_URL + '/uploads/' + f; }) : undefined,
