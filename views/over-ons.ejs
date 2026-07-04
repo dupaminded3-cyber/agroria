@@ -1,7 +1,7 @@
 <%- include('partials/head', { titel: 'Over ons' }) %>
 <%- include('partials/header') %>
 
-<section class="pagehead">
+<section class="pagehead <%= paginaHeroFoto ? 'heeft-foto' : '' %>" <% if (paginaHeroFoto) { %>style="background-image:url('<%= paginaHeroFoto %>')"<% } %>>
   <div class="wrap">
     <span class="eyebrow light">Over Agroria</span>
     <h1>Onze passie voor landbouw</h1>
