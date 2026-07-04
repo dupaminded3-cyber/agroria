@@ -64,6 +64,7 @@ header.site{position:sticky;top:0;z-index:60;background:var(--paper);border-bott
 .menu{display:flex;gap:20px;font-size:.85rem;font-weight:600;letter-spacing:.005em}
 .menu-top{display:none}
 .menu-close{display:none}
+.menu-contact{display:none}
 .menu a{color:var(--ink);position:relative;padding:6px 0;white-space:nowrap}
 .menu a::after{content:"";position:absolute;left:0;bottom:0;width:0;height:1.5px;background:var(--gold);transition:width .25s}
 .menu a:hover::after,.menu a.on::after{width:100%}
@@ -258,6 +259,9 @@ footer.site{background:var(--ink);color:#C7C8B8;padding:70px 0 30px;margin-top:0
   .menu-close:hover{background:var(--cream)}
   .menu a{padding:16px 0;border-bottom:1px solid var(--line);width:100%;font-size:1rem}
   .nav-cta{display:none}
+  /* De aparte "Contact"-knop is op mobiel verborgen (.nav-cta); daarom krijgt
+     deze link in het uitklapmenu dezelfde nadruk, zodat Contact bereikbaar blijft. */
+  .menu-contact{display:block!important;margin-top:18px;padding:15px 0!important;background:var(--forest);color:var(--paper)!important;text-align:center;border-radius:3px;border-bottom:none!important;font-weight:600}
   .intro-grid,.split,.feature,.detail{grid-template-columns:1fr}
   .feature .txt{padding:48px 0}
   .grid3{grid-template-columns:1fr 1fr}
