@@ -108,6 +108,14 @@
 </div>
 
 <div class="panel" style="padding:26px;margin-bottom:22px">
+  <div class="ph" style="border:none;padding:0 0 6px">Foto's op de pagina 'Inruil'</div>
+  <div style="color:var(--muted);font-size:.9rem;margin-bottom:18px">Een grote hero-foto bovenaan en een foto bij "Waarom bij ons inruilen". Leeg = nette illustratie/donkere achtergrond.</div>
+  <% var ir = pages.inruil || {}; %>
+  <%- include('_fotoslot', { slot: { veld:'inruil.foto', naam:'inruil_foto', huidige: ir.foto, titel:'1. Grote hero-foto (helemaal bovenaan)', hint:'Vult de kop van de inruilpagina. Bijvoorbeeld een trekker op het erf of een overdrachtsmoment.' } }) %>
+  <%- include('_fotoslot', { slot: { veld:'inruil.foto2', naam:'inruil_foto2', huidige: ir.foto2, titel:"2. Foto bij \u2018Waarom bij ons inruilen\u2019", hint:'' } }) %>
+</div>
+
+<div class="panel" style="padding:26px;margin-bottom:22px">
   <div class="ph" style="border:none;padding:0 0 6px">Foto's op de pagina 'Over ons'</div>
   <div style="color:var(--muted);font-size:.9rem;margin-bottom:18px">Twee foto's naast de tekstblokken. Leeg = nette illustratie.</div>
   <% var ov = pages.overons || {}; %>
@@ -147,6 +155,10 @@
     <div class="formgrid">
       <div class="field full"><label>Titel</label><input name="inruil_titel" value="<%= pages.inruil.titel %>"></div>
       <div class="field full"><label>Tekst</label><textarea name="inruil_tekst" rows="3"><%= pages.inruil.tekst %></textarea></div>
+      <div class="field full"><label>Titel bij "Waarom bij ons inruilen"</label><input name="inruil_waaromTitel" value="<%= pages.inruil.waaromTitel || '' %>"></div>
+      <div class="field full"><label>Tekst bij "Waarom bij ons inruilen"</label><textarea name="inruil_waaromTekst" rows="3"><%= pages.inruil.waaromTekst || '' %></textarea></div>
+      <div class="field full"><label>Klantquote</label><textarea name="inruil_quote" rows="2"><%= pages.inruil.quote || '' %></textarea><div class="hint">Een korte, echte reactie van een klant over het inruilen. Laat leeg om dit blok niet te tonen.</div></div>
+      <div class="field full"><label>Naam/omschrijving bij de quote</label><input name="inruil_quoteWie" value="<%= pages.inruil.quoteWie || '' %>" placeholder="Bijv. Klant van Agroria, of een voornaam + plaats"></div>
     </div>
   </div>
 

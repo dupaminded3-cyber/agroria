@@ -1,35 +1,80 @@
-<%- include('partials/head', { titel: 'Inruil' }) %>
+<%- include('partials/head', { titel: 'Inruil', beschrijving: 'Ruil uw trekker eerlijk in bij Agroria Landbouwvoertuigen. Stuur de gegevens (en foto\'s) van uw machine in en ontvang binnen 24 uur een vrijblijvende taxatie.', ogImage: page.foto || '' }) %>
 <%- include('partials/header') %>
 
-<section class="pagehead">
+<section class="pagehead <%= page.foto ? 'heeft-foto' : '' %>" <% if (page.foto) { %>style="background-image:url('<%= page.foto %>')"<% } %>>
   <div class="wrap">
     <span class="eyebrow light">Inruil</span>
     <h1>Ruil uw trekker<br>eerlijk in</h1>
-    <p>Wilt u overstappen naar een andere trekker? Wij denken met u mee en zorgen voor een eerlijke, realistische inruilprijs. Stuur de gegevens van uw huidige machine en ontvang binnen 24 uur een vrijblijvende taxatie.</p>
+    <p>Wilt u overstappen naar een andere trekker? Wij denken met u mee en zorgen voor een eerlijke, realistische inruilprijs. Stuur de gegevens van uw huidige machine in en ontvang binnen 24 uur een vrijblijvende taxatie.</p>
   </div>
 </section>
 
+<!-- WAAROM BIJ ONS INRUILEN -->
 <section class="sec">
+  <div class="wrap intro-grid">
+    <div class="rv">
+      <span class="eyebrow">Waarom Agroria</span>
+      <h2 class="dh"><%= page.waaromTitel || 'Waarom bij ons inruilen' %></h2>
+      <p><%= page.waaromTekst || 'Geen eindeloos onderhandelen of vage taxaties. Wij kijken écht naar uw machine — de staat, de historie en het gebruik — en komen met een eerlijk, onderbouwd bod.' %></p>
+      <a class="btn btn-fill" href="#inruil-grid" style="margin-top:8px">Vraag direct uw taxatie aan</a>
+    </div>
+    <div class="intro-art rv">
+      <% if (page.foto2) { %><img src="<%= page.foto2 %>" alt="Inruilen bij Agroria" loading="lazy" decoding="async"><% } else { %>
+      <svg class="tractor dark" viewBox="0 0 460 280" style="width:74%"><path class="t-fender" d="M262 168 A 78 78 0 0 1 398 168" fill="none"/><path class="t-cab" d="M196 152 L212 98 Q214 90 223 90 L290 90 Q299 90 301 99 L309 152 Z"/><path class="t-glass" d="M220 144 L231 100 L284 100 L294 144 Z"/><rect class="t-accent" x="184" y="92" width="9" height="62" rx="4"/><rect class="t-body" x="50" y="150" width="262" height="56" rx="7"/><path class="t-body" d="M50 158 L30 158 Q22 158 22 168 L22 190 Q22 200 32 200 L50 200 Z"/><circle class="t-tyre" cx="120" cy="222" r="46"/><circle class="t-rim" cx="120" cy="222" r="23"/><circle class="t-hub" cx="120" cy="222" r="7"/><circle class="t-tyre" cx="330" cy="205" r="72"/><circle class="t-rim" cx="330" cy="205" r="41"/><circle class="t-hub" cx="330" cy="205" r="12"/></svg>
+      <% } %>
+    </div>
+  </div>
+</section>
+
+<!-- STAPPEN + FORMULIER -->
+<section class="sec band-moss">
   <div class="wrap two-col" id="inruil-grid">
     <div class="rv">
       <span class="eyebrow">Zo werkt het</span>
-      <h2 class="dh" style="margin:14px 0 26px">In drie stappen geregeld</h2>
-      <div class="valuecard" style="margin-bottom:14px"><div class="ico"><b style="font-family:var(--display);font-size:1.4rem;color:var(--green)">1</b></div><h4>Gegevens insturen</h4><p>Merk, type, bouwjaar en werkuren — plus eventueel een paar foto's van uw machine.</p></div>
-      <div class="valuecard" style="margin-bottom:14px"><div class="ico"><b style="font-family:var(--display);font-size:1.4rem;color:var(--green)">2</b></div><h4>Taxatie binnen 24 uur</h4><p>Onze specialist bepaalt een reële, eerlijke inruilwaarde — zonder verrassingen.</p></div>
-      <div class="valuecard"><div class="ico"><b style="font-family:var(--display);font-size:1.4rem;color:var(--green)">3</b></div><h4>Inruilen &amp; rijden</h4><p>Wij verrekenen de waarde direct met uw nieuwe trekker. Gemak van begin tot eind.</p></div>
+      <h2 class="dh" style="margin:14px 0 30px">In drie stappen geregeld</h2>
+      <div class="tijdlijn">
+        <div class="tl-stap">
+          <div class="tl-nr">1</div>
+          <div class="tl-tekst"><h4>Gegevens insturen</h4><p>Merk, type, bouwjaar en werkuren — plus eventueel foto's van uw machine.</p></div>
+        </div>
+        <div class="tl-stap">
+          <div class="tl-nr">2</div>
+          <div class="tl-tekst"><h4>Taxatie binnen 24 uur</h4><p>Onze specialist bepaalt een reële, eerlijke inruilwaarde — zonder verrassingen.</p></div>
+        </div>
+        <div class="tl-stap">
+          <div class="tl-nr">3</div>
+          <div class="tl-tekst"><h4>Inruilen &amp; rijden</h4><p>Wij verrekenen de waarde direct met uw nieuwe trekker. Gemak van begin tot eind.</p></div>
+        </div>
+      </div>
     </div>
-    <form class="form-card" method="post" action="/inruil">
+    <form class="form-card" method="post" action="/inruil" enctype="multipart/form-data">
       <h3 style="font-family:var(--display);font-weight:600;font-size:1.5rem">Vraag uw taxatie aan</h3>
       <div class="field row"><div><label>Merk *</label><input name="merk" required placeholder="Bijv. John Deere"></div><div><label>Type / model</label><input name="model" placeholder="Bijv. 6155R"></div></div>
       <div class="field row"><div><label>Bouwjaar</label><input type="number" name="bouwjaar" placeholder="2017"></div><div><label>Werkuren</label><input type="number" name="uren" placeholder="4200"></div></div>
       <div class="field row"><div><label>Naam *</label><input name="naam" required placeholder="Voor- en achternaam"></div><div><label>Telefoon</label><input type="tel" name="telefoon" placeholder="06 …"></div></div>
       <div class="field"><label>E-mailadres *</label><input type="email" name="email" required placeholder="naam@bedrijf.nl"></div>
       <div class="field"><label>Toelichting</label><textarea name="bericht" rows="3" placeholder="Bijzonderheden, opties of de staat van de machine…"></textarea></div>
+      <div class="field">
+        <label>Foto's van uw machine (optioneel)</label>
+        <input type="file" name="fotos" accept="image/*" multiple>
+        <div class="hint">U kunt tot 20 foto's toevoegen — hoe meer we zien, hoe scherper onze taxatie.</div>
+      </div>
       <button class="btn btn-fill" type="submit" style="justify-content:center">Taxatie aanvragen</button>
       <div class="note"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M12 3l7 3v5c0 5-3.5 7.5-7 9-3.5-1.5-7-4-7-9V6l7-3z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg> Uw aanvraag komt direct binnen bij Agroria — vrijblijvend en zonder verplichting.</div>
     </form>
   </div>
 </section>
+
+<!-- KLANTQUOTE -->
+<% if (page.quote) { %>
+<section class="quote">
+  <div class="wrap">
+    <div class="stars">★★★★★</div>
+    <blockquote>&ldquo;<%= page.quote %>&rdquo;</blockquote>
+    <% if (page.quoteWie) { %><div class="who">— <%= page.quoteWie %></div><% } %>
+  </div>
+</section>
+<% } %>
 
 <section class="split-cta">
   <div class="wrap center rv" style="max-width:680px;margin:0 auto">

@@ -22,6 +22,11 @@
         </div>
         <% if (i.type==='inruil'){ %>
           <div class="meta">Machine: <b><%= i.machine || '—' %></b> · Bouwjaar: <%= i.bouwjaar||'—' %> · Uren: <%= i.uren||'—' %></div>
+          <% if (i.fotos && i.fotos.length){ %>
+            <div class="aanvraag-fotos">
+              <% i.fotos.forEach(function(f){ %><a href="/uploads/<%= f %>" target="_blank" rel="noopener"><img src="/uploads/<%= f %>" loading="lazy" alt="Foto van de in te ruilen machine"></a><% }) %>
+            </div>
+          <% } %>
         <% } %>
         <% if (i.type==='bestelling'){ %>
           <div class="meta">Trekker: <b><%= i.trekker || '—' %></b><% if (i.prijs){ %> · Prijs: <b><%= euro(i.prijs) %></b><% } %><% if (i.bedrijf){ %> · Bedrijf: <%= i.bedrijf %><% } %></div>

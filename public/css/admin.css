@@ -99,6 +99,10 @@ table.list tr:hover td{background:#FAFAF7}
 .aanvraag-item .naam{font-weight:700}
 .aanvraag-item .meta{color:var(--muted);font-size:.85rem;margin-top:4px}
 .aanvraag-item .bericht{margin-top:10px;color:#3A4137;font-size:.94rem;background:#F7F6F1;padding:12px 14px;border-radius:9px}
+.aanvraag-fotos{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.aanvraag-fotos a{display:block;width:64px;height:48px;border-radius:7px;overflow:hidden;border:1px solid var(--line);flex-shrink:0;transition:transform .15s}
+.aanvraag-fotos a:hover{transform:scale(1.06)}
+.aanvraag-fotos img{width:100%;height:100%;object-fit:cover;display:block}
 .aanvraag-item .acties{display:flex;gap:8px;margin-top:12px}
 .tag-type{font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.04em;padding:3px 9px;border-radius:6px}
 .tag-type.vraag{background:#E3EFE0;color:var(--green)}
