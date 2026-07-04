@@ -243,8 +243,9 @@ app.post('/aanvraag', (req, res) => {
   res.render('bedankt', { soort: 'aanvraag' });
 });
 
-// Inruil-taxatie aanvragen (komt binnen in uadmin)
-app.post('/inruil', (req, res) => {
+// Inruil-taxatie aanvragen (komt binnen in uadmin) — met optioneel foto's van de machine
+const INRUIL_MAX_FOTOS = 20;
+app.post('/inruil', upload.array('fotos', INRUIL_MAX_FOTOS), verwerkUploads, (req, res) => {
   const data = db.read();
   data.inquiries.unshift({
     id: db.id(),
@@ -257,6 +258,7 @@ app.post('/inruil', (req, res) => {
     bouwjaar: req.body.bouwjaar || '',
     uren: req.body.uren || '',
     bericht: (req.body.bericht || '').trim(),
+    fotos: (req.files || []).map(f => f.filename),
     gelezen: false,
     createdAt: new Date().toISOString()
   });
@@ -454,6 +456,7 @@ const paginaUpload = upload.fields([
   { name: 'home_nieuwFoto', maxCount: 1 },
   { name: 'home_closerFoto', maxCount: 1 },
   { name: 'inruil_foto', maxCount: 1 },
+  { name: 'inruil_foto2', maxCount: 1 },
   { name: 'overons_foto', maxCount: 1 },
   { name: 'overons_foto2', maxCount: 1 },
   { name: 'selectie_foto1', maxCount: 1 },
@@ -480,9 +483,15 @@ app.post('/uadmin/paginas', requireAuth, paginaUpload, verwerkUploads, (req, res
   if (f.home_garantieFoto) data.pages.home.garantieFoto = '/uploads/' + f.home_garantieFoto[0].filename;
   if (f.home_nieuwFoto) data.pages.home.nieuwFoto = '/uploads/' + f.home_nieuwFoto[0].filename;
   if (f.home_closerFoto) data.pages.home.closerFoto = '/uploads/' + f.home_closerFoto[0].filename;
+  data.pages.inruil = data.pages.inruil || {};
   set(data.pages.inruil, 'titel', b.inruil_titel);
   set(data.pages.inruil, 'tekst', b.inruil_tekst);
+  set(data.pages.inruil, 'waaromTitel', b.inruil_waaromTitel);
+  set(data.pages.inruil, 'waaromTekst', b.inruil_waaromTekst);
+  set(data.pages.inruil, 'quote', b.inruil_quote);
+  set(data.pages.inruil, 'quoteWie', b.inruil_quoteWie);
   if (f.inruil_foto) data.pages.inruil.foto = '/uploads/' + f.inruil_foto[0].filename;
+  if (f.inruil_foto2) data.pages.inruil.foto2 = '/uploads/' + f.inruil_foto2[0].filename;
   set(data.pages.overons, 'titel', b.overons_titel);
   set(data.pages.overons, 'tekst', b.overons_tekst);
   data.pages.overons = data.pages.overons || {};
@@ -532,7 +541,7 @@ app.post('/uadmin/favicon/delete', requireAuth, (req, res) => {
 
 // Verwijder één losse pagina-foto (bv. home.introFoto) -> terug naar illustratie
 app.post('/uadmin/paginas/foto/delete', requireAuth, (req, res) => {
-  const toegestaan = ['home.heroFoto','home.introFoto','home.garantieFoto','home.nieuwFoto','home.closerFoto','inruil.foto','overons.foto','overons.foto2','selectie.foto1','selectie.foto2','selectie.foto3','aanbod.foto1','aanbod.foto2'];
+  const toegestaan = ['home.heroFoto','home.introFoto','home.garantieFoto','home.nieuwFoto','home.closerFoto','inruil.foto','inruil.foto2','overons.foto','overons.foto2','selectie.foto1','selectie.foto2','selectie.foto3','aanbod.foto1','aanbod.foto2'];
   const veld = req.body.veld;
   if (toegestaan.includes(veld)) {
     const [pagina, key] = veld.split('.');
@@ -598,7 +607,8 @@ app.use((err, req, res, next) => {
   if (err instanceof multer.MulterError && err.code === 'LIMIT_FILE_SIZE') {
     melding = 'De foto is te groot (maximaal 12 MB per foto). Kies een kleiner bestand.';
   } else if (err instanceof multer.MulterError && (err.code === 'LIMIT_UNEXPECTED_FILE' || err.code === 'LIMIT_FILE_COUNT')) {
-    melding = `Je kunt maximaal ${MAX_FOTOS_PER_KEER} foto's in één keer uploaden. Selecteer er iets minder en probeer het opnieuw.`;
+    const max = req.path === '/inruil' ? INRUIL_MAX_FOTOS : MAX_FOTOS_PER_KEER;
+    melding = `Je kunt maximaal ${max} foto's in één keer uploaden. Selecteer er iets minder en probeer het opnieuw.`;
   } else if (isUpload) {
     melding = err.message;
   } else {
