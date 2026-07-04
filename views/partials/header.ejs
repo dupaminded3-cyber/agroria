@@ -10,6 +10,10 @@
     <%- include('brand') %>
     <div class="menu-backdrop" id="menuBackdrop"></div>
     <nav class="menu" id="menu">
+      <div class="menu-top">
+        <%- include('brand') %>
+        <button class="menu-close" id="menuClose" aria-label="Menu sluiten"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 5l14 14M19 5L5 19" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>
+      </div>
       <a href="/" class="<%= path==='/' ? 'on' : '' %>">Home</a>
       <a href="/over-ons" class="<%= path==='/over-ons' ? 'on' : '' %>">Over ons</a>
       <a href="/selectie" class="<%= path==='/selectie' ? 'on' : '' %>">Selectie &amp; kwaliteit</a>

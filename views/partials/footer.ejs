@@ -36,12 +36,13 @@
 <script>
   // Mobiel menu — met toegankelijkheid (aria-expanded + Escape sluit) en donkere laag
   (function(){
-    var h=document.getElementById('hamb'), m=document.getElementById('menu'), b=document.getElementById('menuBackdrop');
+    var h=document.getElementById('hamb'), m=document.getElementById('menu'), b=document.getElementById('menuBackdrop'), x=document.getElementById('menuClose');
     if(!h||!m) return;
     function open(){m.classList.add('open');if(b)b.classList.add('open');h.setAttribute('aria-expanded','true');document.body.style.overflow='hidden';}
     function close(){m.classList.remove('open');if(b)b.classList.remove('open');h.setAttribute('aria-expanded','false');document.body.style.overflow='';}
     h.addEventListener('click',function(){m.classList.contains('open')?close():open();});
     if(b)b.addEventListener('click',close);
+    if(x)x.addEventListener('click',close);
     m.querySelectorAll('a').forEach(function(a){a.addEventListener('click',close);});
     document.addEventListener('keydown',function(e){if(e.key==='Escape')close();});
   })();
