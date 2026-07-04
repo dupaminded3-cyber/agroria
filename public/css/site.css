@@ -388,6 +388,13 @@ footer.site{background:var(--ink);color:#C7C8B8;padding:70px 0 30px;margin-top:0
 
 /* ===== "STEL UW VRAAG" ALS POP-UP (in plaats van wegscrollen) ===== */
 #vraag{scroll-margin-top:120px;position:relative}
+/* Met JavaScript verschijnt het formulier als pop-up (zie hieronder), dus het
+   losse exemplaar op de pagina zelf hoeft dan niet ook nog zichtbaar te zijn.
+   Zonder JavaScript (heel zeldzaam) blijft dit de nette, werkende terugval. */
+.js #vraag:not(.modal-open){display:none}
+/* De omschrijving mag dan de volle breedte gebruiken i.p.v. een lege kolom over te houden,
+   met een leesbare maximumbreedte zodat de regels niet te lang worden */
+.js .detail-info .omschrijving{grid-column:1 / -1;max-width:760px}
 .vraag-close{display:none}
 .vraag-sub{color:var(--muted);font-size:.92rem;margin-bottom:18px}
 .vraag-backdrop{position:fixed;inset:0;background:rgba(8,10,6,.6);z-index:115;opacity:0;visibility:hidden;pointer-events:none;transition:opacity .28s ease,visibility .28s ease}
