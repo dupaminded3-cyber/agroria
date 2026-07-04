@@ -45,6 +45,18 @@
     m.querySelectorAll('a').forEach(function(a){a.addEventListener('click',close);});
     document.addEventListener('keydown',function(e){if(e.key==='Escape')close();});
   })();
+  // Meldingenbalk bovenaan: op smalle schermen laat CSS er telkens maar 1 zien,
+  // hier laten we ze om de beurt oplichten (op desktop heeft dit geen effect).
+  (function(){
+    var items = [].slice.call(document.querySelectorAll('#announceWrap .a'));
+    if (items.length < 2) return;
+    var i = 0;
+    setInterval(function(){
+      items[i].classList.remove('show');
+      i = (i + 1) % items.length;
+      items[i].classList.add('show');
+    }, 3200);
+  })();
   // Reveal bij scrollen — met vangnet zodat content nooit verborgen blijft
   (function(){
     var els=[].slice.call(document.querySelectorAll('.rv'));

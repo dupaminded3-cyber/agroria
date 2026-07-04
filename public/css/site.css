@@ -35,6 +35,14 @@ h2.dh{font-family:var(--display);font-weight:500;font-size:clamp(2.1rem,4.2vw,3.
 .announce .a{display:inline-flex;align-items:center;gap:9px}
 .announce .a svg{color:var(--gold-soft);flex-shrink:0}
 
+/* Op smalle schermen: één regel die vanzelf doorschuift i.p.v. 3 regels onder elkaar */
+@media(max-width:700px){
+  .announce .wrap{position:relative;display:block;height:20px;padding:11px 46px;overflow:hidden;text-align:center}
+  .announce .a{position:absolute;inset:0;justify-content:center;align-items:center;opacity:0;transition:opacity .5s ease;max-width:100%;margin:0 auto}
+  .announce .a.show{opacity:1}
+  .announce .a .txt{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}
+}
+
 /* HEADER */
 /* Let op: GEEN backdrop-filter/filter/transform op de kop. Dat maakt het
    vaste (position:fixed) mobiele menu relatief aan de kop i.p.v. het scherm,
