@@ -386,6 +386,39 @@ footer.site{background:var(--ink);color:#C7C8B8;padding:70px 0 30px;margin-top:0
   .floatcta .fc{width:50px;height:50px}
 }
 
+/* ===== "STEL UW VRAAG" ALS POP-UP (in plaats van wegscrollen) ===== */
+#vraag{scroll-margin-top:120px;position:relative}
+.vraag-close{display:none}
+.vraag-sub{color:var(--muted);font-size:.92rem;margin-bottom:18px}
+.vraag-backdrop{position:fixed;inset:0;background:rgba(8,10,6,.6);z-index:115;opacity:0;visibility:hidden;pointer-events:none;transition:opacity .28s ease,visibility .28s ease}
+.vraag-backdrop.open{opacity:1;visibility:visible;pointer-events:auto}
+@media(min-width:601px){
+  #vraag.modal-open{
+    position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);
+    width:min(560px,92vw);max-height:88vh;overflow-y:auto;
+    background:var(--paper);border-radius:8px;z-index:120;padding:38px 34px;
+    box-shadow:0 50px 100px -30px rgba(8,10,6,.55);
+    animation:vraagIn .3s cubic-bezier(.2,.7,.2,1);
+  }
+}
+@media(max-width:600px){
+  #vraag.modal-open{
+    position:fixed;left:0;right:0;bottom:0;top:auto;
+    max-height:88vh;overflow-y:auto;
+    background:var(--paper);border-radius:16px 16px 0 0;z-index:120;padding:30px 22px 26px;
+    box-shadow:0 -20px 60px -20px rgba(8,10,6,.5);
+    animation:vraagInMobiel .3s cubic-bezier(.2,.7,.2,1);
+  }
+}
+#vraag.modal-open .vraag-close{
+  display:flex;align-items:center;justify-content:center;
+  position:absolute;top:16px;right:16px;width:34px;height:34px;border-radius:50%;
+  background:var(--cream);border:none;color:var(--ink);cursor:pointer;transition:background .2s;
+}
+#vraag.modal-open .vraag-close:hover{background:var(--moss-2)}
+@keyframes vraagIn{from{opacity:0;transform:translate(-50%,-46%) scale(.97)}to{opacity:1;transform:translate(-50%,-50%) scale(1)}}
+@keyframes vraagInMobiel{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
+
 /* ===== LIGHTBOX (fotogalerij trekkerpagina) ===== */
 .lightbox{position:fixed;inset:0;z-index:100;background:rgba(8,10,6,.92);display:none;align-items:center;justify-content:center;padding:40px}
 .lightbox.open{display:flex}
