@@ -1,7 +1,7 @@
 <%- include('partials/head', { titel: 'Veelgestelde vragen', beschrijving: 'Antwoord op veelgestelde vragen over garantie, herkomst, inruil, bezichtiging, kopen op afstand en transport bij Agroria Landbouwvoertuigen.' }) %>
 <%- include('partials/header') %>
 
-<section class="pagehead">
+<section class="pagehead <%= paginaHeroFoto ? 'heeft-foto' : '' %>" <% if (paginaHeroFoto) { %>style="background-image:url('<%= paginaHeroFoto %>')"<% } %>>
   <div class="wrap">
     <span class="eyebrow light">Veelgestelde vragen</span>
     <h1>Antwoord op<br>uw vragen</h1>
