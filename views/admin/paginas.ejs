@@ -72,6 +72,33 @@
 </div>
 
 <div class="panel" style="padding:26px;margin-bottom:22px">
+  <div class="ph" style="border:none;padding:0 0 6px">Hero-foto voor de overige pagina's</div>
+  <div style="color:var(--muted);font-size:.9rem;margin-bottom:18px">Eén foto voor de kop van "Over ons", "Selectie &amp; kwaliteit", "Garantie", "Ons aanbod" en "Contact" — upload 'm hier één keer en hij verschijnt automatisch op al die pagina's. (De pagina's "Home", "Inruil" en "Veelgestelde vragen" hebben hun eigen instelling, of bewust geen foto.)</div>
+  <% if (settings.paginaHeroFoto){ %>
+    <div style="display:flex;align-items:center;gap:22px;flex-wrap:wrap">
+      <div style="width:200px;height:110px;border-radius:8px;overflow:hidden;background:#eee;flex-shrink:0"><img src="<%= settings.paginaHeroFoto %>" alt="Huidige hero-foto" style="width:100%;height:100%;object-fit:cover;display:block"></div>
+    </div>
+    <div style="display:flex;gap:12px;margin-top:18px;flex-wrap:wrap">
+      <form method="post" action="/uadmin/paginas" enctype="multipart/form-data" style="display:flex;gap:12px;align-items:center;flex-wrap:wrap">
+        <input type="file" name="pagina_heroFoto" accept="image/*" required>
+        <button class="btn btn-fill" type="submit">Foto vervangen</button>
+      </form>
+      <form method="post" action="/uadmin/pagina-hero/delete" onsubmit="return confirm('Foto verwijderen? Deze pagina\'s vallen dan terug op de donkere achtergrond zonder foto.')">
+        <button class="btn btn-danger" type="submit">Foto verwijderen</button>
+      </form>
+    </div>
+  <% } else { %>
+    <form method="post" action="/uadmin/paginas" enctype="multipart/form-data">
+      <div class="field full" style="margin:0">
+        <input type="file" name="pagina_heroFoto" accept="image/*" required>
+        <div class="hint">Een liggende foto werkt het beste, bijvoorbeeld een trekker op het erf.</div>
+      </div>
+      <button class="btn btn-fill" type="submit" style="margin-top:16px">Foto uploaden</button>
+    </form>
+  <% } %>
+</div>
+
+<div class="panel" style="padding:26px;margin-bottom:22px">
   <div class="ph" style="border:none;padding:0 0 6px">Foto's op de homepage</div>
   <div style="color:var(--muted);font-size:.9rem;margin-bottom:18px">Elke plek op de homepage heeft een eigen foto. Je kunt ze los uploaden, vervangen of verwijderen. Leeg = nette illustratie.</div>
   <% [

@@ -1,7 +1,7 @@
 <%- include('partials/head', { titel: 'Ons aanbod' }) %>
 <%- include('partials/header') %>
 
-<section class="pagehead">
+<section class="pagehead <%= paginaHeroFoto ? 'heeft-foto' : '' %>" <% if (paginaHeroFoto) { %>style="background-image:url('<%= paginaHeroFoto %>')"<% } %>>
   <div class="wrap">
     <span class="eyebrow light">Ons aanbod</span>
     <h1>Ontdek ons<br>uitzonderlijk aanbod</h1>
