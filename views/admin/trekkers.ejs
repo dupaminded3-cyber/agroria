@@ -17,7 +17,7 @@
         <td><b><%= t.merk %> <%= t.model %></b><% if(t.uitgelicht){ %> <span class="pill nieuw">uitgelicht</span><% } %></td>
         <td><%= t.bouwjaar %></td>
         <td><%= getal(t.uren) %></td>
-        <td><%= euro(t.prijs) %></td>
+        <td><%= euro(t.prijs) %><% if (t.prijsType==='btw') { %> <span class="pill" style="background:#e8eee3;color:#25402a">excl. BTW</span><% } else if (t.prijsType==='marge') { %> <span class="pill" style="background:#f1eee5;color:#6c7363">marge</span><% } %></td>
         <td><span class="pill <%= t.status %>"><%= t.status %></span></td>
         <td style="text-align:right;white-space:nowrap">
           <a class="btn btn-out btn-sm" href="/uadmin/trekkers/<%= t.id %>">Bewerk</a>

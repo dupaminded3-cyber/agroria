@@ -11,6 +11,7 @@ const bcrypt = require('bcryptjs');
 const sharp = require('sharp');
 const db = require('./lib/db');
 const { omschrijvingHtml, omschrijvingText } = require('./lib/format');
+const { prijsInfo } = require('./lib/prijs');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -95,6 +96,7 @@ app.locals.getal = (n) => Number(n || 0).toLocaleString('nl-NL');
 app.locals.firstFoto = (t) => (t.fotos && t.fotos[0]) ? '/uploads/' + t.fotos[0] : null;
 app.locals.omschrijvingHtml = omschrijvingHtml;
 app.locals.omschrijvingText = omschrijvingText;
+app.locals.prijsInfo = prijsInfo;
 // Veilig JSON in een <script>-blok zetten: escape "<" zodat een waarde als
 // "</script><script>...</script>" het blok niet kan doorbreken.
 app.locals.safeJsonLd = (obj) => JSON.stringify(obj).replace(/</g, '\\u003c');
@@ -359,6 +361,8 @@ app.post('/uadmin/trekkers/:id?', requireAuth, upload.array('fotos', 12), verwer
     transmissie: (b.transmissie || '').trim(),
     prijs: parseInt(b.prijs) || 0,
     oudePrijs: parseInt(b.oudePrijs) || 0,
+    // '' = nog niet ingesteld -> prijs blijft getoond zoals voorheen (geen BTW/marge-label)
+    prijsType: (b.prijsType === 'btw' || b.prijsType === 'marge') ? b.prijsType : '',
     voorlader: b.voorlader === 'on' || b.voorlader === 'true',
     categorie: b.categorie || 'Trekker',
     status: b.status || 'beschikbaar',
