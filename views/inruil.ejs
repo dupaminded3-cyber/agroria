@@ -1,7 +1,8 @@
-<%- include('partials/head', { titel: 'Inruil', beschrijving: 'Ruil uw trekker eerlijk in bij Agroria Landbouwvoertuigen. Stuur de gegevens (en foto\'s) van uw machine in en ontvang binnen 24 uur een vrijblijvende taxatie.', ogImage: page.foto || '' }) %>
+<% var inruilHero = page.foto || paginaHeroFoto; %>
+<%- include('partials/head', { titel: 'Inruil', beschrijving: 'Ruil uw trekker eerlijk in bij Agroria Landbouwvoertuigen. Stuur de gegevens (en foto\'s) van uw machine in en ontvang binnen 24 uur een vrijblijvende taxatie.', ogImage: inruilHero || '' }) %>
 <%- include('partials/header') %>
 
-<section class="pagehead <%= page.foto ? 'heeft-foto' : '' %>" <% if (page.foto) { %>style="background-image:url('<%= page.foto %>')"<% } %>>
+<section class="pagehead <%= inruilHero ? 'heeft-foto' : '' %>" <% if (inruilHero) { %>style="background-image:url('<%= inruilHero %>')"<% } %>>
   <div class="wrap">
     <span class="eyebrow light">Inruil</span>
     <h1>Ruil uw trekker<br>eerlijk in</h1>
