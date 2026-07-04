@@ -62,7 +62,7 @@
       <div class="field full">
         <label>Foto's toevoegen</label>
         <input type="file" name="fotos" accept="image/*" multiple>
-        <div class="hint">Je kunt meerdere foto's tegelijk selecteren. De eerste foto wordt de hoofdfoto.</div>
+        <div class="hint">Je kunt tot 40 foto's in één keer selecteren en uploaden. De eerste foto wordt de hoofdfoto.</div>
         <% if (trekker && trekker.fotos && trekker.fotos.length){ %>
           <div class="fotostrip">
             <% trekker.fotos.forEach(function(f){ %>
