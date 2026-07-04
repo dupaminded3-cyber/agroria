@@ -34,9 +34,9 @@
         </table>
         <% if (trekker.status !== 'verkocht') { %>
           <a class="btn btn-gold" style="width:100%;justify-content:center" href="/bestellen/<%= trekker.id %>">Bestel deze trekker</a>
-          <a class="btn btn-out" style="width:100%;justify-content:center;margin-top:10px" href="#vraag">Eerst een vraag stellen</a>
+          <a class="btn btn-out js-open-vraag" style="width:100%;justify-content:center;margin-top:10px" href="#vraag">Eerst een vraag stellen</a>
         <% } else { %>
-          <a class="btn btn-out" style="width:100%;justify-content:center" href="#vraag">Vraag stellen over dit model</a>
+          <a class="btn btn-out js-open-vraag" style="width:100%;justify-content:center" href="#vraag">Vraag stellen over dit model</a>
         <% } %>
       </div>
     </div>
@@ -48,8 +48,11 @@
           <% if (omsHtml) { %><%- omsHtml %><% } else { %><p>Geen omschrijving beschikbaar.</p><% } %>
         </div>
       </div>
+      <div class="vraag-backdrop" id="vraagBackdrop"></div>
       <div id="vraag">
-        <h3 style="font-family:var(--display);font-weight:600;font-size:1.4rem;margin-bottom:14px">Stel uw vraag</h3>
+        <button type="button" class="vraag-close" id="vraagClose" aria-label="Venster sluiten"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 5l14 14M19 5L5 19" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>
+        <h3 style="font-family:var(--display);font-weight:600;font-size:1.4rem;margin-bottom:4px">Stel uw vraag</h3>
+        <p class="vraag-sub">Over de <%= trekker.merk %> <%= trekker.model %> — we reageren persoonlijk, vaak nog dezelfde dag.</p>
         <form class="form-card" method="post" action="/aanvraag">
           <input type="hidden" name="onderwerp" value="Vraag over <%= trekker.merk %> <%= trekker.model %>">
           <input type="hidden" name="trekker" value="<%= trekker.merk %> <%= trekker.model %>">
@@ -96,6 +99,40 @@
   })();
 </script>
 <% } %>
+
+<script>
+  // "Vraag stellen" als elegant pop-up venster i.p.v. wegscrollen.
+  // Zonder JavaScript blijft de link gewoon naar het formulier verderop springen.
+  (function(){
+    var vraag = document.getElementById('vraag');
+    var backdrop = document.getElementById('vraagBackdrop');
+    var sluitBtn = document.getElementById('vraagClose');
+    var knoppen = document.querySelectorAll('.js-open-vraag');
+    if (!vraag || !backdrop || !knoppen.length) return;
+    var vorigeFocus = null;
+    function open(e){
+      if (e) e.preventDefault();
+      vorigeFocus = document.activeElement;
+      vraag.classList.add('modal-open');
+      backdrop.classList.add('open');
+      document.body.style.overflow = 'hidden';
+      var eersteVeld = vraag.querySelector('input, textarea');
+      if (eersteVeld) eersteVeld.focus();
+    }
+    function close(){
+      vraag.classList.remove('modal-open');
+      backdrop.classList.remove('open');
+      document.body.style.overflow = '';
+      if (vorigeFocus && vorigeFocus.focus) vorigeFocus.focus();
+    }
+    knoppen.forEach(function(a){ a.addEventListener('click', open); });
+    backdrop.addEventListener('click', close);
+    if (sluitBtn) sluitBtn.addEventListener('click', close);
+    document.addEventListener('keydown', function(e){
+      if (e.key === 'Escape' && vraag.classList.contains('modal-open')) close();
+    });
+  })();
+</script>
 
 <script type="application/ld+json">
 <%- safeJsonLd({
