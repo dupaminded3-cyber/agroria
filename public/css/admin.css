@@ -68,11 +68,11 @@ table.list tr:hover td{background:#FAFAF7}
 .check input{width:auto}
 .formactions{display:flex;gap:12px;margin-top:24px;grid-column:1/-1}
 
-.fotostrip{display:flex;gap:14px;flex-wrap:wrap;margin-top:10px}
+.fotostrip{display:flex;gap:14px;flex-wrap:wrap;margin-top:24px}
 .fotostrip .f{position:relative;width:110px}
 .fotostrip .f img{width:110px;height:84px;object-fit:cover;border-radius:9px;border:1px solid var(--line)}
-.fotostrip .f .hoofdfoto-badge{position:absolute;top:6px;left:6px;background:var(--forest,#25402A);color:#fff;font-size:.66rem;font-weight:700;letter-spacing:.04em;text-transform:uppercase;padding:3px 7px;border-radius:4px;z-index:1}
-.fotostrip .f button[title="Verwijder foto"]{position:absolute;top:-8px;right:-8px;width:24px;height:24px;border-radius:50%;border:none;background:var(--danger);color:#fff;cursor:pointer;font-size:.9rem;line-height:1}
+.fotostrip .f .hoofdfoto-badge{position:absolute;top:6px;left:6px;background:var(--forest,#25402A);color:#fff;font-size:.66rem;font-weight:700;letter-spacing:.04em;text-transform:uppercase;padding:3px 7px;border-radius:4px;z-index:1;pointer-events:none}
+.fotostrip .f button[title="Verwijder foto"]{position:absolute;top:-8px;right:-8px;width:24px;height:24px;border-radius:50%;border:none;background:var(--danger);color:#fff;cursor:pointer;font-size:.9rem;line-height:1;z-index:2}
 .fotostrip .f .maak-hoofd{margin-top:6px}
 .fotostrip .f .maak-hoofd button{width:100%;background:none;border:1px solid var(--line);border-radius:6px;padding:4px 6px;font-size:.72rem;color:var(--muted);cursor:pointer;transition:background .15s,color .15s}
 .fotostrip .f .maak-hoofd button:hover{background:var(--forest,#25402A);color:#fff;border-color:var(--forest,#25402A)}
