@@ -16,6 +16,9 @@
       <span class="now"><%= euro(t.prijs) %></span>
       <% if (t.oudePrijs && t.oudePrijs > t.prijs) { %><span class="was"><%= euro(t.oudePrijs) %></span><% } %>
     </div>
+    <% var _pi = prijsInfo(t); %>
+    <% if (_pi.type === 'btw') { %><div class="prijs-sub">excl. BTW · <%= euro(_pi.inclBtw) %> incl.</div>
+    <% } else if (_pi.type === 'marge') { %><div class="prijs-sub marge">Marge, geen BTW</div><% } %>
     <div class="cfoot"><a href="/trekker/<%= t.id %>">Bekijk details →</a></div>
   </div>
 </article>

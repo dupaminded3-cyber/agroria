@@ -52,6 +52,9 @@
             <span class="now"><%= euro(trekker.prijs) %></span>
             <% if (trekker.oudePrijs && trekker.oudePrijs > trekker.prijs) { %><span class="was"><%= euro(trekker.oudePrijs) %></span><% } %>
           </div>
+          <% var pi = prijsInfo(trekker); %>
+          <% if (pi.type === 'btw') { %><div class="prijs-sub">excl. BTW · <%= euro(pi.inclBtw) %> incl. BTW (<%= pi.percentage %>%)</div>
+          <% } else if (pi.type === 'marge') { %><div class="prijs-sub marge">Margeregeling — geen BTW te verrekenen</div><% } %>
           <table class="spectable os-spec">
             <tr><td>Bouwjaar</td><td><%= trekker.bouwjaar %></td></tr>
             <tr><td>Werkuren</td><td><%= getal(trekker.uren) %></td></tr>

@@ -13,8 +13,24 @@
       <div class="field"><label>Draaiuren</label><input type="number" name="uren" value="<%= trekker ? trekker.uren : '' %>" placeholder="3250"></div>
       <div class="field"><label>Vermogen (pk)</label><input type="number" name="pk" value="<%= trekker ? trekker.pk : '' %>" placeholder="240"></div>
       <div class="field"><label>Transmissie</label><input name="transmissie" value="<%= trekker ? trekker.transmissie : '' %>" placeholder="Vario / Powershift …"></div>
-      <div class="field"><label>Prijs (€)</label><input type="number" name="prijs" value="<%= trekker ? trekker.prijs : '' %>" placeholder="22500"></div>
+      <div class="field">
+        <label>Prijs (€)</label>
+        <input type="number" name="prijs" id="prijsVeld" value="<%= trekker ? trekker.prijs : '' %>" placeholder="22500">
+        <div class="hint" id="prijsPreview" style="display:none"></div>
+      </div>
       <div class="field"><label>Oude prijs (€) — optioneel</label><input type="number" name="oudePrijs" value="<%= trekker ? (trekker.oudePrijs||'') : '' %>" placeholder="30000"><div class="hint">Vul je hier een hoger bedrag in, dan toont de trekker automatisch een "Sale!"-label met doorgestreepte oude prijs.</div></div>
+      <div class="field full">
+        <label>Prijsregeling</label>
+        <select name="prijsType" id="prijsType">
+          <option value="" <%= (!trekker || !trekker.prijsType) ? 'selected' : '' %>>Nog niet ingesteld — toon de prijs zoals nu, zonder BTW/marge-vermelding</option>
+          <option value="btw" <%= trekker && trekker.prijsType==='btw' ? 'selected' : '' %>>BTW-regeling — de prijs hierboven is excl. BTW</option>
+          <option value="marge" <%= trekker && trekker.prijsType==='marge' ? 'selected' : '' %>>Margeregeling — één totaalprijs, geen BTW (bijv. ingekocht van een particulier)</option>
+        </select>
+        <div class="hint">
+          Kies je <b>BTW-regeling</b>, dan geldt het bedrag bij "Prijs (€)" als <b>excl. BTW</b>; het bedrag incl. BTW (21%) wordt automatisch berekend en op de website getoond.
+          Kies je <b>Margeregeling</b>, dan toont de website één totaalprijs zonder BTW-vermelding — verplicht bij inkoop van particulieren.
+        </div>
+      </div>
       <div class="field"><label>Categorie</label>
         <select name="categorie">
           <% ['Trekker','Smalspoor','Compact','Werktuig'].forEach(function(c){ %>
@@ -68,4 +84,26 @@
     </div>
   </form>
 </div>
+<script>
+  // Live voorbeeld: laat direct zien wat de prijs incl. BTW wordt.
+  (function(){
+    var type = document.getElementById('prijsType');
+    var prijs = document.getElementById('prijsVeld');
+    var preview = document.getElementById('prijsPreview');
+    if (!type || !prijs || !preview) return;
+    function bijwerken(){
+      if (type.value === 'btw') {
+        var bedrag = parseFloat(prijs.value) || 0;
+        var incl = Math.round(bedrag * 1.21);
+        preview.style.display = 'block';
+        preview.innerHTML = 'Incl. BTW (21%): <b>€ ' + incl.toLocaleString('nl-NL') + '</b>';
+      } else {
+        preview.style.display = 'none';
+      }
+    }
+    type.addEventListener('change', bijwerken);
+    prijs.addEventListener('input', bijwerken);
+    bijwerken();
+  })();
+</script>
 <%- include('_foot') %>

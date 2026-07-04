@@ -25,6 +25,9 @@
         <h1><%= trekker.merk %> <%= trekker.model %></h1>
         <% if (trekker.status === 'verkocht') { %><p style="color:var(--soil);font-weight:600">Deze trekker is verkocht.</p><% } %>
         <div class="prices"><span class="now"><%= euro(trekker.prijs) %></span><% if (trekker.oudePrijs && trekker.oudePrijs > trekker.prijs) { %><span class="was"><%= euro(trekker.oudePrijs) %></span><% } %></div>
+        <% var pi = prijsInfo(trekker); %>
+        <% if (pi.type === 'btw') { %><div class="prijs-sub">Prijs excl. BTW · <%= euro(pi.inclBtw) %> incl. BTW (<%= pi.percentage %>%)</div>
+        <% } else if (pi.type === 'marge') { %><div class="prijs-sub marge">Margeregeling — geen BTW te verrekenen</div><% } %>
         <table class="spectable">
           <tr><td>Bouwjaar</td><td><%= trekker.bouwjaar %></td></tr>
           <tr><td>Werkuren</td><td><%= getal(trekker.uren) %></td></tr>
@@ -145,7 +148,7 @@
   "image": (trekker.fotos && trekker.fotos.length) ? trekker.fotos.map(function(f){ return SITE_URL + '/uploads/' + f; }) : undefined,
   "offers": {
     "@type": "Offer",
-    "price": trekker.prijs,
+    "price": pi.type === 'btw' ? pi.inclBtw : trekker.prijs,
     "priceCurrency": "EUR",
     "availability": trekker.status === 'verkocht' ? "https://schema.org/SoldOut" : "https://schema.org/InStock",
     "url": SITE_URL + '/trekker/' + trekker.id

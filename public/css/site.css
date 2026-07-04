@@ -128,6 +128,11 @@ header.site{position:sticky;top:0;z-index:60;background:var(--paper);border-bott
 .card .prices{display:flex;align-items:baseline;gap:12px;margin-top:16px;padding-top:16px;border-top:1px solid var(--line)}
 .card .prices .now{font-family:var(--display);font-weight:600;font-size:1.45rem;color:var(--forest)}
 .card .prices .was{font-size:.95rem;color:var(--muted-2);text-decoration:line-through}
+
+/* BTW / margeregeling — klein tekstje onder de prijs */
+.prijs-sub{font-size:.78rem;color:var(--muted-2);margin-top:4px;letter-spacing:.01em}
+.prijs-sub.marge{font-style:italic}
+.card .prijs-sub{margin-top:6px}
 .card .cfoot{margin-top:14px}
 .card .cfoot a{font-weight:600;font-size:.88rem;color:var(--green);display:inline-flex;gap:7px;transition:gap .2s}
 .card:hover .cfoot a{gap:12px}
