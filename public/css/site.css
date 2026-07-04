@@ -36,11 +36,10 @@ h2.dh{font-family:var(--display);font-weight:500;font-size:clamp(2.1rem,4.2vw,3.
 .announce .a svg{color:var(--gold-soft);flex-shrink:0}
 
 /* HEADER */
-header.site{position:sticky;top:0;z-index:60;background:rgba(247,246,241,.92);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);border-bottom:1px solid var(--line);transition:.3s}
-/* Browsers zonder backdrop-filter (o.a. sommige Android): maak de kop volledig dekkend */
-@supports not ((backdrop-filter:blur(12px)) or (-webkit-backdrop-filter:blur(12px))){
-  header.site{background:var(--paper)}
-}
+/* Let op: GEEN backdrop-filter/filter/transform op de kop. Dat maakt het
+   vaste (position:fixed) mobiele menu relatief aan de kop i.p.v. het scherm,
+   waardoor het op Android/Samsung verkeerd valt. Daarom een dekkende balk. */
+header.site{position:sticky;top:0;z-index:60;background:var(--paper);border-bottom:1px solid var(--line);transition:.3s}
 /* Donkere laag achter het mobiele menu */
 .menu-backdrop{position:fixed;inset:0;background:rgba(8,10,6,.55);opacity:0;visibility:hidden;transition:opacity .26s ease,visibility .26s ease;z-index:80}
 .menu-backdrop.open{opacity:1;visibility:visible}
