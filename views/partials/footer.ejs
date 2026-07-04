@@ -31,6 +31,11 @@
     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 4h3l2 5-2 1c1 2 2 3 4 4l1-2 5 2v3a2 2 0 01-2 2A14 14 0 013 6a2 2 0 012-2z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
   </a>
   <% } %>
+  <% if (contact.email) { %>
+  <a class="fc fc-mail" href="mailto:<%= contact.email %>" aria-label="Stuur ons direct een e-mail" title="Mail ons">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M3 7l9 6 9-6M4 5h16a1 1 0 011 1v12a1 1 0 01-1 1H4a1 1 0 01-1-1V6a1 1 0 011-1z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
+  </a>
+  <% } %>
 </div>
 
 <script>
