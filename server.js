@@ -33,11 +33,19 @@ function sessionSecret() {
 }
 
 // --- Uploads (foto's) ---
-// We houden de foto eerst in het geheugen en optimaliseren hem daarna met sharp:
-// verkleinen naar max. 1600px breed en comprimeren naar webp. Dat scheelt fors
-// in laadtijd — belangrijk voor het high-end gevoel van de site.
+// Foto's worden eerst tijdelijk op de schijf gezet (niet in het geheugen —
+// dat zou bij grote batches, bijv. 30+ foto's tegelijk, teveel RAM kosten op
+// een kleine server) en daarna één voor één met sharp geoptimaliseerd:
+// verkleind naar max. 1600px breed en gecomprimeerd naar webp. Dat scheelt
+// fors in laadtijd — belangrijk voor het high-end gevoel van de site.
+const MAX_FOTOS_PER_KEER = 40; // ruim voldoende voor bijv. 30 foto's in één keer
+const TIJDELIJKE_MAP = require('os').tmpdir();
+
 const upload = multer({
-  storage: multer.memoryStorage(),
+  storage: multer.diskStorage({
+    destination: (req, file, cb) => cb(null, TIJDELIJKE_MAP),
+    filename: (req, file, cb) => cb(null, 'upload-' + db.id())
+  }),
   limits: { fileSize: 12 * 1024 * 1024 }, // 12 MB per originele foto
   fileFilter: (req, file, cb) => {
     const ok = /jpe?g|png|webp|gif/i.test(file.mimetype);
@@ -50,25 +58,36 @@ const UPLOAD_DIR = path.join(db.DATA_DIR, 'uploads');
 async function bewaarFoto(file) {
   const naam = db.id() + '.webp';
   const doel = path.join(UPLOAD_DIR, naam);
-  await sharp(file.buffer)
-    .rotate() // corrigeert stand op basis van EXIF
-    .resize({ width: 1600, height: 1600, fit: 'inside', withoutEnlargement: true })
-    .webp({ quality: 82 })
-    .toFile(doel);
+  try {
+    await sharp(file.path)
+      .rotate() // corrigeert stand op basis van EXIF
+      .resize({ width: 1600, height: 1600, fit: 'inside', withoutEnlargement: true })
+      .webp({ quality: 82 })
+      .toFile(doel);
+  } finally {
+    fs.unlink(file.path, () => {}); // tijdelijk bestand altijd opruimen
+  }
   return naam;
 }
 
 // Middleware: verwerkt alle geüploade foto's (zowel .array als .fields) en zet
 // per bestand file.filename klaar, precies zoals de rest van de code verwacht.
-function verwerkUploads(req, res, next) {
+// Bewust ÉÉN voor ÉÉN verwerkt (niet allemaal tegelijk), zodat ook een grote
+// batch foto's geen geheugen- of CPU-piek veroorzaakt.
+async function verwerkUploads(req, res, next) {
   let files = [];
   if (Array.isArray(req.files)) files = req.files;
   else if (req.files) Object.keys(req.files).forEach(k => { files = files.concat(req.files[k]); });
   else if (req.file) files = [req.file];
   if (!files.length) return next();
-  Promise.all(files.map(async f => { f.filename = await bewaarFoto(f); }))
-    .then(() => next())
-    .catch(next);
+  try {
+    for (const f of files) {
+      f.filename = await bewaarFoto(f);
+    }
+    next();
+  } catch (err) {
+    next(err);
+  }
 }
 
 // --- Basis-instellingen ---
@@ -349,7 +368,7 @@ app.get('/uadmin/trekkers/:id', requireAuth, (req, res) => {
   res.render('admin/trekker-form', { trekker, active: 'trekkers' });
 });
 
-app.post('/uadmin/trekkers/:id?', requireAuth, upload.array('fotos', 12), verwerkUploads, (req, res) => {
+app.post('/uadmin/trekkers/:id?', requireAuth, upload.array('fotos', MAX_FOTOS_PER_KEER), verwerkUploads, (req, res) => {
   const data = db.read();
   const b = req.body;
   const velden = {
@@ -563,6 +582,8 @@ app.use((err, req, res, next) => {
   let melding = 'Er ging iets mis. Probeer het later opnieuw.';
   if (err instanceof multer.MulterError && err.code === 'LIMIT_FILE_SIZE') {
     melding = 'De foto is te groot (maximaal 12 MB per foto). Kies een kleiner bestand.';
+  } else if (err instanceof multer.MulterError && (err.code === 'LIMIT_UNEXPECTED_FILE' || err.code === 'LIMIT_FILE_COUNT')) {
+    melding = `Je kunt maximaal ${MAX_FOTOS_PER_KEER} foto's in één keer uploaden. Selecteer er iets minder en probeer het opnieuw.`;
   } else if (isUpload) {
     melding = err.message;
   } else {
