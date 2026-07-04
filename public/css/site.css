@@ -40,9 +40,13 @@ h2.dh{font-family:var(--display);font-weight:500;font-size:clamp(2.1rem,4.2vw,3.
    vaste (position:fixed) mobiele menu relatief aan de kop i.p.v. het scherm,
    waardoor het op Android/Samsung verkeerd valt. Daarom een dekkende balk. */
 header.site{position:sticky;top:0;z-index:60;background:var(--paper);border-bottom:1px solid var(--line);transition:.3s}
-/* Donkere laag achter het mobiele menu */
-.menu-backdrop{position:fixed;inset:0;background:rgba(8,10,6,.55);opacity:0;visibility:hidden;transition:opacity .26s ease,visibility .26s ease;z-index:80}
-.menu-backdrop.open{opacity:1;visibility:visible}
+/* Donkere laag achter het mobiele menu.
+   Belangrijk: dit element staat in de HTML BINNEN header.site (dezelfde
+   stacking-context als .menu), zodat de volgorde knop -> laag -> menu-drawer
+   correct is. Stond de laag buiten de header, dan kon hij op sommige
+   Android-toestellen bovenop het hele menu belanden (klikken deden dan niks). */
+.menu-backdrop{position:fixed;inset:0;background:rgba(8,10,6,.55);opacity:0;visibility:hidden;pointer-events:none;transition:opacity .26s ease,visibility .26s ease;z-index:85}
+.menu-backdrop.open{opacity:1;visibility:visible;pointer-events:auto}
 .nav{display:flex;align-items:center;justify-content:space-between;height:96px;gap:24px}
 .brand{display:flex;align-items:center;gap:13px;flex-shrink:0}
 .brand .mark{width:50px;height:50px;background:var(--forest);border-radius:3px;display:grid;place-items:center;color:var(--paper)}
