@@ -417,6 +417,21 @@ app.post('/uadmin/trekkers/:id/foto/delete', requireAuth, (req, res) => {
   res.redirect('/uadmin/trekkers/' + req.params.id);
 });
 
+// Maak een andere foto de hoofdfoto (eerste foto), zonder iets te verwijderen.
+app.post('/uadmin/trekkers/:id/foto/hoofd', requireAuth, (req, res) => {
+  const data = db.read();
+  const t = data.tractors.find(x => x.id === req.params.id);
+  if (t && t.fotos) {
+    const i = t.fotos.indexOf(req.body.foto);
+    if (i > 0) {
+      t.fotos.splice(i, 1);
+      t.fotos.unshift(req.body.foto);
+      db.write(data);
+    }
+  }
+  res.redirect('/uadmin/trekkers/' + req.params.id);
+});
+
 app.post('/uadmin/trekkers/:id/delete', requireAuth, (req, res) => {
   const data = db.read();
   data.tractors = data.tractors.filter(t => t.id !== req.params.id);

@@ -64,14 +64,22 @@
         <input type="file" name="fotos" accept="image/*" multiple>
         <div class="hint">Je kunt tot 40 foto's in één keer selecteren en uploaden. De eerste foto wordt de hoofdfoto.</div>
         <% if (trekker && trekker.fotos && trekker.fotos.length){ %>
+          <div class="hint" style="margin:12px 0 0">De <b>eerste</b> foto (met het label "Hoofdfoto") wordt overal op de site als hoofdfoto getoond. Klik bij een andere foto op "Maak hoofdfoto" om die te wisselen.</div>
           <div class="fotostrip">
-            <% trekker.fotos.forEach(function(f){ %>
+            <% trekker.fotos.forEach(function(f, i){ %>
               <div class="f">
+                <% if (i === 0) { %><span class="hoofdfoto-badge">Hoofdfoto</span><% } %>
                 <img src="/uploads/<%= f %>">
                 <form method="post" action="/uadmin/trekkers/<%= trekker.id %>/foto/delete" onsubmit="return confirm('Foto verwijderen?')">
                   <input type="hidden" name="foto" value="<%= f %>">
                   <button type="submit" title="Verwijder foto">×</button>
                 </form>
+                <% if (i !== 0) { %>
+                  <form method="post" action="/uadmin/trekkers/<%= trekker.id %>/foto/hoofd" class="maak-hoofd">
+                    <input type="hidden" name="foto" value="<%= f %>">
+                    <button type="submit">Maak hoofdfoto</button>
+                  </form>
+                <% } %>
               </div>
             <% }) %>
           </div>
