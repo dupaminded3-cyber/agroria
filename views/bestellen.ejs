@@ -2,7 +2,7 @@
 <%- include('partials/header') %>
 <section class="pagehead" style="padding:54px 0 46px">
   <div class="wrap">
-    <a href="/trekker/<%= trekker.id %>" style="color:#cfcfc2;font-size:.9rem">← Terug naar de trekker</a>
+    <a href="/trekker/<%= trekker.slug || trekker.id %>" style="color:#cfcfc2;font-size:.9rem">← Terug naar de trekker</a>
     <span class="eyebrow light" style="margin-top:16px">Bestelling plaatsen</span>
     <h1 style="font-size:clamp(2rem,4vw,3rem)"><%= trekker.merk %> <%= trekker.model %></h1>
     <p>Vul uw gegevens in. Eén van onze specialisten neemt persoonlijk contact met u op voor de koopovereenkomst — u zit nergens aan vast tot die rond is.</p>

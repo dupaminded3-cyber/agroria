@@ -12,6 +12,7 @@ const sharp = require('sharp');
 const db = require('./lib/db');
 const { omschrijvingHtml, omschrijvingText } = require('./lib/format');
 const { prijsInfo } = require('./lib/prijs');
+const { maakSlug, uniekeSlug } = require('./lib/slug');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -170,9 +171,15 @@ app.get('/aanbod', (req, res) => {
   res.render('aanbod', { lijst, merken, filter: { merk, q, sort }, page: (data.pages.aanbod || {}) });
 });
 
-app.get('/trekker/:id', (req, res) => {
+// Nette URL (bijv. /trekker/case-ih-puma-165-cvx). Oude links op basis van het
+// kale ID blijven werken en verwijzen automatisch door naar de nette versie.
+app.get('/trekker/:slug', (req, res) => {
   const data = db.read();
-  const trekker = data.tractors.find(t => t.id === req.params.id);
+  let trekker = data.tractors.find(t => t.slug === req.params.slug);
+  if (!trekker) {
+    trekker = data.tractors.find(t => t.id === req.params.slug);
+    if (trekker && trekker.slug) return res.redirect(301, '/trekker/' + trekker.slug);
+  }
   if (!trekker) return res.status(404).render('404');
   const meer = data.tractors
     .filter(t => t.id !== trekker.id && t.status !== 'verkocht' && t.status !== 'verwijderd')
@@ -217,7 +224,7 @@ app.get('/sitemap.xml', (req, res) => {
   const urls = statisch.map(p => ({ loc: SITE_URL + p }));
   data.tractors
     .filter(t => t.status !== 'verwijderd')
-    .forEach(t => urls.push({ loc: SITE_URL + '/trekker/' + t.id }));
+    .forEach(t => urls.push({ loc: SITE_URL + '/trekker/' + (t.slug || t.id) }));
   const xml = `<?xml version="1.0" encoding="UTF-8"?>\n` +
     `<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n` +
     urls.map(u => `  <url><loc>${u.loc}</loc></url>`).join('\n') +
@@ -268,11 +275,15 @@ app.post('/inruil', upload.array('fotos', INRUIL_MAX_FOTOS), verwerkUploads, (re
 });
 
 // Bestelpagina voor een specifieke trekker
-app.get('/bestellen/:id', (req, res) => {
+app.get('/bestellen/:slug', (req, res) => {
   const data = db.read();
-  const trekker = data.tractors.find(t => t.id === req.params.id);
+  let trekker = data.tractors.find(t => t.slug === req.params.slug);
+  if (!trekker) {
+    trekker = data.tractors.find(t => t.id === req.params.slug);
+    if (trekker && trekker.slug) return res.redirect(301, '/bestellen/' + trekker.slug);
+  }
   if (!trekker) return res.status(404).render('404');
-  if (trekker.status === 'verkocht') return res.redirect('/trekker/' + trekker.id);
+  if (trekker.status === 'verkocht') return res.redirect('/trekker/' + (trekker.slug || trekker.id));
   res.render('bestellen', { trekker });
 });
 
@@ -398,10 +409,18 @@ app.post('/uadmin/trekkers/:id?', requireAuth, upload.array('fotos', MAX_FOTOS_P
     if (t) {
       Object.assign(t, velden);
       t.fotos = (t.fotos || []).concat(nieuweFotos);
+      // Nette URL alleen aanmaken als deze trekker er nog geen heeft, zodat
+      // eerder gedeelde links nooit veranderen door een latere bewerking.
+      if (!t.slug) {
+        const bezet = data.tractors.filter(x => x.id !== t.id && x.slug).map(x => x.slug);
+        t.slug = uniekeSlug(maakSlug(`${t.merk} ${t.model}`.trim()), bezet);
+      }
     }
   } else {
+    const bezet = data.tractors.filter(x => x.slug).map(x => x.slug);
+    const slug = uniekeSlug(maakSlug(`${velden.merk} ${velden.model}`.trim()), bezet);
     data.tractors.unshift(Object.assign({
-      id: db.id(), fotos: nieuweFotos, createdAt: new Date().toISOString()
+      id: db.id(), slug, fotos: nieuweFotos, createdAt: new Date().toISOString()
     }, velden));
   }
   db.write(data);
