@@ -36,7 +36,7 @@
           <% if (trekker.voorlader) { %><tr><td>Voorlader</td><td>Ja</td></tr><% } %>
         </table>
         <% if (trekker.status !== 'verkocht') { %>
-          <a class="btn btn-gold" style="width:100%;justify-content:center" href="/bestellen/<%= trekker.id %>">Bestel deze trekker</a>
+          <a class="btn btn-gold" style="width:100%;justify-content:center" href="/bestellen/<%= trekker.slug || trekker.id %>">Bestel deze trekker</a>
           <a class="btn btn-out js-open-vraag" style="width:100%;justify-content:center;margin-top:10px" href="#vraag">Eerst een vraag stellen</a>
         <% } else { %>
           <a class="btn btn-out js-open-vraag" style="width:100%;justify-content:center" href="#vraag">Vraag stellen over dit model</a>
@@ -151,7 +151,7 @@
     "price": pi.type === 'btw' ? pi.inclBtw : trekker.prijs,
     "priceCurrency": "EUR",
     "availability": trekker.status === 'verkocht' ? "https://schema.org/SoldOut" : "https://schema.org/InStock",
-    "url": SITE_URL + '/trekker/' + trekker.id
+    "url": SITE_URL + '/trekker/' + (trekker.slug || trekker.id)
   }
 }) %>
 </script>
