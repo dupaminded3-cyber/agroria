@@ -50,12 +50,12 @@ function defaultData() {
       site: {
         bedrijfsnaam: 'Roelfsema Totaalonderhoud',
         stijl: '3',
-        strapline: 'Vastgoedonderhoud waar u op kan bouwen',
-        heroTitel: 'Vastgoedonderhoud waar u op kan bouwen',
+        strapline: 'Vastgoedonderhoud zoals het hoort',
+        heroTitel: 'Vastgoedonderhoud, zoals het hoort.',
         heroSubtitel:
-          'Van dagelijks onderhoud tot complete renovatie: Roelfsema Totaalonderhoud ontzorgt vastgoedeigenaren, beheerders en particulieren met vakwerk, heldere afspraken en een vast aanspreekpunt.',
+          'Van dagelijks onderhoud tot ingrijpende renovatie: Roelfsema Totaalonderhoud ontzorgt vastgoedeigenaren en -beheerders met vakmanschap, heldere afspraken en één vast aanspreekpunt — zodat u nooit meer hoeft te schakelen tussen vijf verschillende partijen.',
         overOns:
-          'Roelfsema Totaalonderhoud is opgericht vanuit een simpel uitgangspunt: onderhoud aan uw pand moet zonder zorgen kunnen. Wij combineren de deskundigheid van een echte vakman met de betrouwbaarheid van een vast team, zodat u altijd weet waar u aan toe bent. Of het nu gaat om het onderhouden van een enkele huurwoning of het beheren van een grotere vastgoedportefeuille, wij denken mee, plannen zorgvuldig en leveren werk waar u op kunt bouwen.',
+          'Roelfsema Totaalonderhoud is opgericht vanuit een simpel uitgangspunt: onderhoud aan uw pand moet zonder zorgen kunnen. Geen wisselende onderaannemers, geen vage toezeggingen — wel een vast team dat uw pand kent, meedenkt en doet wat er is afgesproken. Of het nu gaat om één huurwoning of een complete vastgoedportefeuille: wij plannen zorgvuldig, werken netjes en leveren op wat we beloven.',
         telefoon: '',
         email: '',
         adres: '',

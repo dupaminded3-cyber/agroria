@@ -3,15 +3,16 @@
 
   <main>
     <section class="pagina-hero pagina-hero--klein">
-      <div class="container">
-        <p class="eyebrow">Offerte aanvragen</p>
+      <div class="hero__blob hero__blob--1" aria-hidden="true"></div>
+      <div class="container reveal">
+        <p class="eyebrow eyebrow--center">Offerte aanvragen</p>
         <h1>Vertel ons over uw klus</h1>
         <p class="pagina-hero__intro">Vul onderstaand formulier in. Hoe meer details en foto's u toevoegt, hoe scherper en sneller wij een passende offerte kunnen opstellen.</p>
       </div>
     </section>
 
     <section class="sectie sectie--form">
-      <div class="container container--smal">
+      <div class="container container--smal reveal">
         <% if (fout) { %>
           <div class="melding melding--fout"><%= fout %></div>
         <% } %>
@@ -110,7 +111,10 @@
             <span>Ik ga akkoord dat Roelfsema Totaalonderhoud mijn gegevens gebruikt om contact met mij op te nemen over deze aanvraag.</span>
           </label>
 
-          <button type="submit" class="btn btn--accent btn--groot btn--volledig">Offerte aanvragen versturen</button>
+          <button type="submit" class="btn btn--accent btn--groot btn--volledig">
+            Offerte aanvragen versturen
+            <svg viewBox="0 0 24 24" fill="none"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
         </form>
       </div>
     </section>

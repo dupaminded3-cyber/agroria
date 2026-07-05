@@ -3,8 +3,9 @@
 
   <main>
     <section class="pagina-hero pagina-hero--klein">
-      <div class="container">
-        <p class="eyebrow">Contact</p>
+      <div class="hero__blob hero__blob--1" aria-hidden="true"></div>
+      <div class="container reveal">
+        <p class="eyebrow eyebrow--center">Contact</p>
         <h1>Neem contact met ons op</h1>
         <p class="pagina-hero__intro">Heeft u een vraag of wilt u liever eerst kennismaken? Stuur ons een bericht, we reageren zo snel mogelijk.</p>
       </div>
@@ -12,15 +13,18 @@
 
     <section class="sectie sectie--form">
       <div class="container container--smal contact-grid">
-        <div class="contact-info">
+        <div class="contact-info reveal">
           <h2>Gegevens</h2>
           <p><a href="tel:<%= site.telefoon %>"><%= site.telefoon || 'Telefoonnummer volgt' %></a></p>
           <p><a href="mailto:<%= site.email %>"><%= site.email || 'E-mailadres volgt' %></a></p>
           <p><%= site.adres || 'Werkgebied: in overleg' %></p>
-          <a href="/offerte-aanvragen" class="btn btn--outline">Liever direct een offerte aanvragen?</a>
+          <a href="/offerte-aanvragen" class="btn btn--outline">
+            Liever direct een offerte aanvragen?
+            <svg viewBox="0 0 24 24" fill="none"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </a>
         </div>
 
-        <div>
+        <div class="reveal" style="--vertraging: 120ms">
           <% if (typeof verzonden !== 'undefined' && verzonden) { %>
             <div class="melding melding--succes">Bedankt voor uw bericht! We nemen zo snel mogelijk contact met u op.</div>
           <% } else { %>
