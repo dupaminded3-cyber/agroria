@@ -93,7 +93,7 @@ a { color: inherit; text-decoration: none; }
 .foto-galerij__item img { width: 100%; height: 100%; object-fit: cover; }
 
 .admin-preview { max-width: 260px; border-radius: 8px; border: 1px solid var(--rand); margin-bottom: 14px; }
-.admin-preview--logo { max-height: 60px; max-width: 200px; object-fit: contain; }
+.admin-preview--logo { max-height: 92px; max-width: 280px; object-fit: contain; }
 
 .form { display: flex; flex-direction: column; gap: 16px; }
 .form--inline { flex-direction: row; align-items: center; gap: 10px; }

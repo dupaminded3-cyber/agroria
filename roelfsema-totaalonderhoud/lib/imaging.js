@@ -47,14 +47,26 @@ async function slaSiteAfbeeldingOp(buffer, type) {
   const extensie = type === 'logo' ? 'png' : 'jpg';
   const naam = `${type}-${crypto.randomBytes(6).toString('hex')}.${extensie}`;
 
-  const breedte = type === 'logo' ? 600 : 2400;
-  const pipeline = sharp(buffer).rotate().resize({ width: breedte, withoutEnlargement: true });
+  const pipeline = sharp(buffer).rotate();
 
   if (type === 'logo') {
-    // Logo's worden als PNG bewaard zodat transparantie behouden blijft.
-    await pipeline.png({ compressionLevel: 9, adaptiveFiltering: true }).toFile(path.join(map, naam));
+    // Logo's: transparantie behouden + transparante randen wegsnijden
+    // zodat ze in de header niet \"mini\" ogen door veel lege marge.
+    await pipeline
+      .ensureAlpha()
+      .trim({ threshold: 1 })
+      .resize({
+        width: 880,
+        height: 260,
+        fit: 'inside',
+      })
+      .png({ compressionLevel: 9, adaptiveFiltering: true })
+      .toFile(path.join(map, naam));
   } else {
-    await pipeline.jpeg({ quality: 88, mozjpeg: true }).toFile(path.join(map, naam));
+    await pipeline
+      .resize({ width: 2400, withoutEnlargement: true })
+      .jpeg({ quality: 88, mozjpeg: true })
+      .toFile(path.join(map, naam));
   }
 
   return `site/${naam}`;

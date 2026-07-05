@@ -228,7 +228,12 @@ p { line-height: 1.75; color: var(--tekst-zacht); margin: 0 0 1em; }
 .brand { display: flex; align-items: center; gap: 12px; }
 .brand__mark { color: var(--accent); display: inline-flex; }
 .brand__mark svg { width: 30px; height: 30px; }
-.brand__logo { max-height: 44px; width: auto; }
+.brand__logo {
+  height: 56px;
+  width: auto;
+  max-width: 270px;
+  object-fit: contain;
+}
 .brand__naam {
   font-family: var(--font-kop);
   font-size: 1.18rem;
@@ -920,4 +925,5 @@ textarea { resize: vertical; min-height: 100px; }
   .marquee__item { font-size: 1.05rem; }
   .naar-boven { right: 16px; bottom: 16px; width: 44px; height: 44px; }
   .hero__belofte span { font-size: 0.8rem; }
+  .brand__logo { height: 46px; max-width: 210px; }
 }
