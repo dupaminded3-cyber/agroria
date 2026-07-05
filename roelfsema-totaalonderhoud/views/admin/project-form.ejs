@@ -22,14 +22,14 @@
               <label>
                 <span>Foto "Voor"</span>
                 <% if (project && project.voorFoto) { %>
-                  <img src="/uploads/<%= project.voorFoto %>" alt="" class="admin-preview" style="max-width:100%;" />
+                  <img src="<%= project.voorFoto.charAt(0) === '/' ? project.voorFoto : '/uploads/' + project.voorFoto %>" alt="" class="admin-preview" style="max-width:100%;" />
                 <% } %>
                 <input type="file" name="voorFoto" accept="image/*" />
               </label>
               <label>
                 <span>Foto "Na"</span>
                 <% if (project && project.naFoto) { %>
-                  <img src="/uploads/<%= project.naFoto %>" alt="" class="admin-preview" style="max-width:100%;" />
+                  <img src="<%= project.naFoto.charAt(0) === '/' ? project.naFoto : '/uploads/' + project.naFoto %>" alt="" class="admin-preview" style="max-width:100%;" />
                 <% } %>
                 <input type="file" name="naFoto" accept="image/*" />
               </label>

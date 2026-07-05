@@ -85,6 +85,73 @@ function standaardFaq() {
   ];
 }
 
+function standaardProjecten() {
+  return [
+    {
+      id: 'demo-badkamer',
+      titel: 'Complete badkamerrenovatie',
+      categorie: 'Renovatie',
+      omschrijving:
+        'Een gedateerde badkamer volledig gestript en opnieuw opgebouwd: nieuwe leidingen, strakke tegels, inloopdouche en moderne afwerking.',
+      voorFoto: '/img/project-badkamer-voor.jpg',
+      naFoto: '/img/project-badkamer-na.jpg',
+      voorbeeld: true,
+    },
+    {
+      id: 'demo-gevel',
+      titel: 'Schilderwerk & gevelherstel',
+      categorie: 'Schilderwerk & gevel',
+      omschrijving:
+        'Houtrot hersteld, kozijnen geschuurd en de complete gevel opnieuw geschilderd voor een frisse, duurzame uitstraling.',
+      voorFoto: '/img/project-gevel-voor.jpg',
+      naFoto: '/img/project-gevel-na.jpg',
+      voorbeeld: true,
+    },
+    {
+      id: 'demo-woning',
+      titel: 'Woning verhuurklaar opgeleverd',
+      categorie: 'Mutatieonderhoud',
+      omschrijving:
+        'Tussen twee huurders in volledig opgeknapt: wanden hersteld en gesausd, nieuwe vloer en een nette, verhuurklare oplevering.',
+      voorFoto: '/img/project-woning-voor.jpg',
+      naFoto: '/img/project-woning-na.jpg',
+      voorbeeld: true,
+    },
+  ];
+}
+
+function standaardReviews() {
+  return [
+    {
+      id: 'demo-review1',
+      naam: 'Vastgoedbeheerder',
+      functie: 'Beheerder woningportefeuille',
+      tekst:
+        'Snelle reactie, heldere offerte en een nette uitvoering. Precies waar je bij onderhoud naar op zoek bent — één aanspreekpunt dat gewoon regelt.',
+      sterren: 5,
+      voorbeeld: true,
+    },
+    {
+      id: 'demo-review2',
+      naam: 'Particuliere verhuurder',
+      functie: '',
+      tekst:
+        'Onze huurwoning tussen twee huurders in supersnel opgeknapt. Meegedacht, netjes gewerkt en op tijd opgeleverd. Absolute aanrader.',
+      sterren: 5,
+      voorbeeld: true,
+    },
+    {
+      id: 'demo-review3',
+      naam: 'Woningeigenaar',
+      functie: '',
+      tekst:
+        'Vakmensen die weten waar ze mee bezig zijn. Duidelijke communicatie en het resultaat mag er zijn. Zeer tevreden over de samenwerking.',
+      sterren: 5,
+      voorbeeld: true,
+    },
+  ];
+}
+
 function defaultData() {
   return {
     instellingen: {
@@ -111,8 +178,8 @@ function defaultData() {
         stats: standaardStats(),
       },
     },
-    projecten: [],
-    reviews: [],
+    projecten: standaardProjecten(),
+    reviews: standaardReviews(),
     faq: standaardFaq(),
     aanvragen: [],
   };
@@ -139,8 +206,8 @@ function readDb() {
     if (!Array.isArray(merged.instellingen.site.stats) || !merged.instellingen.site.stats.length) {
       merged.instellingen.site.stats = standaardStats();
     }
-    merged.projecten = Array.isArray(parsed.projecten) ? parsed.projecten : [];
-    merged.reviews = Array.isArray(parsed.reviews) ? parsed.reviews : [];
+    merged.projecten = Array.isArray(parsed.projecten) ? parsed.projecten : standaardProjecten();
+    merged.reviews = Array.isArray(parsed.reviews) ? parsed.reviews : standaardReviews();
     merged.faq = Array.isArray(parsed.faq) ? parsed.faq : standaardFaq();
     merged.aanvragen = Array.isArray(parsed.aanvragen) ? parsed.aanvragen : [];
     return merged;

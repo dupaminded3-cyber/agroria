@@ -19,7 +19,7 @@
                   <tr>
                     <td>
                       <% if (p.naFoto) { %>
-                        <img src="/uploads/<%= p.naFoto %>" alt="" style="width:64px;height:48px;object-fit:cover;border-radius:6px;" />
+                        <img src="<%= p.naFoto.charAt(0) === '/' ? p.naFoto : '/uploads/' + p.naFoto %>" alt="" style="width:64px;height:48px;object-fit:cover;border-radius:6px;" />
                       <% } else { %>—<% } %>
                     </td>
                     <td><%= p.titel %></td>

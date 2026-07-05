@@ -27,22 +27,19 @@
             <span><strong>Tot 50 klusfoto's</strong> per offerteaanvraag</span>
           </div>
         </div>
-        <div class="hero__beeld" aria-hidden="true">
-          <svg viewBox="0 0 480 480" class="hero__svg" xmlns="http://www.w3.org/2000/svg">
-            <circle cx="240" cy="240" r="200" class="hero__svg-cirkel" />
-            <g class="hero__svg-lijn" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M130 300V190L245 110L360 190V300" />
-              <path d="M170 300V230H320V300" />
-              <path d="M245 230V180" />
-              <path d="M100 300H390" />
-              <path d="M215 300V255H275V300" />
-            </g>
-            <g class="hero__svg-accent" fill="none" stroke-width="2.5" stroke-linecap="round">
-              <path class="hero__svg-zwever" d="M340 130L360 110M340 110L360 130" />
-              <circle class="hero__svg-zwever hero__svg-zwever--traag" cx="130" cy="150" r="6" />
-              <path class="hero__svg-zwever" d="M96 250l14 14 14-14" />
-            </g>
-          </svg>
+        <div class="hero__beeld">
+          <div class="hero__foto">
+            <img src="<%= site.heroAfbeelding ? '/uploads/' + site.heroAfbeelding : '/img/hero-vastgoed.jpg' %>" alt="Vastgoedonderhoud door <%= site.bedrijfsnaam %>" />
+          </div>
+          <div class="hero__foto-badge" aria-hidden="true">
+            <span class="hero__foto-badge__icoon">
+              <svg viewBox="0 0 24 24" fill="none"><path d="M9 12l2 2 4-4M21 12a9 9 0 11-18 0 9 9 0 0118 0z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </span>
+            <span>
+              <strong>Vakwerk &amp; ontzorging</strong>
+              onderhoud · renovatie · beheer
+            </span>
+          </div>
         </div>
       </div>
 
@@ -288,13 +285,8 @@
             <svg viewBox="0 0 24 24" fill="none"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
           </a>
         </div>
-        <div class="over-ons-snippet__kader reveal" aria-hidden="true">
-          <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
-            <rect x="10" y="10" width="180" height="180" rx="4" fill="none" stroke="currentColor" stroke-width="1.4" />
-            <path d="M40 140L80 90L110 120L160 60" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-            <circle cx="40" cy="140" r="4" fill="currentColor" />
-            <circle cx="160" cy="60" r="4" fill="currentColor" />
-          </svg>
+        <div class="over-ons-snippet__foto reveal">
+          <img src="/img/vakman-aan-het-werk.jpg" alt="Vakman aan het werk" loading="lazy" />
         </div>
       </div>
     </section>
