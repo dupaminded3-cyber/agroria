@@ -23,6 +23,24 @@ const PERIODES = [
   'Nog geen haast, oriënterend',
 ];
 
+const STIJLEN = [
+  {
+    id: '1',
+    naam: 'Antraciet & Koper',
+    omschrijving: 'Donker, statig en premium. Diepe antracietgrijze vlakken met warme koperkleurige accenten.',
+  },
+  {
+    id: '2',
+    naam: 'Warm Natuurlijk',
+    omschrijving: 'Zachte zandtinten met diepgroen. Warm, benaderbaar en toch verzorgd.',
+  },
+  {
+    id: '3',
+    naam: 'Modern Minimal',
+    omschrijving: "Strak wit met een diepe marineblauwe accentkleur. Dicht bij de stijl van emmow.nl, maar verfijnder.",
+  },
+];
+
 function defaultData() {
   return {
     instellingen: {
@@ -31,6 +49,7 @@ function defaultData() {
       sessionSecret: crypto.randomBytes(32).toString('hex'),
       site: {
         bedrijfsnaam: 'Roelfsema Totaalonderhoud',
+        stijl: '3',
         strapline: 'Vastgoedonderhoud waar u op kan bouwen',
         heroTitel: 'Vastgoedonderhoud waar u op kan bouwen',
         heroSubtitel:
@@ -89,6 +108,7 @@ module.exports = {
   UPLOADS_DIR,
   DIENSTEN,
   PERIODES,
+  STIJLEN,
   defaultData,
   ensureDirs,
   readDb,
