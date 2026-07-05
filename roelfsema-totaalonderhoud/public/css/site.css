@@ -1201,65 +1201,50 @@ textarea { resize: vertical; min-height: 100px; }
 .faq-item[open] summary { color: var(--accent); }
 
 /* ---- Terug naar boven ---- */
-/* ---- Zwevende contactknop ---- */
-.contact-fab { position: fixed; right: 26px; bottom: 26px; z-index: 45; display: flex; flex-direction: column; align-items: flex-end; gap: 14px; }
-.contact-fab__opties { display: flex; flex-direction: column; align-items: flex-end; gap: 12px; }
-.contact-fab__optie {
-  display: inline-flex; align-items: center; gap: 12px; text-decoration: none;
-  opacity: 0; transform: translateY(12px) scale(0.9); pointer-events: none;
-  transition: opacity 260ms var(--ease), transform 260ms var(--ease);
+/* ---- Zwevende contactknoppen (verticale rij) ---- */
+.contact-rail {
+  position: fixed; right: 22px; bottom: 40px; z-index: 45;
+  display: flex; flex-direction: column; gap: 14px;
 }
-.contact-fab.is-open .contact-fab__optie { opacity: 1; transform: none; pointer-events: auto; }
-.contact-fab.is-open .contact-fab__optie:nth-last-child(1) { transition-delay: 30ms; }
-.contact-fab.is-open .contact-fab__optie:nth-last-child(2) { transition-delay: 70ms; }
-.contact-fab.is-open .contact-fab__optie:nth-last-child(3) { transition-delay: 110ms; }
-.contact-fab.is-open .contact-fab__optie:nth-last-child(4) { transition-delay: 150ms; }
-.contact-fab__optie-label {
-  background: var(--surface); color: var(--tekst); font-weight: 600; font-size: 0.86rem;
-  padding: 7px 13px; border-radius: 10px; white-space: nowrap;
-  border: 1px solid var(--rand); box-shadow: var(--schaduw-klein);
-}
-.contact-fab__optie-icoon {
-  width: 46px; height: 46px; border-radius: 50%; flex-shrink: 0;
-  display: flex; align-items: center; justify-content: center;
-  background: var(--accent); color: var(--accent-tekst);
-  box-shadow: 0 12px 26px -12px rgba(0, 0, 0, 0.55);
-  transition: transform 200ms var(--ease);
-}
-.contact-fab__optie:hover .contact-fab__optie-icoon { transform: scale(1.1); }
-.contact-fab__optie-icoon svg { width: 22px; height: 22px; }
-.contact-fab__optie--whatsapp .contact-fab__optie-icoon { background: #25d366; color: #fff; }
-
-.contact-fab__knop {
+.contact-rail__knop {
   position: relative;
-  width: 60px; height: 60px; border-radius: 50%; border: none; cursor: pointer;
-  background: var(--accent); color: var(--accent-tekst);
+  width: 56px; height: 56px; border-radius: 50%; flex-shrink: 0;
   display: flex; align-items: center; justify-content: center;
-  box-shadow: 0 16px 34px -12px rgba(var(--accent-rgb), 0.7);
-  transition: transform 300ms var(--ease);
+  color: #fff; text-decoration: none;
+  box-shadow: 0 12px 26px -10px rgba(0, 0, 0, 0.5);
+  transition: transform 220ms var(--ease), box-shadow 220ms var(--ease);
 }
-.contact-fab__knop:hover { transform: scale(1.06); }
-.contact-fab__knop::before {
+.contact-rail__knop:hover { transform: scale(1.09); box-shadow: 0 16px 32px -10px rgba(0, 0, 0, 0.55); }
+.contact-rail__knop svg { width: 27px; height: 27px; }
+.contact-rail__knop--whatsapp { background: #25d366; }
+.contact-rail__knop--bel { background: #1e6b43; }
+.contact-rail__knop--mail { background: #c2a15c; }
+.contact-rail__knop::after {
+  content: attr(data-label);
+  position: absolute; right: calc(100% + 12px); top: 50%;
+  transform: translateY(-50%) translateX(6px);
+  background: #14171f; color: #fff; font-size: 0.82rem; font-weight: 600;
+  padding: 6px 11px; border-radius: 8px; white-space: nowrap;
+  opacity: 0; pointer-events: none;
+  transition: opacity 200ms var(--ease), transform 200ms var(--ease);
+}
+.contact-rail__knop:hover::after { opacity: 1; transform: translateY(-50%) translateX(0); }
+.contact-rail__knop--whatsapp::before {
   content: ''; position: absolute; inset: 0; border-radius: 50%;
-  box-shadow: 0 0 0 0 rgba(var(--accent-rgb), 0.45);
-  animation: fabPuls 2.8s infinite;
+  box-shadow: 0 0 0 0 rgba(37, 211, 102, 0.5);
+  animation: railPuls 2.8s infinite;
 }
-.contact-fab.is-open .contact-fab__knop::before { animation: none; }
-@keyframes fabPuls {
-  0% { box-shadow: 0 0 0 0 rgba(var(--accent-rgb), 0.45); }
-  70% { box-shadow: 0 0 0 16px rgba(var(--accent-rgb), 0); }
-  100% { box-shadow: 0 0 0 0 rgba(var(--accent-rgb), 0); }
+@keyframes railPuls {
+  0% { box-shadow: 0 0 0 0 rgba(37, 211, 102, 0.5); }
+  70% { box-shadow: 0 0 0 14px rgba(37, 211, 102, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(37, 211, 102, 0); }
 }
-.contact-fab__knop svg { position: absolute; width: 26px; height: 26px; transition: opacity 250ms var(--ease), transform 300ms var(--ease); }
-.contact-fab__icoon-sluit { opacity: 0; transform: rotate(-90deg); }
-.contact-fab.is-open .contact-fab__icoon-open { opacity: 0; transform: rotate(90deg); }
-.contact-fab.is-open .contact-fab__icoon-sluit { opacity: 1; transform: rotate(0); }
-@media (prefers-reduced-motion: reduce) { .contact-fab__knop::before { animation: none; } }
+@media (prefers-reduced-motion: reduce) { .contact-rail__knop--whatsapp::before { animation: none; } }
 
 .naar-boven {
   position: fixed;
-  right: 32px;
-  bottom: 98px;
+  left: 26px;
+  bottom: 26px;
   width: 48px;
   height: 48px;
   border-radius: 50%;
@@ -1321,9 +1306,10 @@ textarea { resize: vertical; min-height: 100px; }
   .cta-band__inner { flex-direction: column; text-align: center; }
   .site-footer__grid { grid-template-columns: 1fr; }
   .marquee__item { font-size: 1.05rem; }
-  .contact-fab { right: 16px; bottom: 16px; }
-  .contact-fab__knop { width: 54px; height: 54px; }
-  .naar-boven { right: 21px; bottom: 82px; width: 44px; height: 44px; }
+  .contact-rail { right: 14px; bottom: 20px; gap: 12px; }
+  .contact-rail__knop { width: 50px; height: 50px; }
+  .contact-rail__knop svg { width: 24px; height: 24px; }
+  .naar-boven { left: 14px; bottom: 16px; width: 44px; height: 44px; }
   .hero__belofte span { font-size: 0.8rem; }
   .brand__logo { height: 46px; max-width: 210px; }
   .metrics__grid, .metrics__grid--4, .metrics__grid--2 { grid-template-columns: 1fr; }
