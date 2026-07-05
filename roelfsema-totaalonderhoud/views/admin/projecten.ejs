@@ -1,0 +1,42 @@
+<%- include('_head') %>
+<%- include('_side') %>
+
+        <div class="admin-paneel__kop" style="margin-bottom:18px;">
+          <p class="admin-uitleg" style="margin:0;">Voeg projecten toe met een "voor"- en "na"-foto. Op de site verschijnt automatisch een sleepbare voor/na-vergelijker.</p>
+          <a href="/uadmin/projecten/nieuw" class="btn btn--accent btn--klein">+ Nieuw project</a>
+        </div>
+
+        <div class="admin-paneel">
+          <% if (!projecten.length) { %>
+            <p class="admin-leeg">Nog geen projecten. Klik op "Nieuw project" om te beginnen. Je kunt ook alvast een project aanmaken zonder foto's — dan verschijnt er een nette placeholder tot je foto's toevoegt.</p>
+          <% } else { %>
+            <table class="admin-tabel">
+              <thead>
+                <tr><th>Foto</th><th>Titel</th><th>Categorie</th><th>Voor/Na</th><th></th></tr>
+              </thead>
+              <tbody>
+                <% projecten.forEach(function(p) { %>
+                  <tr>
+                    <td>
+                      <% if (p.naFoto) { %>
+                        <img src="/uploads/<%= p.naFoto %>" alt="" style="width:64px;height:48px;object-fit:cover;border-radius:6px;" />
+                      <% } else { %>—<% } %>
+                    </td>
+                    <td><%= p.titel %></td>
+                    <td><%= p.categorie || '—' %></td>
+                    <td><%= p.voorFoto ? '✓ voor' : '– voor' %> · <%= p.naFoto ? '✓ na' : '– na' %></td>
+                    <td>
+                      <a href="/uadmin/projecten/<%= p.id %>">Bewerken</a>
+                      &nbsp;·&nbsp;
+                      <form action="/uadmin/projecten/<%= p.id %>/verwijderen" method="POST" style="display:inline;" onsubmit="return confirm('Dit project verwijderen?');">
+                        <button type="submit" class="admin-link-gevaar">Verwijderen</button>
+                      </form>
+                    </td>
+                  </tr>
+                <% }) %>
+              </tbody>
+            </table>
+          <% } %>
+        </div>
+
+<%- include('_foot') %>

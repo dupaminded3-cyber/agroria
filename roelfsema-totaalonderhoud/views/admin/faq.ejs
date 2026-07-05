@@ -1,0 +1,43 @@
+<%- include('_head') %>
+<%- include('_side') %>
+
+        <div class="admin-paneel admin-paneel--smal" style="max-width:640px;">
+          <h2 class="detail-subkop">Nieuwe vraag toevoegen</h2>
+          <form action="/uadmin/faq" method="POST" class="form">
+            <label>
+              <span>Vraag *</span>
+              <input type="text" name="vraag" required maxlength="240" />
+            </label>
+            <label>
+              <span>Antwoord *</span>
+              <textarea name="antwoord" rows="4" required maxlength="2000"></textarea>
+            </label>
+            <button type="submit" class="btn btn--accent">Vraag toevoegen</button>
+          </form>
+        </div>
+
+        <div class="admin-paneel">
+          <h2 class="detail-subkop">Bestaande vragen</h2>
+          <% if (!faq.length) { %>
+            <p class="admin-leeg">Nog geen vragen.</p>
+          <% } else { %>
+            <table class="admin-tabel">
+              <thead><tr><th>Vraag</th><th>Antwoord</th><th></th></tr></thead>
+              <tbody>
+                <% faq.forEach(function(f) { %>
+                  <tr>
+                    <td style="max-width:260px;"><strong><%= f.vraag %></strong></td>
+                    <td style="max-width:400px;"><%= f.antwoord %></td>
+                    <td>
+                      <form action="/uadmin/faq/<%= f.id %>/verwijderen" method="POST" onsubmit="return confirm('Deze vraag verwijderen?');">
+                        <button type="submit" class="admin-link-gevaar">Verwijderen</button>
+                      </form>
+                    </td>
+                  </tr>
+                <% }) %>
+              </tbody>
+            </table>
+          <% } %>
+        </div>
+
+<%- include('_foot') %>

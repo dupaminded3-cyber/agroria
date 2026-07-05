@@ -56,10 +56,16 @@
                 <input type="email" name="email" value="<%= site.email %>" />
               </label>
             </div>
-            <label>
-              <span>Adres / werkgebied</span>
-              <input type="text" name="adres" value="<%= site.adres %>" />
-            </label>
+            <div class="form__rij">
+              <label>
+                <span>Adres</span>
+                <input type="text" name="adres" value="<%= site.adres %>" />
+              </label>
+              <label>
+                <span>Werkgebied (bijv. "Groningen en omstreken")</span>
+                <input type="text" name="werkgebied" value="<%= site.werkgebied || '' %>" />
+              </label>
+            </div>
             <div class="form__rij">
               <label>
                 <span>KvK-nummer</span>
@@ -70,6 +76,22 @@
                 <input type="text" name="btw" value="<%= site.btw %>" />
               </label>
             </div>
+
+            <h2 class="detail-subkop">Cijfers op de homepage</h2>
+            <p class="admin-uitleg">De vier blokken met kerncijfers onder de hero. Laat een regel leeg om die te verbergen. Voorbeeld waarde: <code>24u</code>, <code>50+</code>, <code>100%</code>.</p>
+            <% var _stats = (site.stats && site.stats.length ? site.stats : []); while (_stats.length < 4) { _stats.push({ waarde: '', label: '' }); } %>
+            <% _stats.slice(0, 4).forEach(function(stat) { %>
+              <div class="form__rij">
+                <label>
+                  <span>Waarde</span>
+                  <input type="text" name="statWaarde" value="<%= stat.waarde %>" maxlength="20" />
+                </label>
+                <label>
+                  <span>Omschrijving</span>
+                  <input type="text" name="statLabel" value="<%= stat.label %>" maxlength="120" />
+                </label>
+              </div>
+            <% }) %>
 
             <button type="submit" class="btn btn--accent">Wijzigingen opslaan</button>
           </form>

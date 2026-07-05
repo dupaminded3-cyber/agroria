@@ -72,4 +72,34 @@ async function slaSiteAfbeeldingOp(buffer, type) {
   return `site/${naam}`;
 }
 
-module.exports = { slaOffertefotoOp, verwijderAanvraagFotos, slaSiteAfbeeldingOp };
+async function slaProjectAfbeeldingOp(buffer) {
+  const map = veiligeMap('projecten');
+  const naam = `project-${crypto.randomBytes(7).toString('hex')}.jpg`;
+
+  await sharp(buffer)
+    .rotate()
+    .resize({ width: 1600, height: 1200, fit: 'cover' })
+    .jpeg({ quality: 84, mozjpeg: true })
+    .toFile(path.join(map, naam));
+
+  return `projecten/${naam}`;
+}
+
+function verwijderUpload(relatievePad) {
+  if (!relatievePad) return;
+  // Bescherm tegen path traversal: alleen binnen UPLOADS_DIR verwijderen.
+  const doel = path.join(UPLOADS_DIR, relatievePad);
+  const genormaliseerd = path.normalize(doel);
+  if (!genormaliseerd.startsWith(UPLOADS_DIR)) return;
+  if (fs.existsSync(genormaliseerd) && fs.statSync(genormaliseerd).isFile()) {
+    fs.rmSync(genormaliseerd, { force: true });
+  }
+}
+
+module.exports = {
+  slaOffertefotoOp,
+  verwijderAanvraagFotos,
+  slaSiteAfbeeldingOp,
+  slaProjectAfbeeldingOp,
+  verwijderUpload,
+};

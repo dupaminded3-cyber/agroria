@@ -1,0 +1,21 @@
+<section class="sectie faq-sectie">
+  <div class="container container--smal">
+    <div class="sectie__kop-blok reveal">
+      <p class="eyebrow eyebrow--center">Veelgestelde vragen</p>
+      <h2 class="sectie__titel">Goed om te weten</h2>
+    </div>
+    <div class="faq-lijst reveal">
+      <% faq.forEach(function(item) { %>
+        <details class="faq-item">
+          <summary>
+            <span><%= item.vraag %></span>
+            <span class="faq-item__icoon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </span>
+          </summary>
+          <div class="faq-item__antwoord"><p><%= item.antwoord %></p></div>
+        </details>
+      <% }) %>
+    </div>
+  </div>
+</section>

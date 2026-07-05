@@ -41,6 +41,50 @@ const STIJLEN = [
   },
 ];
 
+function standaardStats() {
+  return [
+    { id: 'stat1', waarde: '24u', label: 'Eerste terugkoppeling op uw aanvraag' },
+    { id: 'stat2', waarde: '1', label: 'Vast aanspreekpunt gedurende het hele traject' },
+    { id: 'stat3', waarde: '50+', label: "Foto's per offerteaanvraag voor maximale duidelijkheid" },
+    { id: 'stat4', waarde: '100%', label: 'Focus op nette oplevering en tevredenheid' },
+  ];
+}
+
+function standaardFaq() {
+  return [
+    {
+      id: 'faq1',
+      vraag: 'In welke regio zijn jullie actief?',
+      antwoord:
+        'Ons werkgebied vindt u onderaan de site en op de contactpagina. Twijfelt u of uw locatie binnen ons gebied valt? Neem gerust even contact op — vaak kunnen we meer dan u denkt.',
+    },
+    {
+      id: 'faq2',
+      vraag: 'Hoe snel kan ik een offerte verwachten?',
+      antwoord:
+        'Na uw aanvraag nemen we in de regel binnen één werkdag contact met u op. Voor een concrete offerte plannen we, indien nodig, eerst een korte (kosteloze) opname of beoordelen we de foto\'s die u heeft meegestuurd.',
+    },
+    {
+      id: 'faq3',
+      vraag: 'Werken jullie ook voor vastgoedbeheerders en VvE\'s?',
+      antwoord:
+        'Zeker. We werken zowel voor particuliere verhuurders en woningeigenaren als voor professionele vastgoedbeheerders en VvE\'s. Voor grotere portefeuilles maken we graag afspraken over vaste inspecties en rapportages.',
+    },
+    {
+      id: 'faq4',
+      vraag: 'Kan ik foto\'s van de klus meesturen?',
+      antwoord:
+        'Ja, en dat helpt ons enorm. Via het offerteformulier kunt u tot 50 foto\'s van de situatie toevoegen, zodat wij een scherpere en snellere offerte kunnen opstellen.',
+    },
+    {
+      id: 'faq5',
+      vraag: 'Wat als ik een spoedklus heb?',
+      antwoord:
+        'Geef dit duidelijk aan in uw aanvraag of bel ons direct. We kijken dan of we op korte termijn kunnen schakelen. Door onze korte lijnen kunnen we vaak snel handelen.',
+    },
+  ];
+}
+
 function defaultData() {
   return {
     instellingen: {
@@ -59,12 +103,17 @@ function defaultData() {
         telefoon: '',
         email: '',
         adres: '',
+        werkgebied: '',
         kvk: '',
         btw: '',
         logo: null,
         heroAfbeelding: null,
+        stats: standaardStats(),
       },
     },
+    projecten: [],
+    reviews: [],
+    faq: standaardFaq(),
     aanvragen: [],
   };
 }
@@ -87,6 +136,12 @@ function readDb() {
     const merged = defaultData();
     merged.instellingen = { ...merged.instellingen, ...parsed.instellingen };
     merged.instellingen.site = { ...merged.instellingen.site, ...(parsed.instellingen && parsed.instellingen.site) };
+    if (!Array.isArray(merged.instellingen.site.stats) || !merged.instellingen.site.stats.length) {
+      merged.instellingen.site.stats = standaardStats();
+    }
+    merged.projecten = Array.isArray(parsed.projecten) ? parsed.projecten : [];
+    merged.reviews = Array.isArray(parsed.reviews) ? parsed.reviews : [];
+    merged.faq = Array.isArray(parsed.faq) ? parsed.faq : standaardFaq();
     merged.aanvragen = Array.isArray(parsed.aanvragen) ? parsed.aanvragen : [];
     return merged;
   } catch (err) {
@@ -102,6 +157,10 @@ function writeDb(db) {
   fs.writeFileSync(DB_FILE, JSON.stringify(db, null, 2));
 }
 
+function nieuwId() {
+  return crypto.randomBytes(6).toString('hex');
+}
+
 module.exports = {
   DATA_DIR,
   DB_FILE,
@@ -109,8 +168,11 @@ module.exports = {
   DIENSTEN,
   PERIODES,
   STIJLEN,
+  standaardStats,
+  standaardFaq,
   defaultData,
   ensureDirs,
   readDb,
   writeDb,
+  nieuwId,
 };

@@ -865,6 +865,130 @@ textarea { resize: vertical; min-height: 100px; }
 .site-footer__kolom a:hover { color: #fff; }
 .site-footer__onder { padding: 26px 0; font-size: 0.82rem; color: rgba(255,255,255,0.45); }
 
+/* ---- Metrics varianten ---- */
+.metrics__grid--4 { grid-template-columns: repeat(4, 1fr); }
+.metrics__grid--2 { grid-template-columns: repeat(2, 1fr); }
+.metrics__grid--1 { grid-template-columns: 1fr; }
+
+/* ---- Projecten / before-after ---- */
+.projecten-sectie { background: var(--bg-alt); }
+.projecten-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 26px; }
+.projecten-grid .project-kaart { grid-column: span 1; }
+
+.project-kaart {
+  background: var(--surface);
+  border: 1px solid var(--rand);
+  border-radius: var(--radius-groot);
+  overflow: hidden;
+  transition: transform var(--transition), box-shadow var(--transition), border-color var(--transition);
+}
+.project-kaart:hover { transform: translateY(-6px); box-shadow: var(--schaduw); border-color: transparent; }
+
+.ba {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  user-select: none;
+  touch-action: pan-y;
+  --pos: 50;
+}
+.ba__laag { position: absolute; inset: 0; }
+.ba__laag img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.ba__laag--voor { clip-path: inset(0 calc(100% - var(--pos) * 1%) 0 0); }
+.ba__placeholder {
+  width: 100%; height: 100%;
+  display: flex; align-items: center; justify-content: center;
+}
+.ba__placeholder svg { width: 46%; height: auto; }
+.ba__placeholder--na { background: rgba(var(--accent-rgb), 0.1); color: var(--accent); }
+.ba__placeholder--voor { background: var(--bg-alt); color: var(--tekst-zacht); }
+
+.ba__label {
+  position: absolute; top: 12px;
+  font-size: 0.7rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
+  padding: 5px 10px; border-radius: 100px;
+  background: rgba(0,0,0,0.55); color: #fff;
+  z-index: 3; pointer-events: none;
+}
+.ba__label--voor { left: 12px; }
+.ba__label--na { right: 12px; }
+
+.ba__handle {
+  position: absolute; top: 0; bottom: 0;
+  left: calc(var(--pos) * 1%);
+  width: 2px; margin-left: -1px;
+  background: #fff;
+  z-index: 4; pointer-events: none;
+  box-shadow: 0 0 0 1px rgba(0,0,0,0.12);
+}
+.ba__handle svg {
+  position: absolute; top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  width: 40px; height: 40px; padding: 9px;
+  border-radius: 50%;
+  background: #fff; color: var(--accent);
+  box-shadow: 0 6px 18px -6px rgba(0,0,0,0.5);
+}
+.ba__range {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%;
+  margin: 0; opacity: 0; cursor: ew-resize;
+  z-index: 5;
+}
+.project-kaart__tekst { padding: 22px 24px 26px; }
+.project-kaart__categorie {
+  display: inline-block; font-size: 0.72rem; font-weight: 700; letter-spacing: 0.1em;
+  text-transform: uppercase; color: var(--accent); margin-bottom: 8px;
+}
+.project-kaart__tekst h3 { font-size: 1.18rem; margin-bottom: 8px; }
+.project-kaart__tekst p { font-size: 0.93rem; margin: 0; }
+
+/* ---- Leeg blok (placeholder pagina) ---- */
+.leeg-blok {
+  text-align: center; max-width: 560px; margin: 0 auto;
+  padding: 60px 30px; border: 1px dashed var(--rand); border-radius: var(--radius-groot);
+}
+.leeg-blok svg { width: 46px; height: 46px; color: var(--accent); margin: 0 auto 20px; }
+.leeg-blok h2 { font-size: 1.5rem; margin-bottom: 12px; }
+.leeg-blok p { margin: 0 auto 24px; max-width: 440px; }
+
+/* ---- Reviews ---- */
+.reviews-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+.review-kaart {
+  margin: 0; background: var(--surface); border: 1px solid var(--rand);
+  border-radius: var(--radius-groot); padding: 30px 28px;
+  display: flex; flex-direction: column; gap: 16px;
+  transition: transform var(--transition), box-shadow var(--transition);
+}
+.review-kaart:hover { transform: translateY(-5px); box-shadow: var(--schaduw-klein); }
+.review-kaart__sterren { display: flex; gap: 3px; color: #d9a441; }
+.review-kaart__sterren svg { width: 18px; height: 18px; opacity: 0.25; }
+.review-kaart__sterren svg.is-vol { opacity: 1; }
+.review-kaart blockquote { margin: 0; font-family: var(--font-kop); font-size: 1.08rem; line-height: 1.5; color: var(--tekst); }
+.review-kaart figcaption { display: flex; flex-direction: column; gap: 2px; margin-top: auto; }
+.review-kaart__naam { font-weight: 700; font-size: 0.94rem; }
+.review-kaart__functie { font-size: 0.85rem; color: var(--tekst-zacht); }
+
+/* ---- FAQ ---- */
+.faq-lijst { display: flex; flex-direction: column; gap: 12px; }
+.faq-item {
+  border: 1px solid var(--rand); border-radius: var(--radius-groot);
+  background: var(--surface); overflow: hidden;
+}
+.faq-item summary {
+  list-style: none; cursor: pointer;
+  display: flex; align-items: center; justify-content: space-between; gap: 16px;
+  padding: 20px 24px; font-weight: 700; font-size: 1rem; color: var(--tekst);
+}
+.faq-item summary::-webkit-details-marker { display: none; }
+.faq-item__icoon { color: var(--accent); display: inline-flex; transition: transform var(--transition); flex-shrink: 0; }
+.faq-item__icoon svg { width: 20px; height: 20px; }
+.faq-item[open] .faq-item__icoon { transform: rotate(180deg); }
+.faq-item__antwoord { padding: 0 24px 22px; }
+.faq-item__antwoord p { margin: 0; font-size: 0.95rem; }
+.faq-item[open] summary { color: var(--accent); }
+
 /* ---- Terug naar boven ---- */
 .naar-boven {
   position: fixed;
@@ -903,8 +1027,10 @@ textarea { resize: vertical; min-height: 100px; }
   .ontwerpen-grid { grid-template-columns: 1fr; }
   .contact-grid { grid-template-columns: 1fr; gap: 40px; }
   .site-footer__grid { grid-template-columns: 1fr 1fr; }
-  .metrics__grid { grid-template-columns: 1fr; }
+  .metrics__grid, .metrics__grid--4, .metrics__grid--2 { grid-template-columns: repeat(2, 1fr); }
   .signature-projecten__grid { grid-template-columns: 1fr; }
+  .projecten-grid { grid-template-columns: repeat(2, 1fr); }
+  .reviews-grid { grid-template-columns: repeat(2, 1fr); }
 }
 
 @media (max-width: 760px) {
@@ -926,4 +1052,7 @@ textarea { resize: vertical; min-height: 100px; }
   .naar-boven { right: 16px; bottom: 16px; width: 44px; height: 44px; }
   .hero__belofte span { font-size: 0.8rem; }
   .brand__logo { height: 46px; max-width: 210px; }
+  .metrics__grid, .metrics__grid--4, .metrics__grid--2 { grid-template-columns: 1fr; }
+  .projecten-grid { grid-template-columns: 1fr; }
+  .reviews-grid { grid-template-columns: 1fr; }
 }

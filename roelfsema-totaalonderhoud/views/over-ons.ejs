@@ -63,6 +63,14 @@
       </div>
     </section>
 
+    <% if (reviews && reviews.length) { %>
+      <%- include('partials/reviews', { reviews: reviews }) %>
+    <% } %>
+
+    <% if (faq && faq.length) { %>
+      <%- include('partials/faq', { faq: faq }) %>
+    <% } %>
+
     <section class="cta-band">
       <div class="container cta-band__inner">
         <div>

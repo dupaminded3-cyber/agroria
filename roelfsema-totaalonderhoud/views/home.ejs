@@ -66,19 +66,13 @@
     </div>
 
     <section class="metrics reveal">
-      <div class="container metrics__grid">
-        <article class="metric-kaart">
-          <p class="metric-kaart__waarde"><span class="js-teller" data-target="24">0</span>u</p>
-          <p class="metric-kaart__label">Eerste terugkoppeling op uw aanvraag</p>
-        </article>
-        <article class="metric-kaart">
-          <p class="metric-kaart__waarde"><span class="js-teller" data-target="1">0</span></p>
-          <p class="metric-kaart__label">Vast aanspreekpunt gedurende het hele traject</p>
-        </article>
-        <article class="metric-kaart">
-          <p class="metric-kaart__waarde"><span class="js-teller" data-target="50">0</span>+</p>
-          <p class="metric-kaart__label">Foto's per offerteaanvraag voor maximale duidelijkheid</p>
-        </article>
+      <div class="container metrics__grid metrics__grid--<%= (stats && stats.length) || 3 %>">
+        <% (stats || []).forEach(function(stat) { %>
+          <article class="metric-kaart">
+            <p class="metric-kaart__waarde js-teller" data-waarde="<%= stat.waarde %>"><%= stat.waarde %></p>
+            <p class="metric-kaart__label"><%= stat.label %></p>
+          </article>
+        <% }) %>
       </div>
     </section>
 
@@ -163,6 +157,29 @@
         </div>
       </div>
     </section>
+
+    <% if (heeftProjecten) { %>
+    <section class="sectie projecten-sectie">
+      <div class="container">
+        <div class="sectie__kop-blok reveal">
+          <p class="eyebrow eyebrow--center">Projecten</p>
+          <h2 class="sectie__titel">Voor &amp; na — ons werk in beeld</h2>
+          <p class="sectie__intro">Sleep over de foto's om het verschil te zien. Een indruk van de kwaliteit die wij in elk project leggen.</p>
+        </div>
+        <div class="projecten-grid">
+          <% projecten.forEach(function(project) { %>
+            <%- include('partials/project-kaart', { project: project }) %>
+          <% }) %>
+        </div>
+        <div class="diensten-cta reveal">
+          <a href="/projecten" class="btn btn--outline">
+            Alle projecten bekijken
+            <svg viewBox="0 0 24 24" fill="none"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </a>
+        </div>
+      </div>
+    </section>
+    <% } %>
 
     <section class="sectie werkwijze-sectie">
       <div class="container">
@@ -281,6 +298,14 @@
         </div>
       </div>
     </section>
+
+    <% if (reviews && reviews.length) { %>
+      <%- include('partials/reviews', { reviews: reviews }) %>
+    <% } %>
+
+    <% if (faq && faq.length) { %>
+      <%- include('partials/faq', { faq: faq }) %>
+    <% } %>
 
     <section class="cta-band">
       <div class="container cta-band__inner">
