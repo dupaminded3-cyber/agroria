@@ -168,6 +168,7 @@ function defaultData() {
         overOns:
           'Roelfsema Totaalonderhoud is opgericht vanuit een simpel uitgangspunt: onderhoud aan uw pand moet zonder zorgen kunnen. Geen wisselende onderaannemers, geen vage toezeggingen — wel een vast team dat uw pand kent, meedenkt en doet wat er is afgesproken. Of het nu gaat om één huurwoning of een complete vastgoedportefeuille: wij plannen zorgvuldig, werken netjes en leveren op wat we beloven.',
         telefoon: '',
+        whatsapp: '',
         email: '',
         adres: '',
         werkgebied: '',

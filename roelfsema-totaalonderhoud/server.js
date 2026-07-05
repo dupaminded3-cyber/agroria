@@ -381,6 +381,7 @@ app.post('/uadmin/paginas', vereistLogin, (req, res) => {
     heroSubtitel: schoon(req.body.heroSubtitel, 600) || db.instellingen.site.heroSubtitel,
     overOns: schoon(req.body.overOns, 4000) || db.instellingen.site.overOns,
     telefoon: schoon(req.body.telefoon, 60),
+    whatsapp: schoon(req.body.whatsapp, 60),
     email: schoon(req.body.email, 160),
     adres: schoon(req.body.adres, 200),
     werkgebied: schoon(req.body.werkgebied, 200),

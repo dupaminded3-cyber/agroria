@@ -981,6 +981,73 @@ textarea { resize: vertical; min-height: 100px; }
 .contact-info p { margin: 0 0 10px; }
 .contact-info .btn { margin-top: 20px; }
 
+/* ---- Contactpagina (premium) ---- */
+.contact-methodes-sectie { padding-bottom: 0; }
+.contact-methodes { display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px; }
+.contact-methode {
+  position: relative;
+  display: flex; flex-direction: column; align-items: flex-start;
+  gap: 4px;
+  padding: 30px 28px;
+  background: var(--surface);
+  border: 1px solid var(--rand);
+  border-radius: var(--radius-groot);
+  text-decoration: none; color: var(--tekst);
+  overflow: hidden;
+  transition: transform var(--transition), box-shadow var(--transition), border-color var(--transition);
+}
+.contact-methode:hover { transform: translateY(-6px); box-shadow: var(--schaduw); border-color: transparent; }
+.contact-methode__icoon {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 52px; height: 52px; border-radius: 14px; margin-bottom: 14px;
+  background: rgba(var(--accent-rgb), 0.1); color: var(--accent);
+  transition: transform var(--transition), background var(--transition), color var(--transition);
+}
+.contact-methode:hover .contact-methode__icoon { background: var(--accent); color: var(--accent-tekst); transform: translateY(-2px); }
+.contact-methode__icoon svg { width: 26px; height: 26px; }
+.contact-methode__label { font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.14em; font-weight: 700; color: var(--tekst-zacht); }
+.contact-methode__waarde { font-family: var(--font-kop); font-size: 1.35rem; line-height: 1.2; color: var(--tekst); word-break: break-word; }
+.contact-methode__sub { font-size: 0.88rem; color: var(--tekst-zacht); margin-top: 4px; }
+.contact-methode--whatsapp .contact-methode__icoon { background: rgba(37, 211, 102, 0.14); color: #1faa54; }
+.contact-methode--whatsapp:hover .contact-methode__icoon { background: #25d366; color: #fff; }
+.contact-methode--uit { pointer-events: none; opacity: 0.7; }
+
+.contact-layout-sectie { padding-top: 56px; }
+.contact-layout { display: grid; grid-template-columns: 1.35fr 0.95fr; gap: 40px; align-items: start; }
+.contact-kaart {
+  background: var(--surface);
+  border: 1px solid var(--rand);
+  border-radius: var(--radius-groot);
+  padding: 40px;
+  box-shadow: var(--schaduw-klein);
+}
+.contact-kaart__titel { font-size: 1.55rem; margin: 4px 0 24px; }
+.contact-bedankt { text-align: center; padding: 20px 10px; }
+.contact-bedankt__icoon {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 68px; height: 68px; border-radius: 50%;
+  background: rgba(var(--accent-rgb), 0.12); color: var(--accent);
+  margin-bottom: 18px;
+}
+.contact-bedankt__icoon svg { width: 34px; height: 34px; }
+.contact-bedankt h2 { font-size: 1.6rem; margin-bottom: 10px; }
+.contact-bedankt p { max-width: 420px; margin: 0 auto 22px; }
+
+.contact-aside { display: flex; flex-direction: column; gap: 22px; }
+.contact-aside__blok, .contact-aside__cta {
+  background: var(--surface);
+  border: 1px solid var(--rand);
+  border-radius: var(--radius-groot);
+  padding: 30px 28px;
+}
+.contact-aside__cta { background: var(--bg-alt); }
+.contact-aside h3 { font-size: 1.12rem; margin-bottom: 16px; }
+.contact-aside__cta h3 { margin-bottom: 8px; }
+.contact-aside__cta p { font-size: 0.92rem; margin: 0 0 20px; }
+.contact-gegevens { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 16px; }
+.contact-gegevens li { display: flex; gap: 12px; align-items: flex-start; font-size: 0.95rem; line-height: 1.45; }
+.contact-gegevens svg { width: 20px; height: 20px; color: var(--accent); flex-shrink: 0; margin-top: 2px; }
+
 /* ---- Ontwerpen keuzepagina ---- */
 .ontwerpen-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 26px; }
 .ontwerp-kaart { border: 1px solid var(--rand); border-radius: var(--radius-groot); padding: 26px; transition: transform var(--transition), box-shadow var(--transition); }
@@ -1180,6 +1247,9 @@ textarea { resize: vertical; min-height: 100px; }
   .waarden-grid, .voor-wie-grid { grid-template-columns: repeat(2, 1fr); }
   .ontwerpen-grid { grid-template-columns: 1fr; }
   .contact-grid { grid-template-columns: 1fr; gap: 40px; }
+  .contact-methodes { grid-template-columns: 1fr; }
+  .contact-layout { grid-template-columns: 1fr; gap: 28px; }
+  .contact-kaart { padding: 30px 24px; }
   .site-footer__grid { grid-template-columns: 1fr 1fr; }
   .metrics__grid, .metrics__grid--4, .metrics__grid--2 { grid-template-columns: repeat(2, 1fr); }
   .signature-projecten__grid { grid-template-columns: 1fr; }

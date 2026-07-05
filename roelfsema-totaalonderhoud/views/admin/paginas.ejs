@@ -46,14 +46,25 @@
             </label>
 
             <h2 class="detail-subkop">Contactgegevens</h2>
+            <p class="admin-uitleg">Deze gegevens worden automatisch gekoppeld aan de bel-, WhatsApp- en mailknoppen op de contactpagina.</p>
             <div class="form__rij">
               <label>
                 <span>Telefoonnummer</span>
-                <input type="text" name="telefoon" value="<%= site.telefoon %>" />
+                <input type="text" name="telefoon" value="<%= site.telefoon %>" placeholder="Bijv. 06 12 34 56 78" />
               </label>
               <label>
                 <span>E-mailadres</span>
                 <input type="email" name="email" value="<%= site.email %>" />
+              </label>
+            </div>
+            <div class="form__rij">
+              <label>
+                <span>WhatsApp-nummer</span>
+                <input type="text" name="whatsapp" value="<%= site.whatsapp || '' %>" placeholder="Leeg = zelfde als telefoonnummer" />
+              </label>
+              <label>
+                <span>&nbsp;</span>
+                <span class="admin-uitleg" style="margin:0;">Vul hier een apart WhatsApp-nummer in, of laat leeg om het telefoonnummer te gebruiken.</span>
               </label>
             </div>
             <div class="form__rij">
