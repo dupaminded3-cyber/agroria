@@ -165,6 +165,37 @@
   }, { passive: true });
 })();
 
+// Zwevende contactknop: uitklappen van bel/WhatsApp/mail-opties.
+(function () {
+  var fab = document.getElementById('contact-fab');
+  var knop = document.getElementById('contact-fab-knop');
+  if (!fab || !knop) return;
+
+  function sluit() {
+    fab.classList.remove('is-open');
+    knop.setAttribute('aria-expanded', 'false');
+    knop.setAttribute('aria-label', 'Contactopties openen');
+  }
+  function open() {
+    fab.classList.add('is-open');
+    knop.setAttribute('aria-expanded', 'true');
+    knop.setAttribute('aria-label', 'Contactopties sluiten');
+  }
+
+  knop.addEventListener('click', function (e) {
+    e.stopPropagation();
+    if (fab.classList.contains('is-open')) sluit();
+    else open();
+  });
+
+  document.addEventListener('click', function (e) {
+    if (fab.classList.contains('is-open') && !fab.contains(e.target)) sluit();
+  });
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') sluit();
+  });
+})();
+
 // Magnetisch gevoel op premium knoppen (desktop).
 (function () {
   if (window.matchMedia('(pointer: coarse)').matches) return;

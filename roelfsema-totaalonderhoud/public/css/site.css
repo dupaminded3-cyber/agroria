@@ -981,47 +981,52 @@ textarea { resize: vertical; min-height: 100px; }
 .contact-info p { margin: 0 0 10px; }
 .contact-info .btn { margin-top: 20px; }
 
-/* ---- Contactpagina (premium) ---- */
-.contact-methodes-sectie { padding-bottom: 0; }
-.contact-methodes { display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px; }
-.contact-methode {
-  position: relative;
-  display: flex; flex-direction: column; align-items: flex-start;
-  gap: 4px;
-  padding: 30px 28px;
+/* ---- Contactpagina (premium split) ---- */
+.contact-split-sectie { padding-top: 64px; }
+.contact-split {
+  display: grid; grid-template-columns: 0.92fr 1.08fr;
+  border-radius: var(--radius-groot); overflow: hidden;
+  box-shadow: var(--schaduw); border: 1px solid var(--rand);
   background: var(--surface);
-  border: 1px solid var(--rand);
-  border-radius: var(--radius-groot);
-  text-decoration: none; color: var(--tekst);
-  overflow: hidden;
-  transition: transform var(--transition), box-shadow var(--transition), border-color var(--transition);
 }
-.contact-methode:hover { transform: translateY(-6px); box-shadow: var(--schaduw); border-color: transparent; }
-.contact-methode__icoon {
-  display: inline-flex; align-items: center; justify-content: center;
-  width: 52px; height: 52px; border-radius: 14px; margin-bottom: 14px;
-  background: rgba(var(--accent-rgb), 0.1); color: var(--accent);
-  transition: transform var(--transition), background var(--transition), color var(--transition);
+.contact-split__info {
+  position: relative; overflow: hidden;
+  background: linear-gradient(155deg, var(--accent) 0%, var(--accent-donker) 100%);
+  color: #fff; padding: 52px 46px;
 }
-.contact-methode:hover .contact-methode__icoon { background: var(--accent); color: var(--accent-tekst); transform: translateY(-2px); }
-.contact-methode__icoon svg { width: 26px; height: 26px; }
-.contact-methode__label { font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.14em; font-weight: 700; color: var(--tekst-zacht); }
-.contact-methode__waarde { font-family: var(--font-kop); font-size: 1.35rem; line-height: 1.2; color: var(--tekst); word-break: break-word; }
-.contact-methode__sub { font-size: 0.88rem; color: var(--tekst-zacht); margin-top: 4px; }
-.contact-methode--whatsapp .contact-methode__icoon { background: rgba(37, 211, 102, 0.14); color: #1faa54; }
-.contact-methode--whatsapp:hover .contact-methode__icoon { background: #25d366; color: #fff; }
-.contact-methode--uit { pointer-events: none; opacity: 0.7; }
+.contact-split__blob {
+  position: absolute; width: 320px; height: 320px; border-radius: 50%;
+  background: radial-gradient(circle at center, rgba(255,255,255,0.12), transparent 70%);
+  top: -120px; right: -100px; pointer-events: none;
+}
+.contact-split__info-inner { position: relative; z-index: 1; }
+.eyebrow--licht { color: rgba(255,255,255,0.9); }
+.eyebrow--licht::before { background: rgba(255,255,255,0.55); }
+.contact-split__info h2 { color: #fff; font-size: 1.7rem; margin-bottom: 12px; }
+.contact-split__intro { color: rgba(255,255,255,0.82); margin-bottom: 30px; }
+.contact-kanalen { list-style: none; margin: 0 0 30px; padding: 0; display: flex; flex-direction: column; gap: 20px; }
+.contact-kanaal { display: flex; gap: 16px; align-items: center; }
+.contact-kanaal__icoon {
+  width: 46px; height: 46px; border-radius: 13px; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  background: rgba(255,255,255,0.12); color: #fff;
+}
+.contact-kanaal__icoon svg { width: 22px; height: 22px; }
+.contact-kanaal__icoon--wa { background: rgba(37, 211, 102, 0.22); color: #4ff08c; }
+.contact-kanaal__tekst { display: flex; flex-direction: column; gap: 2px; }
+.contact-kanaal__label { font-size: 0.76rem; text-transform: uppercase; letter-spacing: 0.13em; font-weight: 700; color: rgba(255,255,255,0.6); }
+.contact-kanaal__tekst a { color: #fff; font-size: 1.14rem; font-weight: 600; text-decoration: none; transition: opacity var(--transition); }
+.contact-kanaal__tekst a:hover { opacity: 0.8; }
+.contact-kanaal__leeg { color: rgba(255,255,255,0.7); font-size: 1.05rem; }
+.contact-split__extra { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; padding-top: 26px; border-top: 1px solid rgba(255,255,255,0.15); }
+.contact-split__extra > div { display: flex; flex-direction: column; gap: 4px; font-size: 0.95rem; color: rgba(255,255,255,0.92); }
+.contact-split__extra-label { font-size: 0.74rem; text-transform: uppercase; letter-spacing: 0.13em; font-weight: 700; color: rgba(255,255,255,0.55); }
 
-.contact-layout-sectie { padding-top: 56px; }
-.contact-layout { display: grid; grid-template-columns: 1.35fr 0.95fr; gap: 40px; align-items: start; }
-.contact-kaart {
-  background: var(--surface);
-  border: 1px solid var(--rand);
-  border-radius: var(--radius-groot);
-  padding: 40px;
-  box-shadow: var(--schaduw-klein);
-}
-.contact-kaart__titel { font-size: 1.55rem; margin: 4px 0 24px; }
+.contact-split__form { padding: 52px 46px; }
+.contact-split__form-titel { font-size: 1.5rem; margin: 4px 0 24px; }
+.contact-split__form-noot { font-size: 0.88rem; color: var(--tekst-zacht); margin-top: 16px; text-align: center; }
+.contact-split__form-noot a { color: var(--accent); font-weight: 600; }
+
 .contact-bedankt { text-align: center; padding: 20px 10px; }
 .contact-bedankt__icoon {
   display: inline-flex; align-items: center; justify-content: center;
@@ -1032,21 +1037,6 @@ textarea { resize: vertical; min-height: 100px; }
 .contact-bedankt__icoon svg { width: 34px; height: 34px; }
 .contact-bedankt h2 { font-size: 1.6rem; margin-bottom: 10px; }
 .contact-bedankt p { max-width: 420px; margin: 0 auto 22px; }
-
-.contact-aside { display: flex; flex-direction: column; gap: 22px; }
-.contact-aside__blok, .contact-aside__cta {
-  background: var(--surface);
-  border: 1px solid var(--rand);
-  border-radius: var(--radius-groot);
-  padding: 30px 28px;
-}
-.contact-aside__cta { background: var(--bg-alt); }
-.contact-aside h3 { font-size: 1.12rem; margin-bottom: 16px; }
-.contact-aside__cta h3 { margin-bottom: 8px; }
-.contact-aside__cta p { font-size: 0.92rem; margin: 0 0 20px; }
-.contact-gegevens { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 16px; }
-.contact-gegevens li { display: flex; gap: 12px; align-items: flex-start; font-size: 0.95rem; line-height: 1.45; }
-.contact-gegevens svg { width: 20px; height: 20px; color: var(--accent); flex-shrink: 0; margin-top: 2px; }
 
 /* ---- Ontwerpen keuzepagina ---- */
 .ontwerpen-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 26px; }
@@ -1211,10 +1201,65 @@ textarea { resize: vertical; min-height: 100px; }
 .faq-item[open] summary { color: var(--accent); }
 
 /* ---- Terug naar boven ---- */
+/* ---- Zwevende contactknop ---- */
+.contact-fab { position: fixed; right: 26px; bottom: 26px; z-index: 45; display: flex; flex-direction: column; align-items: flex-end; gap: 14px; }
+.contact-fab__opties { display: flex; flex-direction: column; align-items: flex-end; gap: 12px; }
+.contact-fab__optie {
+  display: inline-flex; align-items: center; gap: 12px; text-decoration: none;
+  opacity: 0; transform: translateY(12px) scale(0.9); pointer-events: none;
+  transition: opacity 260ms var(--ease), transform 260ms var(--ease);
+}
+.contact-fab.is-open .contact-fab__optie { opacity: 1; transform: none; pointer-events: auto; }
+.contact-fab.is-open .contact-fab__optie:nth-last-child(1) { transition-delay: 30ms; }
+.contact-fab.is-open .contact-fab__optie:nth-last-child(2) { transition-delay: 70ms; }
+.contact-fab.is-open .contact-fab__optie:nth-last-child(3) { transition-delay: 110ms; }
+.contact-fab.is-open .contact-fab__optie:nth-last-child(4) { transition-delay: 150ms; }
+.contact-fab__optie-label {
+  background: var(--surface); color: var(--tekst); font-weight: 600; font-size: 0.86rem;
+  padding: 7px 13px; border-radius: 10px; white-space: nowrap;
+  border: 1px solid var(--rand); box-shadow: var(--schaduw-klein);
+}
+.contact-fab__optie-icoon {
+  width: 46px; height: 46px; border-radius: 50%; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--accent); color: var(--accent-tekst);
+  box-shadow: 0 12px 26px -12px rgba(0, 0, 0, 0.55);
+  transition: transform 200ms var(--ease);
+}
+.contact-fab__optie:hover .contact-fab__optie-icoon { transform: scale(1.1); }
+.contact-fab__optie-icoon svg { width: 22px; height: 22px; }
+.contact-fab__optie--whatsapp .contact-fab__optie-icoon { background: #25d366; color: #fff; }
+
+.contact-fab__knop {
+  position: relative;
+  width: 60px; height: 60px; border-radius: 50%; border: none; cursor: pointer;
+  background: var(--accent); color: var(--accent-tekst);
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 16px 34px -12px rgba(var(--accent-rgb), 0.7);
+  transition: transform 300ms var(--ease);
+}
+.contact-fab__knop:hover { transform: scale(1.06); }
+.contact-fab__knop::before {
+  content: ''; position: absolute; inset: 0; border-radius: 50%;
+  box-shadow: 0 0 0 0 rgba(var(--accent-rgb), 0.45);
+  animation: fabPuls 2.8s infinite;
+}
+.contact-fab.is-open .contact-fab__knop::before { animation: none; }
+@keyframes fabPuls {
+  0% { box-shadow: 0 0 0 0 rgba(var(--accent-rgb), 0.45); }
+  70% { box-shadow: 0 0 0 16px rgba(var(--accent-rgb), 0); }
+  100% { box-shadow: 0 0 0 0 rgba(var(--accent-rgb), 0); }
+}
+.contact-fab__knop svg { position: absolute; width: 26px; height: 26px; transition: opacity 250ms var(--ease), transform 300ms var(--ease); }
+.contact-fab__icoon-sluit { opacity: 0; transform: rotate(-90deg); }
+.contact-fab.is-open .contact-fab__icoon-open { opacity: 0; transform: rotate(90deg); }
+.contact-fab.is-open .contact-fab__icoon-sluit { opacity: 1; transform: rotate(0); }
+@media (prefers-reduced-motion: reduce) { .contact-fab__knop::before { animation: none; } }
+
 .naar-boven {
   position: fixed;
-  right: 26px;
-  bottom: 26px;
+  right: 32px;
+  bottom: 98px;
   width: 48px;
   height: 48px;
   border-radius: 50%;
@@ -1247,9 +1292,8 @@ textarea { resize: vertical; min-height: 100px; }
   .waarden-grid, .voor-wie-grid { grid-template-columns: repeat(2, 1fr); }
   .ontwerpen-grid { grid-template-columns: 1fr; }
   .contact-grid { grid-template-columns: 1fr; gap: 40px; }
-  .contact-methodes { grid-template-columns: 1fr; }
-  .contact-layout { grid-template-columns: 1fr; gap: 28px; }
-  .contact-kaart { padding: 30px 24px; }
+  .contact-split { grid-template-columns: 1fr; }
+  .contact-split__info, .contact-split__form { padding: 38px 28px; }
   .site-footer__grid { grid-template-columns: 1fr 1fr; }
   .metrics__grid, .metrics__grid--4, .metrics__grid--2 { grid-template-columns: repeat(2, 1fr); }
   .signature-projecten__grid { grid-template-columns: 1fr; }
@@ -1277,7 +1321,9 @@ textarea { resize: vertical; min-height: 100px; }
   .cta-band__inner { flex-direction: column; text-align: center; }
   .site-footer__grid { grid-template-columns: 1fr; }
   .marquee__item { font-size: 1.05rem; }
-  .naar-boven { right: 16px; bottom: 16px; width: 44px; height: 44px; }
+  .contact-fab { right: 16px; bottom: 16px; }
+  .contact-fab__knop { width: 54px; height: 54px; }
+  .naar-boven { right: 21px; bottom: 82px; width: 44px; height: 44px; }
   .hero__belofte span { font-size: 0.8rem; }
   .brand__logo { height: 46px; max-width: 210px; }
   .metrics__grid, .metrics__grid--4, .metrics__grid--2 { grid-template-columns: 1fr; }
