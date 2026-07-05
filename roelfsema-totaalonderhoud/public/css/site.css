@@ -354,6 +354,30 @@ p { line-height: 1.75; color: var(--tekst-zacht); margin: 0 0 1em; }
   animation: fadeUp 900ms var(--ease) forwards;
   animation-delay: 820ms;
 }
+.hero__belofte {
+  margin-top: 20px;
+  display: grid;
+  gap: 8px;
+  opacity: 0;
+  animation: fadeUp 900ms var(--ease) forwards;
+  animation-delay: 980ms;
+}
+.hero__belofte span {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.84rem;
+  color: var(--tekst-zacht);
+}
+.hero__belofte span::before {
+  content: '';
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 0 3px rgba(var(--accent-rgb), 0.17);
+}
+.hero__belofte strong { color: var(--tekst); font-weight: 700; }
 @keyframes fadeUp {
   from { opacity: 0; transform: translateY(18px); }
   to { opacity: 1; transform: translateY(0); }
@@ -443,6 +467,34 @@ p { line-height: 1.75; color: var(--tekst-zacht); margin: 0 0 1em; }
 @keyframes marqueeSchuiven {
   from { transform: translateX(0); }
   to { transform: translateX(-50%); }
+}
+
+/* ---- Metrics strip ---- */
+.metrics {
+  padding: 36px 0;
+  border-bottom: 1px solid var(--rand);
+}
+.metrics__grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 18px;
+}
+.metric-kaart {
+  border: 1px solid var(--rand);
+  border-radius: var(--radius-groot);
+  padding: 24px 22px;
+  background: linear-gradient(160deg, rgba(var(--accent-rgb), 0.06), transparent 55%);
+}
+.metric-kaart__waarde {
+  font-family: var(--font-kop);
+  font-size: clamp(2rem, 3.2vw, 2.8rem);
+  line-height: 1;
+  color: var(--tekst);
+  margin: 0 0 10px;
+}
+.metric-kaart__label {
+  font-size: 0.88rem;
+  margin: 0;
 }
 
 /* ---- Pijlers (trust) ---- */
@@ -557,6 +609,65 @@ p { line-height: 1.75; color: var(--tekst-zacht); margin: 0 0 1em; }
 .werkwijze__stap h3 { font-size: 1.08rem; margin-bottom: 8px; }
 .werkwijze__stap p { font-size: 0.92rem; margin: 0; }
 
+/* ---- Signature visual cards ---- */
+.signature-projecten {
+  background: var(--bg-alt);
+}
+.signature-projecten__grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+}
+.signature-kaart {
+  background: var(--surface);
+  border: 1px solid var(--rand);
+  border-radius: var(--radius-groot);
+  padding: 22px 22px 24px;
+  transition: transform var(--transition), box-shadow var(--transition), border-color var(--transition);
+}
+.signature-kaart:hover {
+  transform: translateY(-6px);
+  border-color: transparent;
+  box-shadow: var(--schaduw-klein);
+}
+.signature-kaart__visual {
+  color: var(--accent);
+  border-radius: 10px;
+  overflow: hidden;
+  margin-bottom: 16px;
+  border: 1px solid rgba(var(--accent-rgb), 0.18);
+}
+.signature-kaart__visual svg {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+.signature-line {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.signature-line path {
+  stroke-dasharray: 700;
+  stroke-dashoffset: 700;
+  animation: signatureTekenen 2.2s var(--ease) forwards;
+}
+.signature-line circle {
+  opacity: 0;
+  animation: accentOp 600ms var(--ease-zacht) forwards;
+  animation-delay: 1.2s;
+}
+.signature-line--traag path {
+  animation-duration: 2.8s;
+}
+@keyframes signatureTekenen {
+  to { stroke-dashoffset: 0; }
+}
+.signature-kaart h3 { font-size: 1.16rem; margin-bottom: 10px; }
+.signature-kaart p { font-size: 0.93rem; margin: 0; }
+
 /* ---- Over ons snippet ---- */
 .over-ons-snippet { position: relative; overflow: hidden; }
 .over-ons-snippet__watermerk {
@@ -572,6 +683,7 @@ p { line-height: 1.75; color: var(--tekst-zacht); margin: 0 0 1em; }
   white-space: nowrap;
   pointer-events: none;
   z-index: 0;
+  will-change: transform;
 }
 .over-ons-snippet__grid { display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 70px; align-items: center; position: relative; z-index: 1; }
 .over-ons-snippet__kader { display: flex; justify-content: center; color: var(--accent); animation: zwevenZacht 6s ease-in-out infinite; }
@@ -786,6 +898,8 @@ textarea { resize: vertical; min-height: 100px; }
   .ontwerpen-grid { grid-template-columns: 1fr; }
   .contact-grid { grid-template-columns: 1fr; gap: 40px; }
   .site-footer__grid { grid-template-columns: 1fr 1fr; }
+  .metrics__grid { grid-template-columns: 1fr; }
+  .signature-projecten__grid { grid-template-columns: 1fr; }
 }
 
 @media (max-width: 760px) {
@@ -805,4 +919,5 @@ textarea { resize: vertical; min-height: 100px; }
   .site-footer__grid { grid-template-columns: 1fr; }
   .marquee__item { font-size: 1.05rem; }
   .naar-boven { right: 16px; bottom: 16px; width: 44px; height: 44px; }
+  .hero__belofte span { font-size: 0.8rem; }
 }

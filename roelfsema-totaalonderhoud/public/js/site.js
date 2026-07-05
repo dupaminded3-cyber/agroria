@@ -93,3 +93,68 @@
     window.scrollTo({ top: 0, behavior: 'smooth' });
   });
 })();
+
+// Geanimeerde tellers in de metrics-strip.
+(function () {
+  var tellers = document.querySelectorAll('.js-teller');
+  if (!tellers.length) return;
+
+  function animeer(teller) {
+    var doel = parseInt(teller.getAttribute('data-target') || '0', 10);
+    var duur = 1300;
+    var start = null;
+
+    function frame(ts) {
+      if (!start) start = ts;
+      var p = Math.min((ts - start) / duur, 1);
+      var eased = 1 - Math.pow(1 - p, 3);
+      teller.textContent = String(Math.round(doel * eased));
+      if (p < 1) window.requestAnimationFrame(frame);
+    }
+    window.requestAnimationFrame(frame);
+  }
+
+  if (!('IntersectionObserver' in window)) {
+    tellers.forEach(animeer);
+    return;
+  }
+
+  var observer = new IntersectionObserver(function (entries) {
+    entries.forEach(function (entry) {
+      if (entry.isIntersecting) {
+        animeer(entry.target);
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.65 });
+
+  tellers.forEach(function (t) { observer.observe(t); });
+})();
+
+// Subtiele parallax op het grote watermerk in de over-ons sectie.
+(function () {
+  var watermerk = document.querySelector('.over-ons-snippet__watermerk');
+  if (!watermerk || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+  window.addEventListener('scroll', function () {
+    var y = window.scrollY * -0.04;
+    watermerk.style.transform = 'translate(-50%, calc(-50% + ' + y.toFixed(2) + 'px))';
+  }, { passive: true });
+})();
+
+// Magnetisch gevoel op premium knoppen (desktop).
+(function () {
+  if (window.matchMedia('(pointer: coarse)').matches) return;
+  var knoppen = document.querySelectorAll('.btn--accent');
+  knoppen.forEach(function (knop) {
+    knop.addEventListener('mousemove', function (e) {
+      var r = knop.getBoundingClientRect();
+      var x = (e.clientX - r.left) / r.width - 0.5;
+      var y = (e.clientY - r.top) / r.height - 0.5;
+      knop.style.transform = 'translate(' + (x * 5).toFixed(2) + 'px,' + (y * 4).toFixed(2) + 'px)';
+    });
+    knop.addEventListener('mouseleave', function () {
+      knop.style.transform = '';
+    });
+  });
+})();
