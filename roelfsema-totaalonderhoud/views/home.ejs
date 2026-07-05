@@ -3,13 +3,22 @@
 
   <main>
     <section class="hero">
+      <div class="hero__blob hero__blob--1" aria-hidden="true"></div>
+      <div class="hero__blob hero__blob--2" aria-hidden="true"></div>
+      <div class="hero__spotlight" aria-hidden="true"></div>
+
       <div class="container hero__grid">
         <div class="hero__tekst">
-          <p class="eyebrow">Vastgoedonderhoud &amp; renovatie</p>
-          <h1><%= site.heroTitel %></h1>
+          <p class="eyebrow">Vastgoedonderhoud &middot; renovatie &middot; mutatieonderhoud</p>
+          <h1>
+            <% site.heroTitel.split(' ').forEach(function(woord, i) { %><span class="hero__woord" style="--vertraging: <%= 160 + i * 80 %>ms"><%= woord %></span> <% }) %>
+          </h1>
           <p class="hero__intro"><%= site.heroSubtitel %></p>
           <div class="hero__acties">
-            <a href="/offerte-aanvragen" class="btn btn--accent">Vraag een offerte aan</a>
+            <a href="/offerte-aanvragen" class="btn btn--accent">
+              Vraag een offerte aan
+              <svg viewBox="0 0 24 24" fill="none"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </a>
             <a href="/diensten" class="btn btn--outline">Bekijk onze diensten</a>
           </div>
         </div>
@@ -24,130 +33,159 @@
               <path d="M215 300V255H275V300" />
             </g>
             <g class="hero__svg-accent" fill="none" stroke-width="2.5" stroke-linecap="round">
-              <path d="M340 130L360 110M340 110L360 130" />
-              <circle cx="130" cy="150" r="6" />
-              <path d="M96 250l14 14 14-14" />
+              <path class="hero__svg-zwever" d="M340 130L360 110M340 110L360 130" />
+              <circle class="hero__svg-zwever hero__svg-zwever--traag" cx="130" cy="150" r="6" />
+              <path class="hero__svg-zwever" d="M96 250l14 14 14-14" />
             </g>
           </svg>
         </div>
       </div>
+
+      <div class="hero__scroll-cue" aria-hidden="true">
+        <span>Scroll</span>
+        <span></span>
+      </div>
     </section>
+
+    <div class="marquee" aria-hidden="true">
+      <div class="marquee__track">
+        <% for (let herhaal = 0; herhaal < 2; herhaal++) { %>
+          <span class="marquee__item">Vastgoedonderhoud <span>&#10022;</span></span>
+          <span class="marquee__item">Mutatieonderhoud <span>&#10022;</span></span>
+          <span class="marquee__item">Renovatie &amp; verbouw <span>&#10022;</span></span>
+          <span class="marquee__item">Schilderwerk &amp; afwerking <span>&#10022;</span></span>
+          <span class="marquee__item">Dak- &amp; gevelonderhoud <span>&#10022;</span></span>
+          <span class="marquee__item">Klein onderhoud &amp; reparaties <span>&#10022;</span></span>
+        <% } %>
+      </div>
+    </div>
 
     <section class="pijlers">
       <div class="container pijlers__grid">
-        <div class="pijler">
+        <div class="pijler reveal" style="--vertraging: 0ms">
           <span class="pijler__icoon">
             <svg viewBox="0 0 24 24" fill="none"><path d="M3 12l9-9 9 9M5 10v10h14V10" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>
           </span>
           <h3>Volledige ontzorging</h3>
-          <p>Van inspectie tot uitvoering: één aanspreekpunt voor al uw onderhoudsvragen.</p>
+          <p>Eén vast aanspreekpunt van eerste inspectie tot laatste kwastveeg — u hoeft nergens achteraan te bellen.</p>
         </div>
-        <div class="pijler">
+        <div class="pijler reveal" style="--vertraging: 90ms">
           <span class="pijler__icoon">
             <svg viewBox="0 0 24 24" fill="none"><path d="M9 12l2 2 4-4M21 12a9 9 0 11-18 0 9 9 0 0118 0z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>
           </span>
           <h3>Vakwerk gegarandeerd</h3>
-          <p>Ervaren vakmensen die netjes, zorgvuldig en volgens afspraak werken.</p>
+          <p>Ervaren vakmensen die netjes, zorgvuldig en volgens afspraak werken — geen half werk, geen rommel achterlaten.</p>
         </div>
-        <div class="pijler">
+        <div class="pijler reveal" style="--vertraging: 180ms">
           <span class="pijler__icoon">
             <svg viewBox="0 0 24 24" fill="none"><path d="M4 6h16M4 12h10M4 18h7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
           </span>
           <h3>Transparante offertes</h3>
-          <p>Heldere prijsafspraken vooraf, zonder verrassingen achteraf.</p>
+          <p>Een heldere prijsafspraak vóóraf, in gewone taal — geen kleine lettertjes en geen verrassingen achteraf.</p>
         </div>
-        <div class="pijler">
+        <div class="pijler reveal" style="--vertraging: 270ms">
           <span class="pijler__icoon">
             <svg viewBox="0 0 24 24" fill="none"><path d="M12 8v4l3 3M21 12a9 9 0 11-18 0 9 9 0 0118 0z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>
           </span>
           <h3>Snel geschakeld</h3>
-          <p>Korte lijnen en een vlot offertetraject, ook bij spoedklussen.</p>
+          <p>Korte lijnen en een vlot offertetraject — ook wanneer een klus niet kan wachten.</p>
         </div>
       </div>
     </section>
 
     <section class="sectie diensten-sectie">
       <div class="container">
-        <p class="eyebrow eyebrow--center">Wat wij doen</p>
-        <h2 class="sectie__titel">Onze diensten</h2>
-        <p class="sectie__intro">Eén vast team voor al het onderhoud aan uw pand — van kleine reparatie tot complete renovatie.</p>
+        <div class="sectie__kop-blok reveal">
+          <p class="eyebrow eyebrow--center">Wat wij doen</p>
+          <h2 class="sectie__titel">Eén team voor al uw onderhoud</h2>
+          <p class="sectie__intro">Van een lekkende dakgoot tot een complete renovatie: hetzelfde vertrouwde team, van eerste inspectie tot laatste oplevering.</p>
+        </div>
 
         <div class="diensten-grid">
-          <article class="dienst-kaart">
+          <article class="dienst-kaart reveal" style="--vertraging: 0ms">
             <span class="dienst-kaart__nummer">01</span>
             <h3>Vastgoedonderhoud</h3>
-            <p>Periodiek en preventief onderhoud dat uw pand in topconditie houdt, met vaste inspecties en planning.</p>
+            <p>Periodiek en preventief onderhoud dat uw pand in topconditie houdt, met vaste inspecties en een heldere planning.</p>
           </article>
-          <article class="dienst-kaart">
+          <article class="dienst-kaart reveal" style="--vertraging: 60ms">
             <span class="dienst-kaart__nummer">02</span>
             <h3>Mutatieonderhoud</h3>
-            <p>Snel en vakkundig opknappen tussen huurders in, zodat uw woning zonder leegstand weer verhuurklaar is.</p>
+            <p>Snel en vakkundig opgeknapt tussen twee huurders in, zodat uw woning zonder onnodige leegstand weer verhuurklaar is.</p>
           </article>
-          <article class="dienst-kaart">
+          <article class="dienst-kaart reveal" style="--vertraging: 120ms">
             <span class="dienst-kaart__nummer">03</span>
             <h3>Renovatie &amp; verbouw</h3>
-            <p>Van badkamer tot complete renovatie: wij verzorgen het traject van ontwerp tot oplevering.</p>
+            <p>Van badkamer tot complete renovatie: wij begeleiden het hele traject, van eerste schets tot sleutelklare oplevering.</p>
           </article>
-          <article class="dienst-kaart">
+          <article class="dienst-kaart reveal" style="--vertraging: 0ms">
             <span class="dienst-kaart__nummer">04</span>
             <h3>Schilderwerk &amp; afwerking</h3>
-            <p>Binnen- en buitenschilderwerk en stukadoorswerk voor een verzorgde, duurzame uitstraling.</p>
+            <p>Binnen- en buitenschilderwerk en stukadoorswerk, met oog voor detail en een duurzaam eindresultaat.</p>
           </article>
-          <article class="dienst-kaart">
+          <article class="dienst-kaart reveal" style="--vertraging: 60ms">
             <span class="dienst-kaart__nummer">05</span>
             <h3>Dak- en gevelonderhoud</h3>
-            <p>Inspectie en onderhoud van daken en gevels ter voorkoming van kostbare vervolgschade.</p>
+            <p>Tijdige inspectie en onderhoud van daken en gevels, zodat kleine mankementen nooit uitgroeien tot kostbare schade.</p>
           </article>
-          <article class="dienst-kaart">
+          <article class="dienst-kaart reveal" style="--vertraging: 120ms">
             <span class="dienst-kaart__nummer">06</span>
             <h3>Klein onderhoud &amp; reparaties</h3>
-            <p>Voor de kleine klussen die toch echt gedaan moeten worden — snel opgelost door onze vaste klussendienst.</p>
+            <p>Voor de klussen die klein lijken maar toch echt gedaan moeten worden — snel opgelost, zonder lange wachttijden.</p>
           </article>
         </div>
-        <div class="diensten-cta">
-          <a href="/diensten" class="btn btn--outline">Alle diensten bekijken</a>
+        <div class="diensten-cta reveal">
+          <a href="/diensten" class="btn btn--outline">
+            Alle diensten bekijken
+            <svg viewBox="0 0 24 24" fill="none"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </a>
         </div>
       </div>
     </section>
 
     <section class="sectie werkwijze-sectie">
       <div class="container">
-        <p class="eyebrow eyebrow--center">Ons proces</p>
-        <h2 class="sectie__titel">Zo werken wij</h2>
+        <div class="sectie__kop-blok reveal">
+          <p class="eyebrow eyebrow--center">Ons proces</p>
+          <h2 class="sectie__titel">Zo werken wij</h2>
+        </div>
         <div class="werkwijze">
-          <div class="werkwijze__stap">
+          <div class="werkwijze__stap reveal" style="--vertraging: 0ms">
             <span class="werkwijze__cijfer">01</span>
             <h3>Kennismaking</h3>
-            <p>We bespreken vrijblijvend wat er speelt en wat u nodig heeft.</p>
+            <p>We bespreken vrijblijvend wat er speelt en wat u nodig heeft — telefonisch of bij u op locatie.</p>
           </div>
-          <div class="werkwijze__stap">
+          <div class="werkwijze__stap reveal" style="--vertraging: 90ms">
             <span class="werkwijze__cijfer">02</span>
             <h3>Inspectie &amp; offerte</h3>
-            <p>Op basis van uw aanvraag en foto's stellen we een heldere offerte op.</p>
+            <p>Op basis van uw aanvraag en foto's stellen we een heldere, transparante offerte op.</p>
           </div>
-          <div class="werkwijze__stap">
+          <div class="werkwijze__stap reveal" style="--vertraging: 180ms">
             <span class="werkwijze__cijfer">03</span>
             <h3>Uitvoering</h3>
-            <p>Ons team voert het werk zorgvuldig uit en houdt u steeds op de hoogte.</p>
+            <p>Ons team voert het werk zorgvuldig uit, volgens planning, en houdt u steeds op de hoogte.</p>
           </div>
-          <div class="werkwijze__stap">
+          <div class="werkwijze__stap reveal" style="--vertraging: 270ms">
             <span class="werkwijze__cijfer">04</span>
             <h3>Oplevering &amp; nazorg</h3>
-            <p>We ronden netjes af en blijven ook daarna uw aanspreekpunt.</p>
+            <p>We ronden netjes af, leveren op en blijven ook daarna gewoon uw aanspreekpunt.</p>
           </div>
         </div>
       </div>
     </section>
 
     <section class="sectie over-ons-snippet">
+      <span class="over-ons-snippet__watermerk">Vakmanschap</span>
       <div class="container over-ons-snippet__grid">
-        <div>
+        <div class="reveal">
           <p class="eyebrow">Over ons</p>
           <h2 class="sectie__titel sectie__titel--links">Betrouwbaar onderhoud, persoonlijk geregeld</h2>
           <p><%= site.overOns %></p>
-          <a href="/over-ons" class="btn btn--outline">Meer over ons</a>
+          <a href="/over-ons" class="btn btn--outline">
+            Meer over ons
+            <svg viewBox="0 0 24 24" fill="none"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </a>
         </div>
-        <div class="over-ons-snippet__kader" aria-hidden="true">
+        <div class="over-ons-snippet__kader reveal" aria-hidden="true">
           <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
             <rect x="10" y="10" width="180" height="180" rx="4" fill="none" stroke="currentColor" stroke-width="1.4" />
             <path d="M40 140L80 90L110 120L160 60" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
@@ -164,7 +202,10 @@
           <h2>Heeft u een klus of onderhoudsvraag?</h2>
           <p>Vraag vrijblijvend een offerte aan en voeg gerust foto's van de situatie toe — dan weten wij precies waar het om gaat.</p>
         </div>
-        <a href="/offerte-aanvragen" class="btn btn--accent btn--groot">Offerte aanvragen</a>
+        <a href="/offerte-aanvragen" class="btn btn--accent btn--groot">
+          Offerte aanvragen
+          <svg viewBox="0 0 24 24" fill="none"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </a>
       </div>
     </section>
   </main>
