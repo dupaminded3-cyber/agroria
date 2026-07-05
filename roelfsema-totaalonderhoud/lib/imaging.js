@@ -44,14 +44,18 @@ async function verwijderAanvraagFotos(aanvraagId) {
 
 async function slaSiteAfbeeldingOp(buffer, type) {
   const map = veiligeMap('site');
-  const naam = `${type}-${crypto.randomBytes(6).toString('hex')}.jpg`;
+  const extensie = type === 'logo' ? 'png' : 'jpg';
+  const naam = `${type}-${crypto.randomBytes(6).toString('hex')}.${extensie}`;
 
   const breedte = type === 'logo' ? 600 : 2400;
-  await sharp(buffer)
-    .rotate()
-    .resize({ width: breedte, withoutEnlargement: true })
-    .jpeg({ quality: 88, mozjpeg: true })
-    .toFile(path.join(map, naam));
+  const pipeline = sharp(buffer).rotate().resize({ width: breedte, withoutEnlargement: true });
+
+  if (type === 'logo') {
+    // Logo's worden als PNG bewaard zodat transparantie behouden blijft.
+    await pipeline.png({ compressionLevel: 9, adaptiveFiltering: true }).toFile(path.join(map, naam));
+  } else {
+    await pipeline.jpeg({ quality: 88, mozjpeg: true }).toFile(path.join(map, naam));
+  }
 
   return `site/${naam}`;
 }
