@@ -1004,23 +1004,24 @@ textarea { resize: vertical; min-height: 100px; }
 .eyebrow--licht::before { background: rgba(255,255,255,0.55); }
 .contact-split__info h2 { color: #fff; font-size: 1.7rem; margin-bottom: 12px; }
 .contact-split__intro { color: rgba(255,255,255,0.82); margin-bottom: 30px; }
-.contact-kanalen { list-style: none; margin: 0 0 30px; padding: 0; display: flex; flex-direction: column; gap: 20px; }
-.contact-kanaal { display: flex; gap: 16px; align-items: center; }
-.contact-kanaal__icoon {
+.contact-info-lijst { list-style: none; margin: 0 0 28px; padding: 0; display: flex; flex-direction: column; gap: 18px; }
+.contact-info-lijst > li { display: flex; gap: 16px; align-items: center; }
+.contact-info-lijst__icoon {
   width: 46px; height: 46px; border-radius: 13px; flex-shrink: 0;
   display: flex; align-items: center; justify-content: center;
   background: rgba(255,255,255,0.12); color: #fff;
 }
-.contact-kanaal__icoon svg { width: 22px; height: 22px; }
-.contact-kanaal__icoon--wa { background: rgba(37, 211, 102, 0.22); color: #4ff08c; }
-.contact-kanaal__tekst { display: flex; flex-direction: column; gap: 2px; }
-.contact-kanaal__label { font-size: 0.76rem; text-transform: uppercase; letter-spacing: 0.13em; font-weight: 700; color: rgba(255,255,255,0.6); }
-.contact-kanaal__tekst a { color: #fff; font-size: 1.14rem; font-weight: 600; text-decoration: none; transition: opacity var(--transition); }
-.contact-kanaal__tekst a:hover { opacity: 0.8; }
-.contact-kanaal__leeg { color: rgba(255,255,255,0.7); font-size: 1.05rem; }
-.contact-split__extra { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; padding-top: 26px; border-top: 1px solid rgba(255,255,255,0.15); }
-.contact-split__extra > div { display: flex; flex-direction: column; gap: 4px; font-size: 0.95rem; color: rgba(255,255,255,0.92); }
-.contact-split__extra-label { font-size: 0.74rem; text-transform: uppercase; letter-spacing: 0.13em; font-weight: 700; color: rgba(255,255,255,0.55); }
+.contact-info-lijst__icoon svg { width: 22px; height: 22px; }
+.contact-info-lijst__tekst { display: flex; flex-direction: column; gap: 2px; }
+.contact-info-lijst__label { font-size: 0.74rem; text-transform: uppercase; letter-spacing: 0.13em; font-weight: 700; color: rgba(255,255,255,0.6); }
+.contact-info-lijst__tekst > span:last-child, .contact-info-lijst__leeg { color: rgba(255,255,255,0.92); font-size: 1.06rem; }
+.contact-info-lijst__tekst a { color: #fff; font-size: 1.12rem; font-weight: 600; text-decoration: none; transition: opacity var(--transition); }
+.contact-info-lijst__tekst a:hover { opacity: 0.8; }
+.contact-bedrijf { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; padding-top: 26px; border-top: 1px solid rgba(255,255,255,0.15); }
+.contact-bedrijf > div { display: flex; flex-direction: column; gap: 4px; font-size: 0.98rem; color: rgba(255,255,255,0.92); }
+.contact-bedrijf__label { font-size: 0.74rem; text-transform: uppercase; letter-spacing: 0.13em; font-weight: 700; color: rgba(255,255,255,0.55); }
+
+.contact-usps-sectie { padding-top: 56px; }
 
 .contact-split__form { padding: 52px 46px; }
 .contact-split__form-titel { font-size: 1.5rem; margin: 4px 0 24px; }

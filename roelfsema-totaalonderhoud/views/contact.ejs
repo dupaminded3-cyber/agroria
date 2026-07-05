@@ -2,17 +2,7 @@
 <%- include('partials/header') %>
 <%
   function _digits(s){ return String(s || '').replace(/[^0-9+]/g, ''); }
-  function _waLink(s){
-    var n = String(s || '').replace(/[^0-9+]/g, '');
-    if (!n) return '';
-    if (n.charAt(0) === '+') n = n.slice(1);
-    else if (n.indexOf('00') === 0) n = n.slice(2);
-    else if (n.charAt(0) === '0') n = '31' + n.slice(1);
-    return n ? 'https://wa.me/' + n : '';
-  }
   var _telNr = site.telefoon || '';
-  var _waNr = site.whatsapp || site.telefoon || '';
-  var _waHref = _waLink(_waNr);
   var _telHref = _telNr ? 'tel:' + _digits(_telNr) : '';
   var _mailHref = site.email ? 'mailto:' + site.email : '';
 %>
@@ -23,59 +13,68 @@
       <div class="container reveal">
         <p class="eyebrow eyebrow--center">Contact</p>
         <h1>Persoonlijk contact, geen callcenter</h1>
-        <p class="pagina-hero__intro">Bel of app ons gerust direct via de knop rechtsonder, of stuur hieronder een bericht. U spreekt altijd iemand die uw pand kent — we reageren zo snel mogelijk.</p>
+        <p class="pagina-hero__intro">Bel of app ons gerust direct via de knoppen rechtsonder, of stuur hieronder een bericht. U spreekt altijd iemand die uw pand kent — we reageren zo snel mogelijk.</p>
       </div>
     </section>
 
     <section class="sectie contact-split-sectie">
       <div class="container">
         <div class="contact-split reveal">
-          <!-- Gebrande informatiekant -->
+          <!-- Gebrande informatiekant met bedrijfsgegevens -->
           <div class="contact-split__info">
             <span class="contact-split__blob" aria-hidden="true"></span>
             <div class="contact-split__info-inner">
-              <p class="eyebrow eyebrow--licht">Direct contact</p>
-              <h2>We staan voor u klaar</h2>
-              <p class="contact-split__intro">Van een korte vraag tot een uitgebreide klus: neem gerust contact op via het kanaal dat u het prettigst vindt.</p>
+              <p class="eyebrow eyebrow--licht">Gegevens</p>
+              <h2><%= site.bedrijfsnaam || 'Roelfsema Totaalonderhoud' %></h2>
+              <p class="contact-split__intro"><%= site.strapline ? site.strapline + '.' : 'Vastgoedonderhoud zoals het hoort.' %></p>
 
-              <ul class="contact-kanalen">
-                <li class="contact-kanaal">
-                  <span class="contact-kanaal__icoon">
+              <ul class="contact-info-lijst">
+                <li>
+                  <span class="contact-info-lijst__icoon">
                     <svg viewBox="0 0 24 24" fill="none"><path d="M6.6 3.5l2 .3c.5.1.9.4 1 .9l.7 2.6c.1.5 0 1-.4 1.4L8.6 10.4a12 12 0 005 5l1.7-1.3c.4-.3.9-.4 1.4-.3l2.6.7c.5.1.8.5.9 1l.3 2a1.5 1.5 0 01-1.5 1.7A15.5 15.5 0 014.3 5a1.5 1.5 0 011.7-1.5z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></svg>
                   </span>
-                  <span class="contact-kanaal__tekst">
-                    <span class="contact-kanaal__label">Bel ons</span>
-                    <% if (_telHref) { %><a href="<%= _telHref %>"><%= _telNr %></a><% } else { %><span class="contact-kanaal__leeg">Telefoonnummer volgt</span><% } %>
+                  <span class="contact-info-lijst__tekst">
+                    <span class="contact-info-lijst__label">Telefoon</span>
+                    <% if (_telHref) { %><a href="<%= _telHref %>"><%= _telNr %></a><% } else { %><span class="contact-info-lijst__leeg">Telefoonnummer volgt</span><% } %>
                   </span>
                 </li>
-                <li class="contact-kanaal">
-                  <span class="contact-kanaal__icoon contact-kanaal__icoon--wa">
-                    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12.04 2A9.9 9.9 0 002.1 11.9c0 1.75.46 3.46 1.34 4.97L2 22l5.28-1.38a9.9 9.9 0 004.76 1.21h.01A9.9 9.9 0 0022 11.92 9.9 9.9 0 0012.04 2zm5.8 14.06c-.24.68-1.4 1.3-1.94 1.34-.5.05-1.13.24-3.66-.77-3.08-1.24-5.03-4.4-5.18-4.6-.15-.2-1.24-1.65-1.24-3.15 0-1.5.79-2.24 1.07-2.54.28-.3.6-.38.8-.38l.58.01c.19.01.44-.07.68.52.24.6.83 2.06.9 2.2.07.15.12.32.02.52-.1.2-.15.32-.3.5-.15.17-.31.39-.44.52-.15.15-.3.31-.13.6.17.3.76 1.25 1.63 2.02 1.12.99 2.06 1.3 2.36 1.45.3.15.47.12.64-.07.17-.2.74-.86.94-1.16.2-.3.4-.25.67-.15.27.1 1.72.81 2.02.96.3.15.5.22.57.35.07.12.07.72-.17 1.4z"/></svg>
-                  </span>
-                  <span class="contact-kanaal__tekst">
-                    <span class="contact-kanaal__label">WhatsApp</span>
-                    <% if (_waHref) { %><a href="<%= _waHref %>" target="_blank" rel="noopener"><%= _waNr %></a><% } else { %><span class="contact-kanaal__leeg">Nummer volgt</span><% } %>
-                  </span>
-                </li>
-                <li class="contact-kanaal">
-                  <span class="contact-kanaal__icoon">
+                <li>
+                  <span class="contact-info-lijst__icoon">
                     <svg viewBox="0 0 24 24" fill="none"><path d="M3 6.5h18v11H3v-11z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="M3.5 7l8.5 6 8.5-6" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
                   </span>
-                  <span class="contact-kanaal__tekst">
-                    <span class="contact-kanaal__label">Mail ons</span>
-                    <% if (_mailHref) { %><a href="<%= _mailHref %>"><%= site.email %></a><% } else { %><span class="contact-kanaal__leeg">E-mailadres volgt</span><% } %>
+                  <span class="contact-info-lijst__tekst">
+                    <span class="contact-info-lijst__label">E-mail</span>
+                    <% if (_mailHref) { %><a href="<%= _mailHref %>"><%= site.email %></a><% } else { %><span class="contact-info-lijst__leeg">E-mailadres volgt</span><% } %>
+                  </span>
+                </li>
+                <li>
+                  <span class="contact-info-lijst__icoon">
+                    <svg viewBox="0 0 24 24" fill="none"><path d="M12 21s7-5.3 7-11a7 7 0 10-14 0c0 5.7 7 11 7 11z" stroke="currentColor" stroke-width="1.7"/><circle cx="12" cy="10" r="2.4" stroke="currentColor" stroke-width="1.7"/></svg>
+                  </span>
+                  <span class="contact-info-lijst__tekst">
+                    <span class="contact-info-lijst__label">Werkgebied</span>
+                    <span><%= site.werkgebied || site.adres || 'In overleg' %></span>
+                  </span>
+                </li>
+                <li>
+                  <span class="contact-info-lijst__icoon">
+                    <svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.7"/><path d="M12 7v5l3 2" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                  </span>
+                  <span class="contact-info-lijst__tekst">
+                    <span class="contact-info-lijst__label">Bereikbaar</span>
+                    <span>Ma t/m vr 08:00 – 17:00</span>
                   </span>
                 </li>
               </ul>
 
-              <div class="contact-split__extra">
+              <div class="contact-bedrijf">
                 <div>
-                  <span class="contact-split__extra-label">Bereikbaar</span>
-                  <span>Ma t/m vr 08:00 – 17:00</span>
+                  <span class="contact-bedrijf__label">KvK-nummer</span>
+                  <span><%= site.kvk || 'Volgt' %></span>
                 </div>
                 <div>
-                  <span class="contact-split__extra-label">Werkgebied</span>
-                  <span><%= site.werkgebied || site.adres || 'In overleg' %></span>
+                  <span class="contact-bedrijf__label">BTW-nummer</span>
+                  <span><%= site.btw || 'Volgt' %></span>
                 </div>
               </div>
             </div>
@@ -126,6 +125,42 @@
             <% } %>
           </div>
         </div>
+      </div>
+    </section>
+
+    <!-- Vertrouwenspunten -->
+    <section class="sectie contact-usps-sectie">
+      <div class="container">
+        <div class="garanties-grid">
+          <div class="garantie-kaart reveal" style="--vertraging: 0ms">
+            <span class="garantie-kaart__nr">→</span>
+            <h3>Snel een reactie</h3>
+            <p>Op werkdagen reageren we doorgaans binnen 24 uur op uw bericht of belverzoek.</p>
+          </div>
+          <div class="garantie-kaart reveal" style="--vertraging: 90ms">
+            <span class="garantie-kaart__nr">→</span>
+            <h3>Eén vast aanspreekpunt</h3>
+            <p>Geen doorschakelen of wisselende contactpersonen — u spreekt iemand die uw pand kent.</p>
+          </div>
+          <div class="garantie-kaart reveal" style="--vertraging: 180ms">
+            <span class="garantie-kaart__nr">→</span>
+            <h3>Vrijblijvend advies</h3>
+            <p>Een vraag of prijsindicatie kost u niets. We denken graag met u mee, zonder verplichtingen.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="cta-band">
+      <div class="container cta-band__inner">
+        <div>
+          <h2>Benieuwd wat wij voor uw pand kunnen doen?</h2>
+          <p>Vraag vrijblijvend een offerte aan en voeg gerust foto's van de situatie toe — dan weten wij precies waar het om gaat.</p>
+        </div>
+        <a href="/offerte-aanvragen" class="btn btn--accent btn--groot">
+          Offerte aanvragen
+          <svg viewBox="0 0 24 24" fill="none"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </a>
       </div>
     </section>
   </main>
