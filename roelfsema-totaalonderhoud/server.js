@@ -5,7 +5,7 @@ const session = require('express-session');
 const bcrypt = require('bcryptjs');
 const sanitizeHtml = require('sanitize-html');
 
-const { readDb, writeDb, UPLOADS_DIR, DIENSTEN, PERIODES } = require('./lib/db');
+const { readDb, writeDb, UPLOADS_DIR, DIENSTEN, PERIODES, STIJLEN } = require('./lib/db');
 const { offerteUpload, enkeleAfbeeldingUpload, MAX_FOTOS } = require('./lib/upload');
 const { slaOffertefotoOp, verwijderAanvraagFotos, slaSiteAfbeeldingOp } = require('./lib/imaging');
 
@@ -37,27 +37,20 @@ app.use(
   })
 );
 
-const STIJLEN = ['1', '2', '3'];
+const STIJL_IDS = STIJLEN.map((s) => s.id);
 const STANDAARD_STIJL = '3';
 
 function parseCookieStijl(req) {
   const raw = req.headers.cookie || '';
-  const match = raw.match(/(?:^|;\s*)stijl=([^;]+)/);
-  if (match && STIJLEN.includes(match[1])) return match[1];
-  return STANDAARD_STIJL;
+  const match = raw.match(/(?:^|;\s*)stijl_voorbeeld=([^;]+)/);
+  if (match && STIJL_IDS.includes(match[1])) return match[1];
+  return null;
 }
 
-app.use((req, res, next) => {
-  const queryStijl = String(req.query.stijl || '');
-  if (STIJLEN.includes(queryStijl)) {
-    res.cookie('stijl', queryStijl, { maxAge: 1000 * 60 * 60 * 24 * 90 });
-    res.locals.stijl = queryStijl;
-  } else {
-    res.locals.stijl = parseCookieStijl(req);
-  }
-  next();
-});
-
+// De echte, definitieve stijl van de site staat in de database en wordt
+// ingesteld via /uadmin/ontwerp. Met ?stijl=1/2/3 kan die tijdelijk (per
+// browser, een paar uur) worden overschreven om te kunnen voorproeven zonder
+// meteen de site voor iedereen te wijzigen — zie /ontwerpen.
 app.use((req, res, next) => {
   const db = readDb();
   res.locals.site = db.instellingen.site;
@@ -65,6 +58,22 @@ app.use((req, res, next) => {
   res.locals.huidigPad = req.path;
   res.locals.ingelogd = !!(req.session && req.session.ingelogd);
   res.locals.extraJs = [];
+  res.locals.stijlen = STIJLEN;
+
+  const queryStijl = String(req.query.stijl || '');
+  if (queryStijl === 'standaard') {
+    res.clearCookie('stijl_voorbeeld');
+    res.locals.stijl = db.instellingen.site.stijl || STANDAARD_STIJL;
+    res.locals.stijlVoorbeeld = false;
+  } else if (STIJL_IDS.includes(queryStijl)) {
+    res.cookie('stijl_voorbeeld', queryStijl, { maxAge: 1000 * 60 * 60 * 6 });
+    res.locals.stijl = queryStijl;
+    res.locals.stijlVoorbeeld = true;
+  } else {
+    const voorbeeldStijl = parseCookieStijl(req);
+    res.locals.stijl = voorbeeldStijl || db.instellingen.site.stijl || STANDAARD_STIJL;
+    res.locals.stijlVoorbeeld = !!voorbeeldStijl;
+  }
   next();
 });
 
@@ -285,6 +294,32 @@ app.post('/uadmin/aanvragen/:id/verwijderen', vereistLogin, async (req, res) => 
     writeDb(db);
   }
   res.redirect('/uadmin/aanvragen');
+});
+
+app.get('/uadmin/ontwerp', vereistLogin, (req, res) => {
+  const db = readDb();
+  res.render('admin/ontwerp', {
+    titel: 'Ontwerp / stijl',
+    layoutAdmin: true,
+    stijlen: STIJLEN,
+    actieveStijl: db.instellingen.site.stijl || STANDAARD_STIJL,
+    opgeslagen: false,
+  });
+});
+
+app.post('/uadmin/ontwerp', vereistLogin, (req, res) => {
+  const db = readDb();
+  if (STIJL_IDS.includes(String(req.body.stijl))) {
+    db.instellingen.site.stijl = String(req.body.stijl);
+    writeDb(db);
+  }
+  res.render('admin/ontwerp', {
+    titel: 'Ontwerp / stijl',
+    layoutAdmin: true,
+    stijlen: STIJLEN,
+    actieveStijl: db.instellingen.site.stijl || STANDAARD_STIJL,
+    opgeslagen: true,
+  });
 });
 
 app.get('/uadmin/paginas', vereistLogin, (req, res) => {

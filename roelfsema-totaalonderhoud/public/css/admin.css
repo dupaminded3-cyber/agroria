@@ -125,6 +125,25 @@ textarea { resize: vertical; min-height: 90px; }
 .melding--fout { background: #fdeceb; color: #a6372b; }
 .melding--succes { background: #e4f5ea; color: #1f7a45; }
 
+.ontwerp-keuze-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+.ontwerp-keuze-kaart { border: 1.5px solid var(--rand); border-radius: 10px; padding: 20px; transition: border-color 160ms, box-shadow 160ms; }
+.ontwerp-keuze-kaart.is-actief { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(22,41,79,0.08); }
+.ontwerp-keuze-kaart h3 { font-size: 0.98rem; margin: 0 0 8px; display: flex; align-items: center; gap: 8px; }
+.ontwerp-keuze-kaart__voorbeeld { height: 90px; border-radius: 6px; margin-bottom: 16px; display: flex; align-items: flex-end; gap: 8px; padding: 12px; }
+.ontwerp-keuze-kaart__voorbeeld--1 { background: #16171b; }
+.ontwerp-keuze-kaart__voorbeeld--1 .ontwerp-keuze-kaart__stip { background: #c1793f; }
+.ontwerp-keuze-kaart__voorbeeld--1 .ontwerp-keuze-kaart__balk { background: #f3efe9; }
+.ontwerp-keuze-kaart__voorbeeld--2 { background: #f8f3e9; }
+.ontwerp-keuze-kaart__voorbeeld--2 .ontwerp-keuze-kaart__stip { background: #33513d; }
+.ontwerp-keuze-kaart__voorbeeld--2 .ontwerp-keuze-kaart__balk { background: #2b271f; }
+.ontwerp-keuze-kaart__voorbeeld--3 { background: #ffffff; border: 1px solid rgba(0,0,0,0.08); }
+.ontwerp-keuze-kaart__voorbeeld--3 .ontwerp-keuze-kaart__stip { background: #16294f; }
+.ontwerp-keuze-kaart__voorbeeld--3 .ontwerp-keuze-kaart__balk { background: #14171f; }
+.ontwerp-keuze-kaart__stip { width: 12px; height: 12px; border-radius: 50%; }
+.ontwerp-keuze-kaart__balk { flex: 1; height: 7px; border-radius: 4px; opacity: 0.85; }
+.ontwerp-keuze-kaart__acties { display: flex; gap: 10px; align-items: center; }
+.ontwerp-keuze-kaart__acties form { margin: 0; }
+
 .admin-login { min-height: 100vh; display: flex; align-items: center; justify-content: center; background: #12131a; padding: 20px; }
 .admin-login__kaart { background: #fff; border-radius: 14px; padding: 40px 36px; width: 100%; max-width: 380px; box-shadow: 0 30px 60px -20px rgba(0,0,0,0.4); }
 .admin-login__kaart h1 { font-size: 1.3rem; margin: 0 0 20px; }
