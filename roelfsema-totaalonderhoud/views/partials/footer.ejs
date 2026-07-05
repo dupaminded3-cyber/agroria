@@ -1,0 +1,40 @@
+  <footer class="site-footer">
+    <div class="container site-footer__grid">
+      <div class="site-footer__over">
+        <span class="brand__naam brand__naam--footer">Roelfsema<span class="brand__naam-sub">Totaalonderhoud</span></span>
+        <p><%= site.strapline %>.</p>
+      </div>
+
+      <div class="site-footer__kolom">
+        <h4>Navigatie</h4>
+        <a href="/">Home</a>
+        <a href="/diensten">Diensten</a>
+        <a href="/over-ons">Over ons</a>
+        <a href="/offerte-aanvragen">Offerte aanvragen</a>
+        <a href="/contact">Contact</a>
+      </div>
+
+      <div class="site-footer__kolom">
+        <h4>Contact</h4>
+        <a href="tel:<%= site.telefoon %>"><%= site.telefoon || 'Telefoonnummer volgt' %></a>
+        <a href="mailto:<%= site.email %>"><%= site.email || 'E-mailadres volgt' %></a>
+        <span><%= site.adres || 'Werkgebied: in overleg' %></span>
+      </div>
+
+      <div class="site-footer__kolom">
+        <h4>Bedrijfsgegevens</h4>
+        <span><%= site.kvk ? 'KvK: ' + site.kvk : 'KvK-nummer volgt' %></span>
+        <span><%= site.btw ? 'BTW: ' + site.btw : 'BTW-nummer volgt' %></span>
+      </div>
+    </div>
+    <div class="container site-footer__onder">
+      <span>&copy; <%= new Date().getFullYear() %> Roelfsema Totaalonderhoud. Alle rechten voorbehouden.</span>
+    </div>
+  </footer>
+
+  <script src="/js/site.js"></script>
+  <% (typeof extraJs !== 'undefined' ? extraJs : []).forEach(function(src) { %>
+    <script src="<%= src %>"></script>
+  <% }) %>
+</body>
+</html>

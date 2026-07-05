@@ -1,0 +1,120 @@
+<%- include('partials/head') %>
+<%- include('partials/header') %>
+
+  <main>
+    <section class="pagina-hero pagina-hero--klein">
+      <div class="container">
+        <p class="eyebrow">Offerte aanvragen</p>
+        <h1>Vertel ons over uw klus</h1>
+        <p class="pagina-hero__intro">Vul onderstaand formulier in. Hoe meer details en foto's u toevoegt, hoe scherper en sneller wij een passende offerte kunnen opstellen.</p>
+      </div>
+    </section>
+
+    <section class="sectie sectie--form">
+      <div class="container container--smal">
+        <% if (fout) { %>
+          <div class="melding melding--fout"><%= fout %></div>
+        <% } %>
+
+        <form action="/offerte-aanvragen" method="POST" enctype="multipart/form-data" class="form" id="offerte-form">
+          <div class="form__groep">
+            <h2 class="form__kop">Contactgegevens</h2>
+            <div class="form__rij">
+              <label>
+                <span>Voornaam *</span>
+                <input type="text" name="voornaam" required value="<%= ingevuld.voornaam || '' %>" />
+              </label>
+              <label>
+                <span>Achternaam *</span>
+                <input type="text" name="achternaam" required value="<%= ingevuld.achternaam || '' %>" />
+              </label>
+            </div>
+            <div class="form__rij">
+              <label>
+                <span>E-mailadres *</span>
+                <input type="email" name="email" required value="<%= ingevuld.email || '' %>" />
+              </label>
+              <label>
+                <span>Telefoonnummer *</span>
+                <input type="tel" name="telefoon" required value="<%= ingevuld.telefoon || '' %>" />
+              </label>
+            </div>
+            <label>
+              <span>Bedrijfs- of VvE-naam (optioneel)</span>
+              <input type="text" name="bedrijfsnaam" value="<%= ingevuld.bedrijfsnaam || '' %>" />
+            </label>
+          </div>
+
+          <div class="form__groep">
+            <h2 class="form__kop">Locatie van het pand</h2>
+            <label>
+              <span>Adres</span>
+              <input type="text" name="adres" value="<%= ingevuld.adres || '' %>" />
+            </label>
+            <div class="form__rij">
+              <label>
+                <span>Postcode</span>
+                <input type="text" name="postcode" value="<%= ingevuld.postcode || '' %>" />
+              </label>
+              <label>
+                <span>Plaats</span>
+                <input type="text" name="plaats" value="<%= ingevuld.plaats || '' %>" />
+              </label>
+            </div>
+          </div>
+
+          <div class="form__groep">
+            <h2 class="form__kop">Uw aanvraag</h2>
+            <div class="form__rij">
+              <label>
+                <span>Type dienst</span>
+                <select name="dienst">
+                  <% diensten.forEach(function(d) { %>
+                    <option value="<%= d.naam %>" <%= ingevuld.dienst === d.naam ? 'selected' : '' %>><%= d.naam %></option>
+                  <% }) %>
+                </select>
+              </label>
+              <label>
+                <span>Gewenste periode</span>
+                <select name="periode">
+                  <% periodes.forEach(function(p) { %>
+                    <option value="<%= p %>" <%= ingevuld.periode === p ? 'selected' : '' %>><%= p %></option>
+                  <% }) %>
+                </select>
+              </label>
+            </div>
+            <label>
+              <span>Omschrijving van de klus / situatie *</span>
+              <textarea name="omschrijving" rows="5" required placeholder="Bijvoorbeeld: het kozijn aan de achterzijde van de woning aan de Hoofdstraat vertoont houtrot en moet worden hersteld en geschilderd."><%= ingevuld.omschrijving || '' %></textarea>
+            </label>
+          </div>
+
+          <div class="form__groep">
+            <h2 class="form__kop">Foto's van de klus</h2>
+            <p class="form__uitleg">Voeg tot <strong><%= maxFotos %> foto's</strong> toe van de situatie. Dit helpt ons om een nauwkeurige offerte op te stellen.</p>
+
+            <div class="upload-zone" id="upload-zone">
+              <input type="file" name="fotos" id="upload-input" accept="image/*" multiple />
+              <div class="upload-zone__inhoud">
+                <svg viewBox="0 0 24 24" fill="none"><path d="M12 16V4m0 0L7 9m5-5l5 5M5 20h14" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                <p><strong>Klik om foto's te kiezen</strong> of sleep ze hierheen</p>
+                <span class="upload-zone__teller"><span id="foto-count">0</span> / <%= maxFotos %> foto's geselecteerd</span>
+              </div>
+            </div>
+            <div class="foto-previews" id="foto-previews"></div>
+            <p class="form__melding-fout" id="upload-fout" hidden></p>
+          </div>
+
+          <label class="form__akkoord">
+            <input type="checkbox" name="akkoord" required />
+            <span>Ik ga akkoord dat Roelfsema Totaalonderhoud mijn gegevens gebruikt om contact met mij op te nemen over deze aanvraag.</span>
+          </label>
+
+          <button type="submit" class="btn btn--accent btn--groot btn--volledig">Offerte aanvragen versturen</button>
+        </form>
+      </div>
+    </section>
+  </main>
+
+<% extraJs = ['/js/offerte.js'] %>
+<%- include('partials/footer') %>

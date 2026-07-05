@@ -1,0 +1,53 @@
+<%- include('_head') %>
+<%- include('_side') %>
+
+        <div class="stat-grid">
+          <div class="stat-kaart">
+            <span class="stat-kaart__label">Totaal aanvragen</span>
+            <span class="stat-kaart__getal"><%= totaal %></span>
+          </div>
+          <div class="stat-kaart stat-kaart--accent">
+            <span class="stat-kaart__label">Nieuw</span>
+            <span class="stat-kaart__getal"><%= nieuw %></span>
+          </div>
+          <div class="stat-kaart">
+            <span class="stat-kaart__label">In behandeling</span>
+            <span class="stat-kaart__getal"><%= inBehandeling %></span>
+          </div>
+        </div>
+
+        <div class="admin-paneel">
+          <div class="admin-paneel__kop">
+            <h2>Laatste aanvragen</h2>
+            <a href="/uadmin/aanvragen">Alle aanvragen →</a>
+          </div>
+
+          <% if (!laatste.length) { %>
+            <p class="admin-leeg">Er zijn nog geen aanvragen binnengekomen.</p>
+          <% } else { %>
+            <table class="admin-tabel">
+              <thead>
+                <tr>
+                  <th>Naam</th>
+                  <th>Type</th>
+                  <th>Datum</th>
+                  <th>Status</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody>
+                <% laatste.forEach(function(a) { %>
+                  <tr>
+                    <td><%= a.type === 'contact' ? a.naam : (a.voornaam + ' ' + a.achternaam) %></td>
+                    <td><span class="tag tag--<%= a.type %>"><%= a.type === 'contact' ? 'Bericht' : 'Offerte' %></span></td>
+                    <td><%= new Date(a.createdAt).toLocaleDateString('nl-NL') %></td>
+                    <td><span class="tag tag--status-<%= (a.status||'').replace(/\s+/g,'-') %>"><%= a.status %></span></td>
+                    <td><a href="/uadmin/aanvragen/<%= a.id %>">Bekijken →</a></td>
+                  </tr>
+                <% }) %>
+              </tbody>
+            </table>
+          <% } %>
+        </div>
+
+<%- include('_foot') %>

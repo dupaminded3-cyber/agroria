@@ -1,0 +1,172 @@
+<%- include('partials/head') %>
+<%- include('partials/header') %>
+
+  <main>
+    <section class="hero">
+      <div class="container hero__grid">
+        <div class="hero__tekst">
+          <p class="eyebrow">Vastgoedonderhoud &amp; renovatie</p>
+          <h1><%= site.heroTitel %></h1>
+          <p class="hero__intro"><%= site.heroSubtitel %></p>
+          <div class="hero__acties">
+            <a href="/offerte-aanvragen" class="btn btn--accent">Vraag een offerte aan</a>
+            <a href="/diensten" class="btn btn--outline">Bekijk onze diensten</a>
+          </div>
+        </div>
+        <div class="hero__beeld" aria-hidden="true">
+          <svg viewBox="0 0 480 480" class="hero__svg" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="240" cy="240" r="200" class="hero__svg-cirkel" />
+            <g class="hero__svg-lijn" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M130 300V190L245 110L360 190V300" />
+              <path d="M170 300V230H320V300" />
+              <path d="M245 230V180" />
+              <path d="M100 300H390" />
+              <path d="M215 300V255H275V300" />
+            </g>
+            <g class="hero__svg-accent" fill="none" stroke-width="2.5" stroke-linecap="round">
+              <path d="M340 130L360 110M340 110L360 130" />
+              <circle cx="130" cy="150" r="6" />
+              <path d="M96 250l14 14 14-14" />
+            </g>
+          </svg>
+        </div>
+      </div>
+    </section>
+
+    <section class="pijlers">
+      <div class="container pijlers__grid">
+        <div class="pijler">
+          <span class="pijler__icoon">
+            <svg viewBox="0 0 24 24" fill="none"><path d="M3 12l9-9 9 9M5 10v10h14V10" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>
+          </span>
+          <h3>Volledige ontzorging</h3>
+          <p>Van inspectie tot uitvoering: één aanspreekpunt voor al uw onderhoudsvragen.</p>
+        </div>
+        <div class="pijler">
+          <span class="pijler__icoon">
+            <svg viewBox="0 0 24 24" fill="none"><path d="M9 12l2 2 4-4M21 12a9 9 0 11-18 0 9 9 0 0118 0z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>
+          </span>
+          <h3>Vakwerk gegarandeerd</h3>
+          <p>Ervaren vakmensen die netjes, zorgvuldig en volgens afspraak werken.</p>
+        </div>
+        <div class="pijler">
+          <span class="pijler__icoon">
+            <svg viewBox="0 0 24 24" fill="none"><path d="M4 6h16M4 12h10M4 18h7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+          </span>
+          <h3>Transparante offertes</h3>
+          <p>Heldere prijsafspraken vooraf, zonder verrassingen achteraf.</p>
+        </div>
+        <div class="pijler">
+          <span class="pijler__icoon">
+            <svg viewBox="0 0 24 24" fill="none"><path d="M12 8v4l3 3M21 12a9 9 0 11-18 0 9 9 0 0118 0z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>
+          </span>
+          <h3>Snel geschakeld</h3>
+          <p>Korte lijnen en een vlot offertetraject, ook bij spoedklussen.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="sectie diensten-sectie">
+      <div class="container">
+        <p class="eyebrow eyebrow--center">Wat wij doen</p>
+        <h2 class="sectie__titel">Onze diensten</h2>
+        <p class="sectie__intro">Eén vast team voor al het onderhoud aan uw pand — van kleine reparatie tot complete renovatie.</p>
+
+        <div class="diensten-grid">
+          <article class="dienst-kaart">
+            <span class="dienst-kaart__nummer">01</span>
+            <h3>Vastgoedonderhoud</h3>
+            <p>Periodiek en preventief onderhoud dat uw pand in topconditie houdt, met vaste inspecties en planning.</p>
+          </article>
+          <article class="dienst-kaart">
+            <span class="dienst-kaart__nummer">02</span>
+            <h3>Mutatieonderhoud</h3>
+            <p>Snel en vakkundig opknappen tussen huurders in, zodat uw woning zonder leegstand weer verhuurklaar is.</p>
+          </article>
+          <article class="dienst-kaart">
+            <span class="dienst-kaart__nummer">03</span>
+            <h3>Renovatie &amp; verbouw</h3>
+            <p>Van badkamer tot complete renovatie: wij verzorgen het traject van ontwerp tot oplevering.</p>
+          </article>
+          <article class="dienst-kaart">
+            <span class="dienst-kaart__nummer">04</span>
+            <h3>Schilderwerk &amp; afwerking</h3>
+            <p>Binnen- en buitenschilderwerk en stukadoorswerk voor een verzorgde, duurzame uitstraling.</p>
+          </article>
+          <article class="dienst-kaart">
+            <span class="dienst-kaart__nummer">05</span>
+            <h3>Dak- en gevelonderhoud</h3>
+            <p>Inspectie en onderhoud van daken en gevels ter voorkoming van kostbare vervolgschade.</p>
+          </article>
+          <article class="dienst-kaart">
+            <span class="dienst-kaart__nummer">06</span>
+            <h3>Klein onderhoud &amp; reparaties</h3>
+            <p>Voor de kleine klussen die toch echt gedaan moeten worden — snel opgelost door onze vaste klussendienst.</p>
+          </article>
+        </div>
+        <div class="diensten-cta">
+          <a href="/diensten" class="btn btn--outline">Alle diensten bekijken</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="sectie werkwijze-sectie">
+      <div class="container">
+        <p class="eyebrow eyebrow--center">Ons proces</p>
+        <h2 class="sectie__titel">Zo werken wij</h2>
+        <div class="werkwijze">
+          <div class="werkwijze__stap">
+            <span class="werkwijze__cijfer">01</span>
+            <h3>Kennismaking</h3>
+            <p>We bespreken vrijblijvend wat er speelt en wat u nodig heeft.</p>
+          </div>
+          <div class="werkwijze__stap">
+            <span class="werkwijze__cijfer">02</span>
+            <h3>Inspectie &amp; offerte</h3>
+            <p>Op basis van uw aanvraag en foto's stellen we een heldere offerte op.</p>
+          </div>
+          <div class="werkwijze__stap">
+            <span class="werkwijze__cijfer">03</span>
+            <h3>Uitvoering</h3>
+            <p>Ons team voert het werk zorgvuldig uit en houdt u steeds op de hoogte.</p>
+          </div>
+          <div class="werkwijze__stap">
+            <span class="werkwijze__cijfer">04</span>
+            <h3>Oplevering &amp; nazorg</h3>
+            <p>We ronden netjes af en blijven ook daarna uw aanspreekpunt.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="sectie over-ons-snippet">
+      <div class="container over-ons-snippet__grid">
+        <div>
+          <p class="eyebrow">Over ons</p>
+          <h2 class="sectie__titel sectie__titel--links">Betrouwbaar onderhoud, persoonlijk geregeld</h2>
+          <p><%= site.overOns %></p>
+          <a href="/over-ons" class="btn btn--outline">Meer over ons</a>
+        </div>
+        <div class="over-ons-snippet__kader" aria-hidden="true">
+          <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+            <rect x="10" y="10" width="180" height="180" rx="4" fill="none" stroke="currentColor" stroke-width="1.4" />
+            <path d="M40 140L80 90L110 120L160 60" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+            <circle cx="40" cy="140" r="4" fill="currentColor" />
+            <circle cx="160" cy="60" r="4" fill="currentColor" />
+          </svg>
+        </div>
+      </div>
+    </section>
+
+    <section class="cta-band">
+      <div class="container cta-band__inner">
+        <div>
+          <h2>Heeft u een klus of onderhoudsvraag?</h2>
+          <p>Vraag vrijblijvend een offerte aan en voeg gerust foto's van de situatie toe — dan weten wij precies waar het om gaat.</p>
+        </div>
+        <a href="/offerte-aanvragen" class="btn btn--accent btn--groot">Offerte aanvragen</a>
+      </div>
+    </section>
+  </main>
+
+<%- include('partials/footer') %>

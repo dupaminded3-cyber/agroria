@@ -1,0 +1,69 @@
+<%- include('_head') %>
+<%- include('_side') %>
+
+        <a href="/uadmin/aanvragen" class="admin-terug">← Terug naar aanvragen</a>
+
+        <div class="detail-grid">
+          <div class="admin-paneel">
+            <div class="admin-paneel__kop">
+              <h2><%= aanvraag.type === 'contact' ? aanvraag.naam : (aanvraag.voornaam + ' ' + aanvraag.achternaam) %></h2>
+              <span class="tag tag--<%= aanvraag.type %>"><%= aanvraag.type === 'contact' ? 'Contactbericht' : 'Offerteaanvraag' %></span>
+            </div>
+
+            <dl class="detail-lijst">
+              <div><dt>E-mail</dt><dd><a href="mailto:<%= aanvraag.email %>"><%= aanvraag.email %></a></dd></div>
+              <% if (aanvraag.telefoon) { %><div><dt>Telefoon</dt><dd><a href="tel:<%= aanvraag.telefoon %>"><%= aanvraag.telefoon %></a></dd></div><% } %>
+              <% if (aanvraag.bedrijfsnaam) { %><div><dt>Bedrijf/VvE</dt><dd><%= aanvraag.bedrijfsnaam %></dd></div><% } %>
+              <% if (aanvraag.adres) { %><div><dt>Adres</dt><dd><%= aanvraag.adres %> <%= aanvraag.postcode %> <%= aanvraag.plaats %></dd></div><% } %>
+              <% if (aanvraag.dienst) { %><div><dt>Dienst</dt><dd><%= aanvraag.dienst %></dd></div><% } %>
+              <% if (aanvraag.periode) { %><div><dt>Gewenste periode</dt><dd><%= aanvraag.periode %></dd></div><% } %>
+              <div><dt>Ontvangen op</dt><dd><%= new Date(aanvraag.createdAt).toLocaleString('nl-NL') %></dd></div>
+            </dl>
+
+            <h3 class="detail-subkop">Omschrijving</h3>
+            <p class="detail-omschrijving"><%= aanvraag.omschrijving %></p>
+
+            <% if (aanvraag.fotos && aanvraag.fotos.length) { %>
+              <h3 class="detail-subkop">Foto's (<%= aanvraag.fotos.length %>)</h3>
+              <div class="foto-galerij">
+                <% aanvraag.fotos.forEach(function(f) { %>
+                  <a href="/uploads/<%= f.bestand %>" target="_blank" rel="noopener" class="foto-galerij__item">
+                    <img src="/uploads/<%= f.thumb %>" alt="Foto van de klus" loading="lazy" />
+                  </a>
+                <% }) %>
+              </div>
+            <% } %>
+          </div>
+
+          <div>
+            <div class="admin-paneel">
+              <h3 class="detail-subkop">Status</h3>
+              <form action="/uadmin/aanvragen/<%= aanvraag.id %>/status" method="POST" class="form form--inline">
+                <select name="status">
+                  <option value="nieuw" <%= aanvraag.status === 'nieuw' ? 'selected' : '' %>>Nieuw</option>
+                  <option value="in behandeling" <%= aanvraag.status === 'in behandeling' ? 'selected' : '' %>>In behandeling</option>
+                  <option value="afgehandeld" <%= aanvraag.status === 'afgehandeld' ? 'selected' : '' %>>Afgehandeld</option>
+                </select>
+                <button type="submit" class="btn btn--outline btn--klein">Opslaan</button>
+              </form>
+            </div>
+
+            <div class="admin-paneel">
+              <h3 class="detail-subkop">Interne notitie</h3>
+              <form action="/uadmin/aanvragen/<%= aanvraag.id %>/notitie" method="POST" class="form">
+                <textarea name="notitie" rows="5" placeholder="Alleen zichtbaar voor u..."><%= aanvraag.notitie || '' %></textarea>
+                <button type="submit" class="btn btn--outline btn--klein">Notitie opslaan</button>
+              </form>
+            </div>
+
+            <div class="admin-paneel">
+              <h3 class="detail-subkop">Aanvraag verwijderen</h3>
+              <p class="admin-uitleg">Dit verwijdert de aanvraag en alle bijbehorende foto's permanent.</p>
+              <form action="/uadmin/aanvragen/<%= aanvraag.id %>/verwijderen" method="POST" onsubmit="return confirm('Weet u zeker dat u deze aanvraag wilt verwijderen?');">
+                <button type="submit" class="btn btn--gevaar btn--klein">Verwijderen</button>
+              </form>
+            </div>
+          </div>
+        </div>
+
+<%- include('_foot') %>
