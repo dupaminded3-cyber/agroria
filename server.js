@@ -185,18 +185,12 @@ app.get('/aanbod', (req, res) => {
   else if (sort === 'jaar') lijst.sort((a, b) => b.bouwjaar - a.bouwjaar);
   lijst.sort((a, b) => (a.status === 'verkocht' ? 1 : 0) - (b.status === 'verkocht' ? 1 : 0));
   const merken = [...new Set(data.tractors.filter(zichtbaar).map(t => t.merk))].sort();
-  const aantalVerkocht = data.tractors.filter(t => t.status === 'verkocht').length;
-  res.render('aanbod', { lijst, merken, filter: { merk, q, sort }, page: (data.pages.aanbod || {}), aantalVerkocht });
+  res.render('aanbod', { lijst, merken, filter: { merk, q, sort }, page: (data.pages.aanbod || {}) });
 });
 
-// Recent verkochte machines — als referentie ("deze vonden al een nieuwe eigenaar").
-app.get('/verkocht', (req, res) => {
-  const data = db.read();
-  const lijst = data.tractors
-    .filter(t => t.status === 'verkocht')
-    .sort((a, b) => (b.createdAt || '').localeCompare(a.createdAt || ''));
-  res.render('verkocht', { lijst });
-});
+// De aparte verkocht-pagina is vervallen: verkochte machines staan gewoon
+// (gemarkeerd) tussen het aanbod. Oude links verwijzen we netjes door.
+app.get('/verkocht', (req, res) => res.redirect(301, '/aanbod'));
 
 // Nette URL (bijv. /trekker/case-ih-puma-165-cvx). Oude links op basis van het
 // kale ID blijven werken en verwijzen automatisch door naar de nette versie.
@@ -251,7 +245,7 @@ app.get('/robots.txt', (req, res) => {
 
 app.get('/sitemap.xml', (req, res) => {
   const data = db.read();
-  const statisch = ['/', '/aanbod', '/verkocht', '/over-ons', '/selectie', '/garantie', '/inruil', '/faq', '/contact'];
+  const statisch = ['/', '/aanbod', '/over-ons', '/selectie', '/garantie', '/inruil', '/faq', '/contact'];
   const urls = statisch.map(p => ({ loc: SITE_URL + p }));
   data.tractors
     .filter(t => t.status !== 'verwijderd' && t.status !== 'concept')

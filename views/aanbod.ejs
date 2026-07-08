@@ -20,11 +20,6 @@
     </form>
     <% if (lijst.length === 0) { %><p style="color:var(--muted)">Geen trekkers gevonden. <a href="/aanbod" style="color:var(--green)">Bekijk het hele aanbod</a>.</p><% } %>
     <div class="grid4"><% lijst.forEach(function(t){ %><%- include('partials/card', { t: t }) %><% }) %></div>
-    <% if (typeof aantalVerkocht !== 'undefined' && aantalVerkocht > 0) { %>
-      <div class="center" style="margin-top:44px">
-        <a href="/verkocht" style="color:var(--green);font-weight:600;font-size:.95rem">Bekijk ook onze recent verkochte machines →</a>
-      </div>
-    <% } %>
   </div>
 </section>
 
