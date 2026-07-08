@@ -1,10 +1,44 @@
 <%- include('_head', { titel: 'Account' }) %>
 <%- include('_side') %>
-<div class="topbar"><div><h1>Account</h1><div class="sub">Wijzig hier je wachtwoord voor het beheerpaneel.</div></div></div>
+<div class="topbar"><div><h1>Account</h1><div class="sub">Je wachtwoord en de e-mailmeldingen van de website.</div></div></div>
 <% if (melding==='ok'){ %><div class="melding ok">Je wachtwoord is gewijzigd.</div><% } %>
 <% if (melding==='fout'){ %><div class="melding fout">Je huidige wachtwoord klopt niet.</div><% } %>
 <% if (melding==='kort'){ %><div class="melding fout">Kies een nieuw wachtwoord van minimaal 5 tekens.</div><% } %>
-<div class="panel" style="padding:28px;max-width:520px">
+<% if (melding==='mailopgeslagen'){ %><div class="melding ok">De e-mailinstellingen zijn opgeslagen. Klik op "Verstuur testmail" om te controleren of alles werkt.</div><% } %>
+<% if (melding==='mailok'){ %><div class="melding ok">De testmail is verstuurd! Controleer je inbox (en eventueel de spam-map).</div><% } %>
+<% if (melding==='mailfout'){ %><div class="melding fout">De testmail kon niet worden verstuurd. Foutmelding: <%= typeof mailFout !== 'undefined' ? mailFout : '' %><br>Controleer de servernaam, poort, het e-mailadres en het wachtwoord.</div><% } %>
+
+<div class="panel" style="padding:28px;max-width:640px;margin-bottom:22px">
+  <div class="ph" style="border:none;padding:0 0 6px">E-mailmeldingen bij nieuwe aanvragen</div>
+  <div style="color:var(--muted);font-size:.9rem;margin-bottom:18px">
+    Vul hier de gegevens van je eigen mailbox in (bijv. info@agroria.nl bij Strato). De website stuurt dan automatisch een mail
+    zodra er een nieuwe vraag, inruil-aanvraag of bestelling binnenkomt.
+    <% if (typeof mailActief !== 'undefined' && mailActief) { %>
+      <br><b style="color:#2f6b3a">✓ E-mailmeldingen staan aan.</b>
+    <% } %>
+  </div>
+  <% if (typeof mailViaOmgeving !== 'undefined' && mailViaOmgeving) { %>
+    <div class="melding" style="background:#FBF3DD;color:#8a6d1d">De e-mailinstellingen zijn momenteel ingesteld via Render (omgevingsvariabelen). Die hebben voorrang op wat je hieronder invult.</div>
+  <% } %>
+  <form method="post" action="/uadmin/instellingen/mail">
+    <div class="formgrid">
+      <div class="field"><label>Mailserver (SMTP)</label><input name="host" value="<%= smtp.host || '' %>" placeholder="bijv. smtp.strato.de"><div class="hint">Bij Strato is dit meestal <b>smtp.strato.de</b>. Gebruik je een andere aanbieder, zoek dan op "[aanbieder] SMTP server".</div></div>
+      <div class="field"><label>Poort</label><input type="number" name="port" value="<%= smtp.port || 465 %>" placeholder="465"><div class="hint">Meestal 465. Werkt dat niet, probeer 587.</div></div>
+      <div class="field"><label>E-mailadres (gebruikersnaam)</label><input name="user" value="<%= smtp.user || '' %>" placeholder="info@agroria.nl"></div>
+      <div class="field"><label>Wachtwoord van de mailbox</label><input type="password" name="pass" placeholder="<%= smtp.pass ? '••••••••  (leeg laten = ongewijzigd)' : '' %>"><div class="hint">Het wachtwoord waarmee je op deze mailbox inlogt.<% if (smtp.pass) { %> Laat leeg om het huidige wachtwoord te behouden.<% } %></div></div>
+      <div class="field full"><label>Meldingen sturen naar</label><input name="naar" value="<%= smtp.naar || '' %>" placeholder="info@agroria.nl"><div class="hint">Meestal hetzelfde adres. Leeg = gelijk aan het e-mailadres hierboven.</div></div>
+    </div>
+    <div style="display:flex;gap:12px;margin-top:18px;flex-wrap:wrap">
+      <button class="btn btn-fill" type="submit">Instellingen opslaan</button>
+    </div>
+  </form>
+  <form method="post" action="/uadmin/instellingen/mail/test" style="margin-top:12px">
+    <button class="btn btn-out" type="submit">Verstuur testmail</button>
+  </form>
+</div>
+
+<div class="panel" style="padding:28px;max-width:640px">
+  <div class="ph" style="border:none;padding:0 0 18px">Wachtwoord wijzigen</div>
   <form method="post" action="/uadmin/account">
     <div class="field" style="margin-bottom:16px"><label>Huidig wachtwoord</label><input type="password" name="huidig" required></div>
     <div class="field" style="margin-bottom:16px"><label>Nieuw wachtwoord</label><input type="password" name="nieuw" required></div>

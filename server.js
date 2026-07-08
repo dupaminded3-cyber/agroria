@@ -655,7 +655,7 @@ app.post('/uadmin/paginas/foto/delete', requireAuth, (req, res) => {
 // ---- Aanvragen (inbox) ----
 app.get('/uadmin/aanvragen', requireAuth, (req, res) => {
   const data = db.read();
-  res.render('admin/aanvragen', { lijst: data.inquiries, active: 'aanvragen', mailActief: mail.actief });
+  res.render('admin/aanvragen', { lijst: data.inquiries, active: 'aanvragen', mailActief: mail.isActief() });
 });
 
 app.post('/uadmin/aanvragen/:id/gelezen', requireAuth, (req, res) => {
@@ -698,17 +698,49 @@ app.post('/uadmin/aanvragen/:id/delete', requireAuth, (req, res) => {
 
 // ---- Wachtwoord wijzigen ----
 app.get('/uadmin/account', requireAuth, (req, res) => {
-  res.render('admin/account', { active: 'account', melding: req.query.m });
+  const data = db.read();
+  res.render('admin/account', {
+    active: 'account',
+    melding: req.query.m,
+    mailFout: req.query.fout || '',
+    smtp: (data.settings || {}).smtp || {},
+    mailViaOmgeving: mail.viaOmgeving(),
+    mailActief: mail.isActief()
+  });
+});
+
+// E-mailmeldingen: SMTP-instellingen opslaan vanuit het beheer
+app.post('/uadmin/instellingen/mail', requireAuth, (req, res) => {
+  const data = db.read();
+  if (!data.settings) data.settings = {};
+  const oud = data.settings.smtp || {};
+  data.settings.smtp = {
+    host: (req.body.host || '').trim(),
+    port: parseInt(req.body.port) || 465,
+    user: (req.body.user || '').trim(),
+    // Wachtwoordveld leeg gelaten? Dan het eerder opgeslagen wachtwoord behouden.
+    pass: req.body.pass ? req.body.pass : (oud.pass || ''),
+    naar: (req.body.naar || '').trim()
+  };
+  db.write(data);
+  res.redirect('/uadmin/account?m=mailopgeslagen');
+});
+
+// E-mailmeldingen: testmail versturen en het resultaat tonen
+app.post('/uadmin/instellingen/mail/test', requireAuth, async (req, res) => {
+  const resultaat = await mail.stuurTest();
+  if (resultaat.ok) return res.redirect('/uadmin/account?m=mailok');
+  res.redirect('/uadmin/account?m=mailfout&fout=' + encodeURIComponent(resultaat.fout || 'Onbekende fout'));
 });
 
 app.post('/uadmin/account', requireAuth, (req, res) => {
   const data = db.read();
   const u = data.users.find(x => x.id === req.session.user.id);
   if (!u || !bcrypt.compareSync(req.body.huidig || '', u.passwordHash)) {
-    return res.render('admin/account', { active: 'account', melding: 'fout' });
+    return res.redirect('/uadmin/account?m=fout');
   }
   if ((req.body.nieuw || '').length < 5) {
-    return res.render('admin/account', { active: 'account', melding: 'kort' });
+    return res.redirect('/uadmin/account?m=kort');
   }
   u.passwordHash = bcrypt.hashSync(req.body.nieuw, 10);
   db.write(data);
