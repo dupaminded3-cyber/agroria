@@ -13,6 +13,7 @@ const db = require('./lib/db');
 const { omschrijvingHtml, omschrijvingText } = require('./lib/format');
 const { prijsInfo } = require('./lib/prijs');
 const { maakSlug, uniekeSlug } = require('./lib/slug');
+const mail = require('./lib/mail');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -233,9 +234,16 @@ app.get('/sitemap.xml', (req, res) => {
 });
 
 // Aanvraag / vraag versturen (komt binnen in uadmin)
+// Hulpfunctie: stuurt (indien ingesteld) een e-mailmelding over een nieuwe aanvraag.
+function mailNieuweAanvraag(kop, regels) {
+  const tekst = regels.filter(Boolean).join('\n') +
+    `\n\nBekijk en beantwoord in het beheer:\n${SITE_URL}/uadmin/aanvragen`;
+  mail.stuurMelding(kop, tekst); // fire-and-forget: blokkeert de bezoeker nooit
+}
+
 app.post('/aanvraag', (req, res) => {
   const data = db.read();
-  data.inquiries.unshift({
+  const aanvraag = {
     id: db.id(),
     type: 'vraag',
     onderwerp: req.body.onderwerp || 'Algemene vraag',
@@ -246,8 +254,21 @@ app.post('/aanvraag', (req, res) => {
     trekker: req.body.trekker || '',
     gelezen: false,
     createdAt: new Date().toISOString()
-  });
+  };
+  data.inquiries.unshift(aanvraag);
   db.write(data);
+  mailNieuweAanvraag(`Nieuwe vraag via agroria.nl — ${aanvraag.naam || 'onbekend'}`, [
+    `Er is een nieuwe vraag binnengekomen op de website.`,
+    ``,
+    `Onderwerp: ${aanvraag.onderwerp}`,
+    aanvraag.trekker ? `Trekker: ${aanvraag.trekker}` : '',
+    `Naam: ${aanvraag.naam || '—'}`,
+    `E-mail: ${aanvraag.email || '—'}`,
+    `Telefoon: ${aanvraag.telefoon || '—'}`,
+    ``,
+    `Bericht:`,
+    aanvraag.bericht || '—'
+  ]);
   res.render('bedankt', { soort: 'aanvraag' });
 });
 
@@ -255,7 +276,7 @@ app.post('/aanvraag', (req, res) => {
 const INRUIL_MAX_FOTOS = 20;
 app.post('/inruil', upload.array('fotos', INRUIL_MAX_FOTOS), verwerkUploads, (req, res) => {
   const data = db.read();
-  data.inquiries.unshift({
+  const aanvraag = {
     id: db.id(),
     type: 'inruil',
     onderwerp: 'Inruil-taxatie',
@@ -269,8 +290,22 @@ app.post('/inruil', upload.array('fotos', INRUIL_MAX_FOTOS), verwerkUploads, (re
     fotos: (req.files || []).map(f => f.filename),
     gelezen: false,
     createdAt: new Date().toISOString()
-  });
+  };
+  data.inquiries.unshift(aanvraag);
   db.write(data);
+  mailNieuweAanvraag(`Nieuwe inruil-aanvraag via agroria.nl — ${aanvraag.machine || aanvraag.naam || 'onbekend'}`, [
+    `Er is een nieuwe inruil-taxatie aangevraagd op de website.`,
+    ``,
+    `Machine: ${aanvraag.machine || '—'}`,
+    `Bouwjaar: ${aanvraag.bouwjaar || '—'} · Uren: ${aanvraag.uren || '—'}`,
+    `Aantal foto's meegestuurd: ${aanvraag.fotos.length}`,
+    `Naam: ${aanvraag.naam || '—'}`,
+    `E-mail: ${aanvraag.email || '—'}`,
+    `Telefoon: ${aanvraag.telefoon || '—'}`,
+    ``,
+    `Toelichting:`,
+    aanvraag.bericht || '—'
+  ]);
   res.render('bedankt', { soort: 'inruil' });
 });
 
@@ -292,7 +327,7 @@ app.post('/bestelling', (req, res) => {
   const data = db.read();
   const t = data.tractors.find(x => x.id === req.body.trekkerId);
   const naamTrekker = t ? `${t.merk} ${t.model}` : (req.body.trekker || 'Trekker');
-  data.inquiries.unshift({
+  const aanvraag = {
     id: db.id(),
     type: 'bestelling',
     onderwerp: 'Bestelling: ' + naamTrekker,
@@ -309,8 +344,23 @@ app.post('/bestelling', (req, res) => {
     prijs: t ? t.prijs : (parseInt(req.body.prijs) || 0),
     gelezen: false,
     createdAt: new Date().toISOString()
-  });
+  };
+  data.inquiries.unshift(aanvraag);
   db.write(data);
+  mailNieuweAanvraag(`🚜 Nieuwe BESTELLING via agroria.nl — ${naamTrekker}`, [
+    `Er is een nieuwe bestelling geplaatst op de website!`,
+    ``,
+    `Trekker: ${naamTrekker}`,
+    aanvraag.prijs ? `Prijs: € ${Number(aanvraag.prijs).toLocaleString('nl-NL')}` : '',
+    `Naam: ${aanvraag.naam || '—'}`,
+    aanvraag.bedrijf ? `Bedrijf: ${aanvraag.bedrijf}` : '',
+    `E-mail: ${aanvraag.email || '—'}`,
+    `Telefoon: ${aanvraag.telefoon || '—'}`,
+    (aanvraag.adres || aanvraag.plaats) ? `Adres: ${[aanvraag.adres, [aanvraag.postcode, aanvraag.plaats].filter(Boolean).join(' ')].filter(Boolean).join(', ')}` : '',
+    ``,
+    `Opmerking:`,
+    aanvraag.bericht || '—'
+  ]);
   res.render('besteld', { trekker: naamTrekker, prijs: t ? t.prijs : (parseInt(req.body.prijs) || 0) });
 });
 
@@ -595,13 +645,37 @@ app.post('/uadmin/paginas/foto/delete', requireAuth, (req, res) => {
 // ---- Aanvragen (inbox) ----
 app.get('/uadmin/aanvragen', requireAuth, (req, res) => {
   const data = db.read();
-  res.render('admin/aanvragen', { lijst: data.inquiries, active: 'aanvragen' });
+  res.render('admin/aanvragen', { lijst: data.inquiries, active: 'aanvragen', mailActief: mail.actief });
 });
 
 app.post('/uadmin/aanvragen/:id/gelezen', requireAuth, (req, res) => {
   const data = db.read();
   const i = data.inquiries.find(x => x.id === req.params.id);
   if (i) { i.gelezen = true; db.write(data); }
+  res.redirect('/uadmin/aanvragen');
+});
+
+// Status van een aanvraag bijwerken (nieuw / in behandeling / afgehandeld)
+app.post('/uadmin/aanvragen/:id/status', requireAuth, (req, res) => {
+  const data = db.read();
+  const i = data.inquiries.find(x => x.id === req.params.id);
+  const toegestaan = ['nieuw', 'bezig', 'afgehandeld'];
+  if (i && toegestaan.includes(req.body.status)) {
+    i.status = req.body.status;
+    if (req.body.status !== 'nieuw') i.gelezen = true;
+    db.write(data);
+  }
+  res.redirect('/uadmin/aanvragen');
+});
+
+// Eigen notitie bij een aanvraag opslaan (bijv. "teruggebeld, wil bedenktijd")
+app.post('/uadmin/aanvragen/:id/notitie', requireAuth, (req, res) => {
+  const data = db.read();
+  const i = data.inquiries.find(x => x.id === req.params.id);
+  if (i) {
+    i.notitie = (req.body.notitie || '').trim();
+    db.write(data);
+  }
   res.redirect('/uadmin/aanvragen');
 });
 
