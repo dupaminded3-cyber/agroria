@@ -10,6 +10,51 @@
   <div class="stat <%= stats.nieuweAanvragen>0?'alert':'' %>"><div class="n"><%= stats.nieuweAanvragen %></div><div class="l">Nieuwe aanvragen</div></div>
   <div class="stat"><div class="n"><%= stats.totaalAanvragen %></div><div class="l">Aanvragen totaal</div></div>
 </div>
+<div class="cards">
+  <div class="stat"><div class="n" style="color:#2f6b3a"><%= bezoek.live %></div><div class="l">Nu live op de site</div></div>
+  <div class="stat"><div class="n"><%= bezoek.dagen[0].bezoekers %></div><div class="l">Bezoekers vandaag</div></div>
+  <div class="stat"><div class="n"><%= bezoek.dagen[0].paginas %></div><div class="l">Paginaweergaven vandaag</div></div>
+  <div class="stat"><div class="n"><%= bezoek.dagen[1] ? bezoek.dagen[1].bezoekers : 0 %></div><div class="l">Bezoekers gisteren</div></div>
+</div>
+
+<div class="panel" style="margin-bottom:22px">
+  <div class="ph">Bezoekers per dag <span style="font-weight:400;font-size:.8rem;color:var(--muted)">laatste 14 dagen</span></div>
+  <div style="padding:18px 22px">
+    <% var max = Math.max(1, ...bezoek.dagen.map(function(d){ return d.bezoekers; })); %>
+    <div class="staafgrafiek">
+      <% bezoek.dagen.slice().reverse().forEach(function(d){ %>
+        <div class="staaf-kolom" title="<%= new Date(d.dag).toLocaleDateString('nl-NL') %>: <%= d.bezoekers %> bezoekers, <%= d.paginas %> weergaven">
+          <div class="staaf" style="height:<%= Math.round(d.bezoekers / max * 100) %>%"></div>
+          <span class="staaf-label"><%= new Date(d.dag).getDate() %></span>
+        </div>
+      <% }) %>
+    </div>
+    <div style="font-size:.78rem;color:var(--muted);margin-top:8px">Beweeg over een staaf voor de details van die dag. Eigen bezoeken (ingelogd) en zoekmachines tellen niet mee.</div>
+  </div>
+</div>
+
+<div class="panel" style="margin-bottom:22px">
+  <div class="ph">Meest bekeken trekkers</div>
+  <% var trekkersMetViews = bezoek.trekkers.filter(function(t){ return t.maand > 0; }); %>
+  <% if (trekkersMetViews.length === 0) { %>
+    <div style="padding:24px 22px;color:var(--muted)">Nog geen trekker-weergaven gemeten. Zodra bezoekers je trekkers bekijken, zie je hier welke het populairst zijn.</div>
+  <% } else { %>
+    <table class="list">
+      <thead><tr><th>Trekker</th><th style="text-align:right">Vandaag</th><th style="text-align:right">7 dagen</th><th style="text-align:right">30 dagen</th></tr></thead>
+      <tbody>
+      <% trekkersMetViews.slice(0, 10).forEach(function(t){ %>
+        <tr>
+          <td><a href="/trekker/<%= t.slug %>" target="_blank" style="color:var(--green);font-weight:600"><%= t.naam %></a><% if (t.status === 'verkocht') { %> <span class="pill verkocht">verkocht</span><% } %></td>
+          <td style="text-align:right"><%= t.vandaag %></td>
+          <td style="text-align:right"><%= t.week %></td>
+          <td style="text-align:right;font-weight:700"><%= t.maand %></td>
+        </tr>
+      <% }) %>
+      </tbody>
+    </table>
+  <% } %>
+</div>
+
 <div class="panel">
   <div class="ph">Laatste aanvragen <a class="btn btn-out btn-sm" href="/uadmin/aanvragen">Alles bekijken</a></div>
   <% if (laatste.length===0){ %>
