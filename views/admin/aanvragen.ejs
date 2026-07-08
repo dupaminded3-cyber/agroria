@@ -1,17 +1,26 @@
 <%- include('_head', { titel: 'Aanvragen' }) %>
 <%- include('_side') %>
 <div class="topbar"><div><h1>Aanvragen</h1><div class="sub">Bestellingen, vragen en inruil-taxaties die via de website binnenkomen.</div></div></div>
+
+<% if (typeof mailActief !== 'undefined' && !mailActief) { %>
+  <div class="melding" style="background:#FBF3DD;color:#8a6d1d">
+    <b>Tip:</b> e-mailmeldingen staan nog uit. Ga naar <a href="/uadmin/account" style="color:inherit;font-weight:700;text-decoration:underline">Account → E-mailmeldingen</a> om ze aan te zetten — dan krijg je automatisch een mail bij elke nieuwe aanvraag.
+  </div>
+<% } %>
+
 <div class="panel">
   <% if (lijst.length===0){ %>
     <div style="padding:40px 22px;color:var(--muted)">Nog geen aanvragen binnengekomen. Zodra iemand het contact- of inruilformulier invult, verschijnt het hier.</div>
   <% } else { %>
     <% lijst.forEach(function(i){ %>
+      <% var st = i.status || 'nieuw'; %>
       <div class="aanvraag-item <%= i.gelezen ? '' : 'ongelezen' %>">
         <div class="kop">
           <div class="links">
             <span class="tag-type <%= i.type %>"><%= i.type==='bestelling'?'Bestelling':(i.type==='inruil'?'Inruil':'Vraag') %></span>
             <span class="naam"><%= i.naam || 'Onbekend' %></span>
             <% if(!i.gelezen){ %><span class="pill nieuw">nieuw</span><% } %>
+            <span class="status-pill st-<%= st %>"><%= st==='bezig' ? 'In behandeling' : (st==='afgehandeld' ? 'Afgehandeld' : 'Nieuw') %></span>
           </div>
           <span style="color:var(--muted);font-size:.85rem"><%= new Date(i.createdAt).toLocaleString('nl-NL') %></span>
         </div>
@@ -33,7 +42,25 @@
           <% if (i.adres || i.postcode || i.plaats){ %><div class="meta">Adres: <%= [i.adres, [i.postcode, i.plaats].filter(Boolean).join(' ')].filter(Boolean).join(', ') %></div><% } %>
         <% } %>
         <% if (i.bericht){ %><div class="bericht"><%= i.bericht %></div><% } %>
+
+        <div class="notitieblok">
+          <form method="post" action="/uadmin/aanvragen/<%= i.id %>/notitie" class="notitie-form">
+            <label>Eigen notitie <span style="font-weight:400;color:var(--muted)">(alleen zichtbaar voor jou)</span></label>
+            <div class="notitie-rij">
+              <textarea name="notitie" rows="2" placeholder="Bijv. teruggebeld op 14/7, wil er even over nadenken…"><%= i.notitie || '' %></textarea>
+              <button class="btn btn-out btn-sm" type="submit">Opslaan</button>
+            </div>
+          </form>
+        </div>
+
         <div class="acties">
+          <form method="post" action="/uadmin/aanvragen/<%= i.id %>/status" class="status-form">
+            <select name="status" onchange="this.form.submit()">
+              <option value="nieuw" <%= st==='nieuw'?'selected':'' %>>Nieuw</option>
+              <option value="bezig" <%= st==='bezig'?'selected':'' %>>In behandeling</option>
+              <option value="afgehandeld" <%= st==='afgehandeld'?'selected':'' %>>Afgehandeld</option>
+            </select>
+          </form>
           <% if(!i.gelezen){ %>
           <form method="post" action="/uadmin/aanvragen/<%= i.id %>/gelezen"><button class="btn btn-out btn-sm" type="submit">Markeer als gelezen</button></form>
           <% } %>

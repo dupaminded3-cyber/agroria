@@ -118,6 +118,15 @@ table.list tr:hover td{background:#FAFAF7}
 .staaf-label{font-size:.68rem;color:var(--muted);margin-top:5px}
 
 .tag-type{font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.04em;padding:3px 9px;border-radius:6px}
+.status-pill{font-size:.7rem;font-weight:700;letter-spacing:.03em;padding:3px 10px;border-radius:999px}
+.status-pill.st-nieuw{background:#F6E3E0;color:#9a3b2b}
+.status-pill.st-bezig{background:#FBF3DD;color:#8a6d1d}
+.status-pill.st-afgehandeld{background:#E3EFE0;color:var(--green,#2f6b3a)}
+.notitieblok{margin-top:12px}
+.notitieblok label{display:block;font-size:.78rem;font-weight:700;margin-bottom:5px}
+.notitie-rij{display:flex;gap:10px;align-items:flex-start}
+.notitie-rij textarea{flex:1;border:1px solid var(--line);border-radius:9px;padding:9px 12px;font-family:inherit;font-size:.88rem;resize:vertical;background:#FCFBF7}
+.status-form select{border:1px solid var(--line);border-radius:8px;padding:7px 10px;font-family:inherit;font-size:.85rem;background:#fff;cursor:pointer}
 .tag-type.vraag{background:#E3EFE0;color:var(--green)}
 .tag-type.inruil{background:#FBE9C8;color:#9A6B16}
 
