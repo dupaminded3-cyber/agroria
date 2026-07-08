@@ -1,0 +1,45 @@
+<%- include('partials/head', { titel: 'Recent verkocht', beschrijving: 'Deze trekkers vonden via Agroria Landbouwvoertuigen een nieuwe eigenaar. Bekijk onze referenties en ontdek het actuele aanbod.' }) %>
+<%- include('partials/header') %>
+
+<section class="pagehead <%= paginaHeroFoto ? 'heeft-foto' : '' %>" <% if (paginaHeroFoto) { %>style="background-image:url('<%= paginaHeroFoto %>')"<% } %>>
+  <div class="wrap">
+    <span class="eyebrow light">Recent verkocht</span>
+    <h1>Deze machines vonden<br>een nieuwe eigenaar</h1>
+    <p>Elke verkochte trekker is een boer, loonwerker of handelaar die ons zijn vertrouwen gaf. Bekijk hier een selectie van recent verkochte machines — en ontdek wat er nu beschikbaar is.</p>
+  </div>
+</section>
+
+<section class="sec">
+  <div class="wrap">
+    <% if (lijst.length === 0) { %>
+      <div class="center" style="max-width:560px;margin:0 auto;padding:40px 0">
+        <p style="color:var(--muted);font-size:1.05rem">Er zijn op dit moment geen verkochte machines om te tonen.</p>
+        <a class="btn btn-fill" href="/aanbod" style="margin-top:18px">Bekijk het actuele aanbod</a>
+      </div>
+    <% } else { %>
+      <div class="sec-top">
+        <div>
+          <span class="eyebrow">Onze referenties</span>
+          <h2 class="dh">Verkocht &amp; geleverd</h2>
+        </div>
+        <a class="btn btn-fill" href="/aanbod">Bekijk het actuele aanbod</a>
+      </div>
+      <div class="grid4">
+        <% lijst.forEach(function(t){ %><%- include('partials/card', { t: t }) %><% }) %>
+      </div>
+    <% } %>
+  </div>
+</section>
+
+<section class="split-cta">
+  <div class="wrap center rv" style="max-width:680px;margin:0 auto">
+    <span class="eyebrow light" style="justify-content:center">Uw trekker kan de volgende zijn</span>
+    <h2 class="dh" style="color:var(--paper)">Op zoek naar úw volgende machine?</h2>
+    <p style="color:#D3DBCC;margin:14px 0 26px">Ons aanbod wisselt continu. Staat uw ideale trekker er nu niet tussen? Laat het ons weten — wij zoeken gericht mee, of ruilen uw huidige machine eerlijk in.</p>
+    <div style="display:flex;gap:14px;justify-content:center;flex-wrap:wrap">
+      <a class="btn btn-gold" href="/aanbod">Bekijk het aanbod</a>
+      <a class="btn btn-out" href="/contact" style="color:var(--paper)">Vertel ons wat u zoekt</a>
+    </div>
+  </div>
+</section>
+<%- include('partials/footer') %>

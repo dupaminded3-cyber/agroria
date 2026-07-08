@@ -96,6 +96,7 @@ async function verwerkUploads(req, res, next) {
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use('/uploads', express.static(path.join(db.DATA_DIR, 'uploads')));
 if (IS_PROD) app.set('trust proxy', 1);
@@ -154,17 +155,21 @@ app.use((req, res, next) => {
 // =====================================================================
 //  PUBLIEKE PAGINA'S
 // =====================================================================
+// Concept-trekkers zijn onzichtbaar voor bezoekers (wel voor de ingelogde beheerder).
+const zichtbaar = (t) => t.status !== 'verwijderd' && t.status !== 'concept';
+
 app.get('/', (req, res) => {
   const data = db.read();
   const uitgelicht = data.tractors
-    .filter(t => t.uitgelicht)
+    .filter(t => t.uitgelicht && zichtbaar(t) && t.status !== 'verkocht')
     .slice(0, 4);
   res.render('home', { page: data.pages.home, uitgelicht });
 });
 
 app.get('/aanbod', (req, res) => {
   const data = db.read();
-  let lijst = data.tractors.filter(t => t.status !== 'verwijderd');
+  // Het aanbod toont wat te koop is; verkochte machines staan op /verkocht als referentie.
+  let lijst = data.tractors.filter(t => zichtbaar(t) && t.status !== 'verkocht');
   const { merk, q, sort } = req.query;
   if (merk) lijst = lijst.filter(t => t.merk === merk);
   if (q) {
@@ -175,8 +180,18 @@ app.get('/aanbod', (req, res) => {
   if (sort === 'prijs-op') lijst.sort((a, b) => a.prijs - b.prijs);
   else if (sort === 'prijs-af') lijst.sort((a, b) => b.prijs - a.prijs);
   else if (sort === 'jaar') lijst.sort((a, b) => b.bouwjaar - a.bouwjaar);
-  const merken = [...new Set(data.tractors.map(t => t.merk))].sort();
-  res.render('aanbod', { lijst, merken, filter: { merk, q, sort }, page: (data.pages.aanbod || {}) });
+  const merken = [...new Set(data.tractors.filter(t => zichtbaar(t) && t.status !== 'verkocht').map(t => t.merk))].sort();
+  const aantalVerkocht = data.tractors.filter(t => t.status === 'verkocht').length;
+  res.render('aanbod', { lijst, merken, filter: { merk, q, sort }, page: (data.pages.aanbod || {}), aantalVerkocht });
+});
+
+// Recent verkochte machines — als referentie ("deze vonden al een nieuwe eigenaar").
+app.get('/verkocht', (req, res) => {
+  const data = db.read();
+  const lijst = data.tractors
+    .filter(t => t.status === 'verkocht')
+    .sort((a, b) => (b.createdAt || '').localeCompare(a.createdAt || ''));
+  res.render('verkocht', { lijst });
 });
 
 // Nette URL (bijv. /trekker/case-ih-puma-165-cvx). Oude links op basis van het
@@ -188,10 +203,13 @@ app.get('/trekker/:slug', (req, res) => {
     trekker = data.tractors.find(t => t.id === req.params.slug);
     if (trekker && trekker.slug) return res.redirect(301, '/trekker/' + trekker.slug);
   }
-  if (!trekker) return res.status(404).render('404');
+  // Concept: alleen zichtbaar voor de ingelogde beheerder (handig als voorbeeld/preview).
+  if (!trekker || (trekker.status === 'concept' && !req.session.user)) {
+    return res.status(404).render('404');
+  }
   if (!req.session.user) stats.telTrekker(req, trekker.slug || trekker.id);
   const meer = data.tractors
-    .filter(t => t.id !== trekker.id && t.status !== 'verkocht' && t.status !== 'verwijderd')
+    .filter(t => t.id !== trekker.id && zichtbaar(t) && t.status !== 'verkocht')
     .slice(0, 3);
   res.render('trekker', { trekker, meer });
 });
@@ -229,10 +247,10 @@ app.get('/robots.txt', (req, res) => {
 
 app.get('/sitemap.xml', (req, res) => {
   const data = db.read();
-  const statisch = ['/', '/aanbod', '/over-ons', '/selectie', '/garantie', '/inruil', '/faq', '/contact'];
+  const statisch = ['/', '/aanbod', '/verkocht', '/over-ons', '/selectie', '/garantie', '/inruil', '/faq', '/contact'];
   const urls = statisch.map(p => ({ loc: SITE_URL + p }));
   data.tractors
-    .filter(t => t.status !== 'verwijderd')
+    .filter(t => t.status !== 'verwijderd' && t.status !== 'concept')
     .forEach(t => urls.push({ loc: SITE_URL + '/trekker/' + (t.slug || t.id) }));
   const xml = `<?xml version="1.0" encoding="UTF-8"?>\n` +
     `<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n` +
@@ -291,7 +309,9 @@ app.get('/bestellen/:slug', (req, res) => {
     trekker = data.tractors.find(t => t.id === req.params.slug);
     if (trekker && trekker.slug) return res.redirect(301, '/bestellen/' + trekker.slug);
   }
-  if (!trekker) return res.status(404).render('404');
+  if (!trekker || (trekker.status === 'concept' && !req.session.user)) {
+    return res.status(404).render('404');
+  }
   if (trekker.status === 'verkocht') return res.redirect('/trekker/' + (trekker.slug || trekker.id));
   res.render('bestellen', { trekker });
 });
@@ -447,6 +467,21 @@ app.post('/uadmin/trekkers/:id/foto/delete', requireAuth, (req, res) => {
     db.write(data);
   }
   res.redirect('/uadmin/trekkers/' + req.params.id);
+});
+
+// Volledige foto-volgorde opslaan (na slepen of pijltjes in het beheer).
+app.post('/uadmin/trekkers/:id/fotos/volgorde', requireAuth, (req, res) => {
+  const data = db.read();
+  const t = data.tractors.find(x => x.id === req.params.id);
+  const nieuw = Array.isArray(req.body.fotos) ? req.body.fotos : [];
+  // Alleen accepteren als het exact dezelfde foto's zijn, alleen in andere volgorde.
+  if (t && t.fotos && nieuw.length === t.fotos.length &&
+      nieuw.every(f => t.fotos.includes(f)) && new Set(nieuw).size === nieuw.length) {
+    t.fotos = nieuw;
+    db.write(data);
+    return res.json({ ok: true });
+  }
+  res.status(400).json({ ok: false });
 });
 
 // Maak een andere foto de hoofdfoto (eerste foto), zonder iets te verwijderen.

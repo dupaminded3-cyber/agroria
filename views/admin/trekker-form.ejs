@@ -40,10 +40,11 @@
       </div>
       <div class="field"><label>Status</label>
         <select name="status">
-          <% [['beschikbaar','Beschikbaar'],['gereserveerd','Gereserveerd'],['verkocht','Verkocht']].forEach(function(s){ %>
+          <% [['concept','Concept — nog niet zichtbaar op de site'],['beschikbaar','Beschikbaar'],['gereserveerd','Gereserveerd'],['verkocht','Verkocht']].forEach(function(s){ %>
             <option value="<%= s[0] %>" <%= trekker && trekker.status===s[0] ? 'selected':'' %>><%= s[1] %></option>
           <% }) %>
         </select>
+        <div class="hint">Met <b>Concept</b> kun je een advertentie alvast klaarzetten (tekst, foto's) zonder dat bezoekers hem zien. Als beheerder kun je hem wél alvast bekijken via "Bewerk → bekijk op de site". Zet de status op <b>Beschikbaar</b> om te publiceren.</div>
       </div>
       <div class="field full"><div class="check"><input type="checkbox" name="uitgelicht" id="uit" <%= trekker && trekker.uitgelicht ? 'checked':'' %>><label for="uit" style="margin:0">Tonen als uitgelichte trekker op de homepage</label></div></div>
       <div class="field full"><div class="check"><input type="checkbox" name="voorlader" id="vl" <%= trekker && trekker.voorlader ? 'checked':'' %>><label for="vl" style="margin:0">Voorzien van voorlader</label></div></div>
@@ -64,16 +65,20 @@
         <input type="file" name="fotos" accept="image/*" multiple>
         <div class="hint">Je kunt tot 40 foto's in één keer selecteren en uploaden. De eerste foto wordt de hoofdfoto.</div>
         <% if (trekker && trekker.fotos && trekker.fotos.length){ %>
-          <div class="hint" style="margin:12px 0 0">De <b>eerste</b> foto (met het label "Hoofdfoto") wordt overal op de site als hoofdfoto getoond. Klik bij een andere foto op "Maak hoofdfoto" om die te wisselen.</div>
-          <div class="fotostrip">
+          <div class="hint" style="margin:12px 0 0">De <b>eerste</b> foto (met het label "Hoofdfoto") wordt overal op de site als hoofdfoto getoond. <b>Versleep</b> de foto's om de volgorde te wijzigen, of gebruik de pijltjes — de volgorde wordt direct opgeslagen.</div>
+          <div class="fotostrip" id="fotostrip" data-trekker="<%= trekker.id %>">
             <% trekker.fotos.forEach(function(f, i){ %>
-              <div class="f">
+              <div class="f" draggable="true" data-foto="<%= f %>">
                 <% if (i === 0) { %><span class="hoofdfoto-badge">Hoofdfoto</span><% } %>
                 <img src="/uploads/<%= f %>">
                 <form method="post" action="/uadmin/trekkers/<%= trekker.id %>/foto/delete" onsubmit="return confirm('Foto verwijderen?')">
                   <input type="hidden" name="foto" value="<%= f %>">
                   <button type="submit" title="Verwijder foto">×</button>
                 </form>
+                <div class="foto-pijlen">
+                  <button type="button" class="pijl-links" title="Naar voren">‹</button>
+                  <button type="button" class="pijl-rechts" title="Naar achteren">›</button>
+                </div>
                 <% if (i !== 0) { %>
                   <form method="post" action="/uadmin/trekkers/<%= trekker.id %>/foto/hoofd" class="maak-hoofd">
                     <input type="hidden" name="foto" value="<%= f %>">
@@ -83,6 +88,7 @@
               </div>
             <% }) %>
           </div>
+          <div class="hint" id="volgordeStatus" style="display:none"></div>
         <% } %>
       </div>
       <div class="formactions">
@@ -93,6 +99,65 @@
   </form>
 </div>
 <script>
+  // Foto-volgorde: slepen (desktop) of pijltjes; wordt direct opgeslagen.
+  (function(){
+    var strip = document.getElementById('fotostrip');
+    if (!strip) return;
+    var status = document.getElementById('volgordeStatus');
+    var gesleept = null;
+
+    function volgorde(){
+      return [].map.call(strip.querySelectorAll('.f'), function(el){ return el.dataset.foto; });
+    }
+    function opslaan(){
+      if (status) { status.style.display = 'block'; status.textContent = 'Volgorde opslaan…'; }
+      fetch('/uadmin/trekkers/' + strip.dataset.trekker + '/fotos/volgorde', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ fotos: volgorde() })
+      }).then(function(r){ return r.json(); }).then(function(j){
+        if (j.ok) { location.reload(); }
+        else if (status) { status.textContent = 'Opslaan mislukt — ververs de pagina en probeer opnieuw.'; }
+      }).catch(function(){
+        if (status) { status.textContent = 'Opslaan mislukt — controleer je verbinding.'; }
+      });
+    }
+
+    strip.addEventListener('dragstart', function(e){
+      var f = e.target.closest('.f');
+      if (!f) return;
+      gesleept = f;
+      f.classList.add('slepen');
+      e.dataTransfer.effectAllowed = 'move';
+    });
+    strip.addEventListener('dragover', function(e){
+      e.preventDefault();
+      var doel = e.target.closest('.f');
+      if (!doel || !gesleept || doel === gesleept) return;
+      var rect = doel.getBoundingClientRect();
+      var naVoor = (e.clientX - rect.left) > rect.width / 2;
+      strip.insertBefore(gesleept, naVoor ? doel.nextSibling : doel);
+    });
+    strip.addEventListener('drop', function(e){ e.preventDefault(); });
+    strip.addEventListener('dragend', function(){
+      if (!gesleept) return;
+      gesleept.classList.remove('slepen');
+      gesleept = null;
+      opslaan();
+    });
+
+    strip.addEventListener('click', function(e){
+      var links = e.target.closest('.pijl-links');
+      var rechts = e.target.closest('.pijl-rechts');
+      if (!links && !rechts) return;
+      var f = e.target.closest('.f');
+      if (links && f.previousElementSibling) strip.insertBefore(f, f.previousElementSibling);
+      else if (rechts && f.nextElementSibling) strip.insertBefore(f.nextElementSibling, f);
+      else return;
+      opslaan();
+    });
+  })();
+
   // Live voorbeeld: laat direct zien wat de prijs incl. BTW wordt.
   (function(){
     var type = document.getElementById('prijsType');

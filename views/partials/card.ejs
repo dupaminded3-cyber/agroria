@@ -1,6 +1,6 @@
-<article class="card rv">
+<article class="card rv <%= t.status === 'verkocht' ? 'card-verkocht' : '' %>">
   <div class="pic <%= firstFoto(t) ? '' : 'illu' %>">
-    <% if (t.status === 'verkocht') { %><span class="badge sold">Uitverkocht</span>
+    <% if (t.status === 'verkocht') { %><span class="badge verkocht-badge">Verkocht</span>
     <% } else if (t.status === 'gereserveerd') { %><span class="badge reserved">Gereserveerd</span>
     <% } else if (t.oudePrijs && t.oudePrijs > t.prijs) { %><span class="badge sale">Sale!</span><% } %>
     <% if (firstFoto(t)) { %>
@@ -12,13 +12,18 @@
   <div class="info">
     <h3><%= t.merk %> <%= t.model %></h3>
     <p class="sub">Bouwjaar <%= t.bouwjaar %> · <%= getal(t.uren) %> werkuren · <%= t.pk %> pk</p>
-    <div class="prices">
-      <span class="now"><%= euro(t.prijs) %></span>
-      <% if (t.oudePrijs && t.oudePrijs > t.prijs) { %><span class="was"><%= euro(t.oudePrijs) %></span><% } %>
-    </div>
-    <% var _pi = prijsInfo(t); %>
-    <% if (_pi.type === 'btw') { %><div class="prijs-sub">excl. BTW · <%= euro(_pi.inclBtw) %> incl.</div>
-    <% } else if (_pi.type === 'marge') { %><div class="prijs-sub marge">Marge, geen BTW</div><% } %>
-    <div class="cfoot"><a href="/trekker/<%= t.slug || t.id %>">Bekijk details →</a></div>
+    <% if (t.status === 'verkocht') { %>
+      <div class="prices"><span class="verkocht-tekst">Verkocht — nieuwe eigenaar gevonden</span></div>
+      <div class="cfoot"><a href="/trekker/<%= t.slug || t.id %>">Bekijk deze referentie →</a></div>
+    <% } else { %>
+      <div class="prices">
+        <span class="now"><%= euro(t.prijs) %></span>
+        <% if (t.oudePrijs && t.oudePrijs > t.prijs) { %><span class="was"><%= euro(t.oudePrijs) %></span><% } %>
+      </div>
+      <% var _pi = prijsInfo(t); %>
+      <% if (_pi.type === 'btw') { %><div class="prijs-sub">excl. BTW · <%= euro(_pi.inclBtw) %> incl.</div>
+      <% } else if (_pi.type === 'marge') { %><div class="prijs-sub marge">Marge, geen BTW</div><% } %>
+      <div class="cfoot"><a href="/trekker/<%= t.slug || t.id %>">Bekijk details →</a></div>
+    <% } %>
   </div>
 </article>
