@@ -60,14 +60,24 @@ const upload = multer({
 const UPLOAD_DIR = path.join(db.DATA_DIR, 'uploads');
 
 async function bewaarFoto(file) {
-  const naam = db.id() + '.webp';
+  // Het logo voor e-mails wordt als PNG opgeslagen: e-mailprogramma's zoals
+  // Outlook tonen webp niet altijd. Al het andere wordt compact webp.
+  const isMailLogo = file.fieldname === 'mail_logo';
+  const naam = db.id() + (isMailLogo ? '.png' : '.webp');
   const doel = path.join(UPLOAD_DIR, naam);
   try {
-    await sharp(file.path)
-      .rotate() // corrigeert stand op basis van EXIF
-      .resize({ width: 1600, height: 1600, fit: 'inside', withoutEnlargement: true })
-      .webp({ quality: 82 })
-      .toFile(doel);
+    const basis = sharp(file.path).rotate(); // corrigeert stand op basis van EXIF
+    if (isMailLogo) {
+      await basis
+        .resize({ width: 480, height: 480, fit: 'inside', withoutEnlargement: true })
+        .png()
+        .toFile(doel);
+    } else {
+      await basis
+        .resize({ width: 1600, height: 1600, fit: 'inside', withoutEnlargement: true })
+        .webp({ quality: 82 })
+        .toFile(doel);
+    }
   } finally {
     fs.unlink(file.path, () => {}); // tijdelijk bestand altijd opruimen
   }
@@ -389,7 +399,8 @@ app.post('/bestelling', (req, res) => {
   ]);
   // Opgemaakte bevestigingsmail naar de klant, namens Agroria (fire-and-forget).
   if (aanvraag.email) {
-    const bev = bestellingBevestiging(aanvraag, t, (data.pages || {}).contact || {}, SITE_URL);
+    const mailLogo = (data.settings || {}).mailLogo ? SITE_URL + data.settings.mailLogo : '';
+    const bev = bestellingBevestiging(aanvraag, t, (data.pages || {}).contact || {}, SITE_URL, mailLogo);
     mail.stuurNaarKlant(aanvraag.email, bev.onderwerp, bev.html, bev.tekst);
   }
   res.render('besteld', { trekker: naamTrekker, prijs: t ? t.prijs : (parseInt(req.body.prijs) || 0) });
@@ -567,6 +578,7 @@ app.get('/uadmin/paginas', requireAuth, (req, res) => {
 const paginaUpload = upload.fields([
   { name: 'logo', maxCount: 1 },
   { name: 'favicon', maxCount: 1 },
+  { name: 'mail_logo', maxCount: 1 },
   { name: 'pagina_heroFoto', maxCount: 1 },
   { name: 'home_heroFoto', maxCount: 1 },
   { name: 'home_introFoto', maxCount: 1 },
@@ -593,6 +605,7 @@ app.post('/uadmin/paginas', requireAuth, paginaUpload, verwerkUploads, (req, res
 
   if (f.logo) data.settings.logo = '/uploads/' + f.logo[0].filename;
   if (f.favicon) data.settings.favicon = '/uploads/' + f.favicon[0].filename;
+  if (f.mail_logo) data.settings.mailLogo = '/uploads/' + f.mail_logo[0].filename;
   if (f.pagina_heroFoto) data.settings.paginaHeroFoto = '/uploads/' + f.pagina_heroFoto[0].filename;
   set(data.settings, 'merken', b.settings_merken);
   set(data.pages.home, 'heroTitel', b.home_heroTitel);
@@ -653,6 +666,18 @@ app.post('/uadmin/favicon/delete', requireAuth, (req, res) => {
     const p = path.join(db.DATA_DIR, 'uploads', fname);
     if (fs.existsSync(p)) try { fs.unlinkSync(p); } catch (e) {}
     data.settings.favicon = '';
+    db.write(data);
+  }
+  res.redirect('/uadmin/paginas?ok=1');
+});
+
+app.post('/uadmin/maillogo/delete', requireAuth, (req, res) => {
+  const data = db.read();
+  if (data.settings && data.settings.mailLogo) {
+    const fname = data.settings.mailLogo.replace('/uploads/', '');
+    const p = path.join(db.DATA_DIR, 'uploads', fname);
+    if (fs.existsSync(p)) try { fs.unlinkSync(p); } catch (e) {}
+    data.settings.mailLogo = '';
     db.write(data);
   }
   res.redirect('/uadmin/paginas?ok=1');

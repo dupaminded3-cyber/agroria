@@ -72,6 +72,36 @@
 </div>
 
 <div class="panel" style="padding:26px;margin-bottom:22px">
+  <div class="ph" style="border:none;padding:0 0 6px">Logo voor e-mails</div>
+  <div style="color:var(--muted);font-size:.9rem;margin-bottom:18px">Dit logo verschijnt in de kop en voet van de e-mails die klanten van je ontvangen (zoals de bestelbevestiging). Gebruik bij voorkeur een PNG met transparante achtergrond — het komt op een donkergroene achtergrond te staan. Leeg = nette tekst-versie van je bedrijfsnaam.</div>
+  <% if (settings.mailLogo){ %>
+    <div style="display:flex;align-items:center;gap:22px;flex-wrap:wrap">
+      <div style="background:#1C3320;border-radius:12px;padding:16px 24px;display:inline-flex;align-items:center">
+        <img src="<%= settings.mailLogo %>" alt="Huidig e-mail-logo" style="max-height:64px;width:auto;max-width:220px;display:block">
+      </div>
+      <div style="color:var(--muted);font-size:.9rem">Zo komt het logo in de mail te staan (op de donkere kop).</div>
+    </div>
+    <div style="display:flex;gap:12px;margin-top:18px;flex-wrap:wrap">
+      <form method="post" action="/uadmin/paginas" enctype="multipart/form-data" style="display:flex;gap:12px;align-items:center;flex-wrap:wrap">
+        <input type="file" name="mail_logo" accept="image/png,image/jpeg,image/webp" required>
+        <button class="btn btn-fill" type="submit">Logo vervangen</button>
+      </form>
+      <form method="post" action="/uadmin/maillogo/delete" onsubmit="return confirm('E-mail-logo verwijderen? De mails tonen dan weer de tekst-versie.')">
+        <button class="btn btn-danger" type="submit">Logo verwijderen</button>
+      </form>
+    </div>
+  <% } else { %>
+    <form method="post" action="/uadmin/paginas" enctype="multipart/form-data">
+      <div class="field full" style="margin:0">
+        <input type="file" name="mail_logo" accept="image/png,image/jpeg,image/webp" required>
+        <div class="hint">Wordt automatisch als PNG opgeslagen (e-mailprogramma's zoals Outlook tonen andere formaten niet altijd goed).</div>
+      </div>
+      <button class="btn btn-fill" type="submit" style="margin-top:16px">Logo uploaden</button>
+    </form>
+  <% } %>
+</div>
+
+<div class="panel" style="padding:26px;margin-bottom:22px">
   <div class="ph" style="border:none;padding:0 0 6px">Hero-foto voor de overige pagina's</div>
   <div style="color:var(--muted);font-size:.9rem;margin-bottom:18px">Eén foto voor de kop van "Over ons", "Selectie &amp; kwaliteit", "Garantie", "Ons aanbod", "Contact" en "Veelgestelde vragen" — upload 'm hier één keer en hij verschijnt automatisch op al die pagina's. De pagina "Inruil" gebruikt deze foto ook automatisch, tenzij je daar zelf een eigen foto instelt. Alleen de <b>homepage</b> gebruikt bewust een eigen, andere hero-foto.</div>
   <% if (settings.paginaHeroFoto){ %>
