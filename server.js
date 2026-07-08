@@ -457,6 +457,12 @@ app.get('/uadmin', requireAuth, (req, res) => {
   res.render('admin/dashboard', { stats: kerncijfers, laatste, bezoek, active: 'dashboard' });
 });
 
+// Live-teller voor het dashboard (wordt elke paar seconden opgehaald zodat
+// het getal meebeweegt zonder de pagina te hoeven verversen).
+app.get('/uadmin/live.json', requireAuth, (req, res) => {
+  res.json({ live: stats.liveAantal() });
+});
+
 // ---- Trekkers beheren ----
 app.get('/uadmin/trekkers', requireAuth, (req, res) => {
   const data = db.read();

@@ -11,11 +11,24 @@
   <div class="stat"><div class="n"><%= stats.totaalAanvragen %></div><div class="l">Aanvragen totaal</div></div>
 </div>
 <div class="cards">
-  <div class="stat"><div class="n" style="color:#2f6b3a"><%= bezoek.live %></div><div class="l">Nu live op de site</div></div>
+  <div class="stat"><div class="n" style="color:#2f6b3a" id="liveTeller"><%= bezoek.live %></div><div class="l">Nu live op de site <span style="display:block;font-size:.7rem;color:var(--muted);margin-top:2px">ververst automatisch · exclusief uzelf</span></div></div>
   <div class="stat"><div class="n"><%= bezoek.dagen[0].bezoekers %></div><div class="l">Bezoekers vandaag</div></div>
   <div class="stat"><div class="n"><%= bezoek.dagen[0].paginas %></div><div class="l">Paginaweergaven vandaag</div></div>
   <div class="stat"><div class="n"><%= bezoek.dagen[1] ? bezoek.dagen[1].bezoekers : 0 %></div><div class="l">Bezoekers gisteren</div></div>
 </div>
+<script>
+  // Live-teller elke 15 seconden verversen zonder de pagina te herladen.
+  (function(){
+    var el = document.getElementById('liveTeller');
+    if (!el) return;
+    setInterval(function(){
+      fetch('/uadmin/live.json')
+        .then(function(r){ return r.json(); })
+        .then(function(j){ if (typeof j.live === 'number') el.textContent = j.live; })
+        .catch(function(){});
+    }, 15000);
+  })();
+</script>
 
 <div class="panel" style="margin-bottom:22px">
   <div class="ph">Bezoekers per dag <span style="font-weight:400;font-size:.8rem;color:var(--muted)">laatste 14 dagen</span></div>
