@@ -14,6 +14,7 @@ const { omschrijvingHtml, omschrijvingText } = require('./lib/format');
 const { prijsInfo } = require('./lib/prijs');
 const { maakSlug, uniekeSlug } = require('./lib/slug');
 const mail = require('./lib/mail');
+const { bestellingBevestiging } = require('./lib/klantmail');
 const stats = require('./lib/stats');
 
 const app = express();
@@ -392,6 +393,11 @@ app.post('/bestelling', (req, res) => {
     `Opmerking:`,
     aanvraag.bericht || '—'
   ]);
+  // Opgemaakte bevestigingsmail naar de klant, namens Agroria (fire-and-forget).
+  if (aanvraag.email) {
+    const bev = bestellingBevestiging(aanvraag, t, (data.pages || {}).contact || {}, SITE_URL);
+    mail.stuurNaarKlant(aanvraag.email, bev.onderwerp, bev.html, bev.tekst);
+  }
   res.render('besteld', { trekker: naamTrekker, prijs: t ? t.prijs : (parseInt(req.body.prijs) || 0) });
 });
 
