@@ -162,15 +162,16 @@ const zichtbaar = (t) => t.status !== 'verwijderd' && t.status !== 'concept';
 app.get('/', (req, res) => {
   const data = db.read();
   const uitgelicht = data.tractors
-    .filter(t => t.uitgelicht && zichtbaar(t) && t.status !== 'verkocht')
+    .filter(t => t.uitgelicht && zichtbaar(t))
     .slice(0, 4);
   res.render('home', { page: data.pages.home, uitgelicht });
 });
 
 app.get('/aanbod', (req, res) => {
   const data = db.read();
-  // Het aanbod toont wat te koop is; verkochte machines staan op /verkocht als referentie.
-  let lijst = data.tractors.filter(t => zichtbaar(t) && t.status !== 'verkocht');
+  // Verkochte machines blijven zichtbaar (met "Verkocht"-markering), maar
+  // komen achteraan — het beschikbare aanbod eerst.
+  let lijst = data.tractors.filter(t => zichtbaar(t));
   const { merk, q, sort } = req.query;
   if (merk) lijst = lijst.filter(t => t.merk === merk);
   if (q) {
@@ -181,7 +182,8 @@ app.get('/aanbod', (req, res) => {
   if (sort === 'prijs-op') lijst.sort((a, b) => a.prijs - b.prijs);
   else if (sort === 'prijs-af') lijst.sort((a, b) => b.prijs - a.prijs);
   else if (sort === 'jaar') lijst.sort((a, b) => b.bouwjaar - a.bouwjaar);
-  const merken = [...new Set(data.tractors.filter(t => zichtbaar(t) && t.status !== 'verkocht').map(t => t.merk))].sort();
+  lijst.sort((a, b) => (a.status === 'verkocht' ? 1 : 0) - (b.status === 'verkocht' ? 1 : 0));
+  const merken = [...new Set(data.tractors.filter(zichtbaar).map(t => t.merk))].sort();
   const aantalVerkocht = data.tractors.filter(t => t.status === 'verkocht').length;
   res.render('aanbod', { lijst, merken, filter: { merk, q, sort }, page: (data.pages.aanbod || {}), aantalVerkocht });
 });

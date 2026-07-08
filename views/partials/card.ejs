@@ -1,6 +1,6 @@
 <article class="card rv <%= t.status === 'verkocht' ? 'card-verkocht' : '' %>">
   <div class="pic <%= firstFoto(t) ? '' : 'illu' %>">
-    <% if (t.status === 'verkocht') { %><span class="badge verkocht-badge">Verkocht</span>
+    <% if (t.status === 'verkocht') { %><span class="verkocht-overlay">Verkocht</span>
     <% } else if (t.status === 'gereserveerd') { %><span class="badge reserved">Gereserveerd</span>
     <% } else if (t.oudePrijs && t.oudePrijs > t.prijs) { %><span class="badge sale">Sale!</span><% } %>
     <% if (firstFoto(t)) { %>

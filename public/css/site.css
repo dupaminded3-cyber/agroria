@@ -122,10 +122,23 @@ header.site{position:sticky;top:0;z-index:60;background:var(--paper);border-bott
 .card .badge.sale{background:var(--gold);color:var(--ink)}
 .card .badge.sold{background:var(--ink);color:var(--paper)}
 .card .badge.reserved{background:var(--soil);color:#fff}
-/* Verkocht — verfijnd, geen "uitverkocht"-gevoel maar een referentie */
-.card .badge.verkocht-badge{background:var(--forest);color:var(--gold-soft);letter-spacing:.12em}
-.card-verkocht .pic img{filter:saturate(.55) brightness(.96)}
-.card-verkocht:hover .pic img{filter:saturate(.85)}
+/* Verkocht — elegante markering over de foto (geen goedkoop label) */
+.verkocht-overlay{
+  position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);z-index:3;
+  font-family:var(--display);font-weight:600;font-size:1.05rem;letter-spacing:.3em;text-transform:uppercase;
+  color:var(--gold-soft);background:rgba(14,18,10,.82);border:1px solid var(--gold);
+  padding:10px 26px 10px 30px;white-space:nowrap;
+  box-shadow:0 10px 40px -10px rgba(0,0,0,.6);
+}
+.verkocht-overlay.groot{font-size:1.5rem;padding:14px 38px 14px 44px}
+.card-verkocht .pic{position:relative}
+.card-verkocht .pic::after{content:"";position:absolute;inset:0;background:rgba(14,18,10,.28);z-index:2}
+.card-verkocht .pic img{filter:saturate(.6)}
+.card-verkocht:hover .pic img{filter:saturate(.9)}
+.gallery .main.main-verkocht{position:relative}
+.gallery .main.main-verkocht::after{content:"";position:absolute;inset:0;background:rgba(14,18,10,.25);z-index:2;pointer-events:none}
+.gallery .main.main-verkocht img{filter:saturate(.65)}
+.verkocht-overlay{pointer-events:none}
 .card .verkocht-tekst{font-family:var(--display);font-weight:600;font-size:1.02rem;color:var(--forest)}
 .card .info{padding:22px;display:flex;flex-direction:column;flex:1}
 .card .info h3{font-family:var(--display);font-weight:600;font-size:1.22rem;line-height:1.15;min-height:2.3em}
