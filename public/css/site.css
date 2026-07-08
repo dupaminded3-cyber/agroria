@@ -122,6 +122,11 @@ header.site{position:sticky;top:0;z-index:60;background:var(--paper);border-bott
 .card .badge.sale{background:var(--gold);color:var(--ink)}
 .card .badge.sold{background:var(--ink);color:var(--paper)}
 .card .badge.reserved{background:var(--soil);color:#fff}
+/* Verkocht — verfijnd, geen "uitverkocht"-gevoel maar een referentie */
+.card .badge.verkocht-badge{background:var(--forest);color:var(--gold-soft);letter-spacing:.12em}
+.card-verkocht .pic img{filter:saturate(.55) brightness(.96)}
+.card-verkocht:hover .pic img{filter:saturate(.85)}
+.card .verkocht-tekst{font-family:var(--display);font-weight:600;font-size:1.02rem;color:var(--forest)}
 .card .info{padding:22px;display:flex;flex-direction:column;flex:1}
 .card .info h3{font-family:var(--display);font-weight:600;font-size:1.22rem;line-height:1.15;min-height:2.3em}
 .card .info .sub{color:var(--muted);font-size:.84rem;margin:8px 0 0}
@@ -194,6 +199,15 @@ header.site{position:sticky;top:0;z-index:60;background:var(--paper);border-bott
 .detail .panel .prices{display:flex;align-items:baseline;gap:14px;margin:16px 0}
 .detail .panel .now{font-family:var(--display);font-weight:600;font-size:2.1rem;color:var(--forest)}
 .detail .panel .was{font-size:1.1rem;color:var(--muted-2);text-decoration:line-through}
+/* Verkocht-blok op de trekkerpagina — elegant i.p.v. een kale melding */
+.verkocht-blok{background:var(--moss);border:1px solid var(--moss-2);border-radius:6px;padding:20px 22px;margin:16px 0}
+.verkocht-blok .verkocht-kop{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:600;font-size:1.15rem;color:var(--forest)}
+.verkocht-blok .verkocht-kop svg{color:var(--gold);flex-shrink:0}
+.verkocht-blok p{color:var(--muted);font-size:.92rem;margin-top:10px;line-height:1.6}
+
+/* Concept-voorbeeldmelding (alleen zichtbaar voor de ingelogde beheerder) */
+.concept-melding{background:#FBF3DD;color:#8a6d1d;border-radius:6px;padding:12px 16px;font-size:.85rem;font-weight:600;margin-bottom:14px}
+
 .spectable{width:100%;border-collapse:collapse;margin:18px 0}
 .spectable td{padding:12px 0;border-bottom:1px solid var(--line);font-size:.93rem}
 .spectable td:first-child{color:var(--muted)}

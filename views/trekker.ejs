@@ -21,13 +21,25 @@
         <% } %>
       </div>
       <div class="panel">
+        <% var pi = prijsInfo(trekker); %>
+        <% if (trekker.status === 'concept' && user) { %>
+          <div class="concept-melding">Concept — alleen jij ziet deze pagina. Zet de status op "Beschikbaar" om te publiceren.</div>
+        <% } %>
         <span class="cat"><%= trekker.categorie || 'Trekker' %> · <%= trekker.bouwjaar %></span>
         <h1><%= trekker.merk %> <%= trekker.model %></h1>
-        <% if (trekker.status === 'verkocht') { %><p style="color:var(--soil);font-weight:600">Deze trekker is verkocht.</p><% } %>
-        <div class="prices"><span class="now"><%= euro(trekker.prijs) %></span><% if (trekker.oudePrijs && trekker.oudePrijs > trekker.prijs) { %><span class="was"><%= euro(trekker.oudePrijs) %></span><% } %></div>
-        <% var pi = prijsInfo(trekker); %>
-        <% if (pi.type === 'btw') { %><div class="prijs-sub">Prijs excl. BTW · <%= euro(pi.inclBtw) %> incl. BTW (<%= pi.percentage %>%)</div>
-        <% } else if (pi.type === 'marge') { %><div class="prijs-sub marge">Margeregeling — geen BTW te verrekenen</div><% } %>
+        <% if (trekker.status === 'verkocht') { %>
+          <div class="verkocht-blok">
+            <div class="verkocht-kop">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M20 6L9 17l-5-5" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              Deze trekker is verkocht
+            </div>
+            <p>Deze machine heeft inmiddels een nieuwe eigenaar gevonden en kan niet meer worden besteld. Regelmatig komen er vergelijkbare machines binnen — bekijk het actuele aanbod of laat ons weten wat u zoekt.</p>
+          </div>
+        <% } else { %>
+          <div class="prices"><span class="now"><%= euro(trekker.prijs) %></span><% if (trekker.oudePrijs && trekker.oudePrijs > trekker.prijs) { %><span class="was"><%= euro(trekker.oudePrijs) %></span><% } %></div>
+          <% if (pi.type === 'btw') { %><div class="prijs-sub">Prijs excl. BTW · <%= euro(pi.inclBtw) %> incl. BTW (<%= pi.percentage %>%)</div>
+          <% } else if (pi.type === 'marge') { %><div class="prijs-sub marge">Margeregeling — geen BTW te verrekenen</div><% } %>
+        <% } %>
         <table class="spectable">
           <tr><td>Bouwjaar</td><td><%= trekker.bouwjaar %></td></tr>
           <tr><td>Werkuren</td><td><%= getal(trekker.uren) %></td></tr>
@@ -39,7 +51,8 @@
           <a class="btn btn-gold" style="width:100%;justify-content:center" href="/bestellen/<%= trekker.slug || trekker.id %>">Bestel deze trekker</a>
           <a class="btn btn-out js-open-vraag" style="width:100%;justify-content:center;margin-top:10px" href="#vraag">Eerst een vraag stellen</a>
         <% } else { %>
-          <a class="btn btn-out js-open-vraag" style="width:100%;justify-content:center" href="#vraag">Vraag stellen over dit model</a>
+          <a class="btn btn-gold" style="width:100%;justify-content:center" href="/aanbod">Bekijk het actuele aanbod</a>
+          <a class="btn btn-out js-open-vraag" style="width:100%;justify-content:center;margin-top:10px" href="#vraag">Vraag naar vergelijkbare modellen</a>
         <% } %>
       </div>
     </div>
