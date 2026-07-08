@@ -9,7 +9,8 @@
     <a href="/aanbod" style="color:var(--muted);font-size:.9rem">← Terug naar aanbod</a>
     <div class="detail">
       <div class="gallery">
-        <div class="main">
+        <div class="main <%= trekker.status === 'verkocht' ? 'main-verkocht' : '' %>">
+          <% if (trekker.status === 'verkocht') { %><span class="verkocht-overlay groot">Verkocht</span><% } %>
           <% if (trekker.fotos && trekker.fotos.length) { %>
             <img id="mainimg" src="/uploads/<%= trekker.fotos[0] %>" alt="<%= trekker.merk %> <%= trekker.model %>" decoding="async" width="800" height="600" style="cursor:zoom-in" onclick="Lightbox.open(0)">
           <% } else { %>
