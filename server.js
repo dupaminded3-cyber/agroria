@@ -14,6 +14,7 @@ const { omschrijvingHtml, omschrijvingText } = require('./lib/format');
 const { prijsInfo } = require('./lib/prijs');
 const { maakSlug, uniekeSlug } = require('./lib/slug');
 const mail = require('./lib/mail');
+const stats = require('./lib/stats');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -126,6 +127,13 @@ app.locals.safeJsonLd = (obj) => JSON.stringify(obj).replace(/</g, '\\u003c');
 app.use((req, res, next) => {
   const data = db.read();
   res.locals.user = req.session.user || null;
+  // Bezoekersstatistieken: alleen publieke pagina-bezoeken tellen — geen
+  // beheerpagina's, technische bestanden of de eigen bezoeken van de beheerder.
+  if (req.method === 'GET' && !req.session.user &&
+      !req.path.startsWith('/uadmin') &&
+      !['/robots.txt', '/sitemap.xml', '/favicon.ico'].includes(req.path)) {
+    stats.telPagina(req);
+  }
   res.locals.contact = (data.pages || {}).contact || {};
   res.locals.logo = (data.settings || {}).logo || '';
   res.locals.favicon = (data.settings || {}).favicon || '';
@@ -182,6 +190,7 @@ app.get('/trekker/:slug', (req, res) => {
     if (trekker && trekker.slug) return res.redirect(301, '/trekker/' + trekker.slug);
   }
   if (!trekker) return res.status(404).render('404');
+  if (!req.session.user) stats.telTrekker(req, trekker.slug || trekker.id);
   const meer = data.tractors
     .filter(t => t.id !== trekker.id && t.status !== 'verkocht' && t.status !== 'verwijderd')
     .slice(0, 3);
@@ -404,14 +413,15 @@ app.get('/uadmin/logout', (req, res) => {
 
 app.get('/uadmin', requireAuth, (req, res) => {
   const data = db.read();
-  const stats = {
+  const kerncijfers = {
     trekkers: data.tractors.filter(t => t.status !== 'verwijderd').length,
     beschikbaar: data.tractors.filter(t => t.status === 'beschikbaar').length,
     nieuweAanvragen: data.inquiries.filter(i => !i.gelezen).length,
     totaalAanvragen: data.inquiries.length
   };
   const laatste = data.inquiries.slice(0, 5);
-  res.render('admin/dashboard', { stats, laatste, active: 'dashboard' });
+  const bezoek = stats.overzicht(data.tractors.filter(t => t.status !== 'verwijderd'));
+  res.render('admin/dashboard', { stats: kerncijfers, laatste, bezoek, active: 'dashboard' });
 });
 
 // ---- Trekkers beheren ----
