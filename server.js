@@ -14,7 +14,7 @@ const { omschrijvingHtml, omschrijvingText } = require('./lib/format');
 const { prijsInfo } = require('./lib/prijs');
 const { maakSlug, uniekeSlug } = require('./lib/slug');
 const mail = require('./lib/mail');
-const { bestellingBevestiging } = require('./lib/klantmail');
+const { bestellingBevestiging, inruilBevestiging, vraagBevestiging } = require('./lib/klantmail');
 const stats = require('./lib/stats');
 
 const app = express();
@@ -275,6 +275,16 @@ function mailNieuweAanvraag(kop, regels) {
   mail.stuurMelding(kop, tekst); // fire-and-forget: blokkeert de bezoeker nooit
 }
 
+// Hulpfunctie: stuurt de opgemaakte bevestigingsmail naar de klant zelf
+// (fire-and-forget). bouw = een van de functies uit lib/klantmail.
+function mailKlantBevestiging(aanvraag, bouw) {
+  if (!aanvraag.email) return;
+  const data = db.read();
+  const mailLogo = (data.settings || {}).mailLogo ? SITE_URL + data.settings.mailLogo : '';
+  const bev = bouw(aanvraag, (data.pages || {}).contact || {}, SITE_URL, mailLogo);
+  mail.stuurNaarKlant(aanvraag.email, bev.onderwerp, bev.html, bev.tekst);
+}
+
 app.post('/aanvraag', (req, res) => {
   const data = db.read();
   const aanvraag = {
@@ -303,6 +313,8 @@ app.post('/aanvraag', (req, res) => {
     `Bericht:`,
     aanvraag.bericht || '—'
   ]);
+  // Opgemaakte bevestigingsmail naar de klant, namens Agroria.
+  mailKlantBevestiging(aanvraag, vraagBevestiging);
   res.render('bedankt', { soort: 'aanvraag' });
 });
 
@@ -340,6 +352,8 @@ app.post('/inruil', upload.array('fotos', INRUIL_MAX_FOTOS), verwerkUploads, (re
     `Toelichting:`,
     aanvraag.bericht || '—'
   ]);
+  // Opgemaakte bevestigingsmail naar de klant, namens Agroria.
+  mailKlantBevestiging(aanvraag, inruilBevestiging);
   res.render('bedankt', { soort: 'inruil' });
 });
 
