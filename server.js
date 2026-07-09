@@ -40,8 +40,9 @@ function sessionSecret() {
 // Foto's worden eerst tijdelijk op de schijf gezet (niet in het geheugen —
 // dat zou bij grote batches, bijv. 30+ foto's tegelijk, teveel RAM kosten op
 // een kleine server) en daarna één voor één met sharp geoptimaliseerd:
-// verkleind naar max. 1600px breed en gecomprimeerd naar webp. Dat scheelt
-// fors in laadtijd — belangrijk voor het high-end gevoel van de site.
+// verkleind naar max. 2560px en als webp bewaard. 2560px is genoeg voor een
+// schermvullende hero-foto op grote (retina-)schermen, en kwaliteit 90 met een
+// zachte nabewerking houdt het beeld scherp zonder de laadtijd op te blazen.
 const MAX_FOTOS_PER_KEER = 40; // ruim voldoende voor bijv. 30 foto's in één keer
 const TIJDELIJKE_MAP = require('os').tmpdir();
 
@@ -74,8 +75,9 @@ async function bewaarFoto(file) {
         .toFile(doel);
     } else {
       await basis
-        .resize({ width: 1600, height: 1600, fit: 'inside', withoutEnlargement: true })
-        .webp({ quality: 82 })
+        .resize({ width: 2560, height: 2560, fit: 'inside', withoutEnlargement: true })
+        .sharpen({ sigma: 0.8 }) // subtiel verscherpen: compenseert het verkleinen
+        .webp({ quality: 90 })
         .toFile(doel);
     }
   } finally {
