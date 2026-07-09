@@ -660,6 +660,7 @@ app.post('/uadmin/paginas', requireAuth, paginaUpload, verwerkUploads, (req, res
   set(data.pages.contact, 'telefoon', b.contact_telefoon);
   set(data.pages.contact, 'whatsapp', b.contact_whatsapp);
   set(data.pages.contact, 'email', b.contact_email);
+  set(data.pages.contact, 'openingstijden', b.contact_openingstijden);
   set(data.pages.contact, 'kvk', b.contact_kvk);
   set(data.pages.contact, 'btw', b.contact_btw);
   set(data.pages.contact, 'plaatsnaam', b.contact_plaatsnaam);
