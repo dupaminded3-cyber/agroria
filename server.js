@@ -16,6 +16,7 @@ const { maakSlug, uniekeSlug } = require('./lib/slug');
 const mail = require('./lib/mail');
 const { bestellingBevestiging, inruilBevestiging, vraagBevestiging } = require('./lib/klantmail');
 const stats = require('./lib/stats');
+const video = require('./lib/video');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -533,6 +534,7 @@ app.post('/uadmin/trekkers/:id?', requireAuth, upload.array('fotos', MAX_FOTOS_P
     omschrijving: (b.omschrijving || '').trim()
   };
   const nieuweFotos = (req.files || []).map(f => f.filename);
+  let trekkerId = '';
 
   if (req.params.id) {
     const t = data.tractors.find(x => x.id === req.params.id);
@@ -546,14 +548,17 @@ app.post('/uadmin/trekkers/:id?', requireAuth, upload.array('fotos', MAX_FOTOS_P
         t.slug = uniekeSlug(maakSlug(`${t.merk} ${t.model}`.trim()), bezet);
       }
     }
+    if (t) trekkerId = t.id;
   } else {
     const bezet = data.tractors.filter(x => x.slug).map(x => x.slug);
     const slug = uniekeSlug(maakSlug(`${velden.merk} ${velden.model}`.trim()), bezet);
+    trekkerId = db.id();
     data.tractors.unshift(Object.assign({
-      id: db.id(), slug, fotos: nieuweFotos, createdAt: new Date().toISOString()
+      id: trekkerId, slug, fotos: nieuweFotos, createdAt: new Date().toISOString()
     }, velden));
   }
   db.write(data);
+  if (trekkerId) video.controleer(trekkerId); // maak/ververs de presentatievideo op de achtergrond
   res.redirect('/uadmin/trekkers');
 });
 
@@ -565,6 +570,7 @@ app.post('/uadmin/trekkers/:id/foto/delete', requireAuth, (req, res) => {
     const p = path.join(db.DATA_DIR, 'uploads', req.body.foto);
     if (fs.existsSync(p)) try { fs.unlinkSync(p); } catch (e) {}
     db.write(data);
+    video.controleer(t.id);
   }
   res.redirect('/uadmin/trekkers/' + req.params.id);
 });
@@ -579,6 +585,7 @@ app.post('/uadmin/trekkers/:id/fotos/volgorde', requireAuth, (req, res) => {
       nieuw.every(f => t.fotos.includes(f)) && new Set(nieuw).size === nieuw.length) {
     t.fotos = nieuw;
     db.write(data);
+    video.controleer(t.id);
     return res.json({ ok: true });
   }
   res.status(400).json({ ok: false });
@@ -594,6 +601,7 @@ app.post('/uadmin/trekkers/:id/foto/hoofd', requireAuth, (req, res) => {
       t.fotos.splice(i, 1);
       t.fotos.unshift(req.body.foto);
       db.write(data);
+      video.controleer(t.id);
     }
   }
   res.redirect('/uadmin/trekkers/' + req.params.id);
@@ -601,9 +609,22 @@ app.post('/uadmin/trekkers/:id/foto/hoofd', requireAuth, (req, res) => {
 
 app.post('/uadmin/trekkers/:id/delete', requireAuth, (req, res) => {
   const data = db.read();
+  video.ruimOp(data.tractors.find(t => t.id === req.params.id));
   data.tractors = data.tractors.filter(t => t.id !== req.params.id);
   db.write(data);
   res.redirect('/uadmin/trekkers');
+});
+
+// Presentatievideo handmatig opnieuw laten maken
+app.post('/uadmin/trekkers/:id/video', requireAuth, (req, res) => {
+  const data = db.read();
+  const t = data.tractors.find(x => x.id === req.params.id);
+  if (t) {
+    t.videoBron = ''; // forceer een nieuwe render
+    db.write(data);
+    video.controleer(t.id);
+  }
+  res.redirect('/uadmin/trekkers/' + req.params.id);
 });
 
 // ---- Pagina-afbeeldingen & teksten beheren ----
@@ -875,4 +896,6 @@ app.use((err, req, res, next) => {
 app.listen(PORT, () => {
   console.log(`\n  Agroria draait op  http://localhost:${PORT}`);
   console.log(`  Beheerpaneel op    http://localhost:${PORT}/uadmin\n`);
+  // Afgebroken of ontbrekende trekker-video's rustig op de achtergrond bijmaken.
+  video.herstelBijOpstarten();
 });

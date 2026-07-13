@@ -20,6 +20,14 @@
         <% if (trekker.fotos && trekker.fotos.length > 1) { %>
           <div class="thumbs"><% trekker.fotos.forEach(function(f, i){ %><img src="/uploads/<%= f %>" alt="<%= trekker.merk %> <%= trekker.model %> — foto <%= i+1 %>" loading="lazy" decoding="async" onclick="Lightbox.select(<%= i %>)"><% }) %></div>
         <% } %>
+        <% if (trekker.video && trekker.videoStatus === 'klaar') { %>
+          <div class="trekker-video">
+            <video controls preload="metadata" playsinline
+              src="/uploads/<%= trekker.video %>"
+              <% if (trekker.fotos && trekker.fotos.length) { %>poster="/uploads/<%= trekker.fotos[0] %>"<% } %>
+              aria-label="Video van de <%= trekker.merk %> <%= trekker.model %>"></video>
+          </div>
+        <% } %>
       </div>
       <div class="panel">
         <% var pi = prijsInfo(trekker); %>

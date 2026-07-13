@@ -91,6 +91,28 @@
           <div class="hint" id="volgordeStatus" style="display:none"></div>
         <% } %>
       </div>
+      <% if (trekker && trekker.fotos && trekker.fotos.length) { %>
+      <div class="field full">
+        <label>Presentatievideo (automatisch)</label>
+        <% if (trekker.videoStatus === 'klaar' && trekker.video) { %>
+          <video controls preload="metadata" src="/uploads/<%= trekker.video %>" style="width:100%;max-width:560px;border-radius:4px;background:#000;display:block"></video>
+          <div class="hint" style="margin-top:8px">
+            Deze video is automatisch gemaakt van de foto's hierboven en staat op de trekker-pagina.
+            Hij wordt vanzelf opnieuw gemaakt als je foto's toevoegt, verwijdert of de volgorde wijzigt.
+            <a href="/uploads/<%= trekker.video %>" download>Download de video</a> om hem ook op bijv. Marktplaats of social media te gebruiken.
+          </div>
+        <% } else if (trekker.videoStatus === 'bezig' || trekker.videoStatus === 'wachtrij') { %>
+          <div class="hint">De video wordt op dit moment gemaakt — dit duurt meestal een paar minuten. Ververs deze pagina straks om het resultaat te zien.</div>
+        <% } else if (trekker.videoStatus === 'fout') { %>
+          <div class="hint">Het maken van de video is niet gelukt<%= trekker.videoFout ? ' (' + trekker.videoFout + ')' : '' %>. Probeer het hieronder opnieuw.</div>
+        <% } else { %>
+          <div class="hint">Er is nog geen video. Sla de trekker op (of klik hieronder) en hij wordt automatisch gemaakt.</div>
+        <% } %>
+        <% if (trekker.videoStatus !== 'bezig' && trekker.videoStatus !== 'wachtrij') { %>
+          <button class="btn btn-out" type="submit" formaction="/uadmin/trekkers/<%= trekker.id %>/video" formnovalidate style="margin-top:10px">Video (opnieuw) maken</button>
+        <% } %>
+      </div>
+      <% } %>
       <div class="formactions">
         <button class="btn btn-fill" type="submit"><%= trekker ? 'Wijzigingen opslaan' : 'Trekker plaatsen' %></button>
         <a class="btn btn-out" href="/uadmin/trekkers">Annuleren</a>
