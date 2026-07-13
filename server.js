@@ -620,7 +620,8 @@ app.post('/uadmin/trekkers/:id/video', requireAuth, (req, res) => {
   const data = db.read();
   const t = data.tractors.find(x => x.id === req.params.id);
   if (t) {
-    t.videoBron = ''; // forceer een nieuwe render
+    t.videoBron = '';     // forceer een nieuwe render
+    t.videoPogingen = 0;  // handmatig = altijd een verse kans
     db.write(data);
     video.controleer(t.id);
   }
