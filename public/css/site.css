@@ -206,6 +206,9 @@ header.site{position:sticky;top:0;z-index:60;background:var(--paper);border-bott
 .gallery .thumbs{display:flex;gap:12px;margin-top:14px;flex-wrap:wrap}
 .gallery .thumbs img{width:92px;height:70px;object-fit:cover;border-radius:3px;border:1px solid var(--line);cursor:pointer;transition:.2s}
 .gallery .thumbs img:hover{border-color:var(--gold)}
+/* Automatische presentatievideo onder de fotogalerij */
+.trekker-video{margin-top:18px}
+.trekker-video video{width:100%;aspect-ratio:16/9;border-radius:4px;background:#0e120a;display:block}
 .detail .panel{position:sticky;top:110px;background:var(--paper);border:1px solid var(--line);border-radius:4px;padding:34px}
 .detail .panel .cat{font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--green);font-weight:600}
 .detail .panel h1{font-family:var(--display);font-weight:500;font-size:2rem;line-height:1.06;margin:8px 0}
