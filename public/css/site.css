@@ -274,14 +274,13 @@ header.site{position:sticky;top:0;z-index:60;background:var(--paper);border-bott
 /* FOOTER (dark, premium) */
 footer.site{background:var(--ink);color:#C7C8B8;padding:70px 0 30px;margin-top:0}
 .foot{display:grid;grid-template-columns:2fr 1fr 1fr 1.3fr;gap:34px}
-.foot .brand-logo{height:56px;max-width:260px}
-.foot .brand b{color:#fff}
-.foot .brand small{color:var(--muted-2)}
+/* Alleen het gouden woordmerk in de voet — bewust geen logo */
+.foot-woordmerk{display:inline-block;font-family:var(--display);font-weight:600;font-size:1.5rem;letter-spacing:.32em;color:var(--gold-soft);line-height:1;padding-left:.32em}
+.foot-woordmerk:hover{color:var(--gold)}
 .foot .about p{color:var(--muted-2);font-size:.9rem;max-width:34ch;margin-top:16px}
 .foot h5{font-weight:700;letter-spacing:.1em;text-transform:uppercase;font-size:.72rem;color:var(--gold-soft);margin-bottom:16px}
 .foot a{display:block;color:#C7C8B8;font-size:.92rem;margin-bottom:10px;transition:color .2s}
 .foot a:hover{color:#fff}
-.foot .about .brand .mark{background:rgba(255,255,255,.1)}
 .copyr{border-top:1px solid var(--line-dark);margin-top:46px;padding-top:24px;display:flex;justify-content:space-between;color:var(--muted-2);font-size:.82rem;flex-wrap:wrap;gap:8px}
 
 /* BEDANKT / 404 */

@@ -315,7 +315,9 @@ app.post('/aanvraag', (req, res) => {
   ]);
   // Opgemaakte bevestigingsmail naar de klant, namens Agroria.
   mailKlantBevestiging(aanvraag, vraagBevestiging);
-  res.render('bedankt', { soort: 'aanvraag' });
+  // Doorsturen i.p.v. direct tonen: zo kan het verversen of herstellen van de
+  // bedanktpagina het formulier nooit opnieuw insturen (geen dubbele mails).
+  res.redirect('/bedankt/aanvraag');
 });
 
 // Inruil-taxatie aanvragen (komt binnen in uadmin) — met optioneel foto's van de machine
@@ -354,7 +356,7 @@ app.post('/inruil', upload.array('fotos', INRUIL_MAX_FOTOS), verwerkUploads, (re
   ]);
   // Opgemaakte bevestigingsmail naar de klant, namens Agroria.
   mailKlantBevestiging(aanvraag, inruilBevestiging);
-  res.render('bedankt', { soort: 'inruil' });
+  res.redirect('/bedankt/inruil');
 });
 
 // Bestelpagina voor een specifieke trekker
@@ -417,7 +419,22 @@ app.post('/bestelling', (req, res) => {
     const bev = bestellingBevestiging(aanvraag, t, (data.pages || {}).contact || {}, SITE_URL, mailLogo);
     mail.stuurNaarKlant(aanvraag.email, bev.onderwerp, bev.html, bev.tekst);
   }
-  res.render('besteld', { trekker: naamTrekker, prijs: t ? t.prijs : (parseInt(req.body.prijs) || 0) });
+  res.redirect('/besteld/' + aanvraag.id);
+});
+
+// Bedankt- en besteld-pagina's als aparte GET-pagina's (POST → redirect → GET).
+// Zo stuurt het verversen of terugbladeren naar deze pagina het formulier nooit
+// opnieuw in — dat gaf eerder dubbele bestellingen en dubbele mails.
+app.get('/bedankt/:soort', (req, res) => {
+  const soort = req.params.soort === 'inruil' ? 'inruil' : 'aanvraag';
+  res.render('bedankt', { soort });
+});
+
+app.get('/besteld/:id', (req, res) => {
+  const data = db.read();
+  const aanvraag = data.inquiries.find(i => i.id === req.params.id && i.type === 'bestelling');
+  if (!aanvraag) return res.redirect('/aanbod');
+  res.render('besteld', { trekker: aanvraag.trekker, prijs: aanvraag.prijs || 0 });
 });
 
 // =====================================================================
