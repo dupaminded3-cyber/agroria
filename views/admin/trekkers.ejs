@@ -9,7 +9,7 @@
     <div style="padding:40px 22px;color:var(--muted)">Je hebt nog geen trekkers geplaatst. <a href="/uadmin/trekkers/nieuw" style="color:var(--green);font-weight:600">Plaats je eerste trekker →</a></div>
   <% } else { %>
   <table class="list">
-    <thead><tr><th>Foto</th><th>Trekker</th><th>Jaar</th><th>Uren</th><th>Prijs</th><th>Status</th><th></th></tr></thead>
+    <thead><tr><th>Foto</th><th>Trekker</th><th>Jaar</th><th>Uren</th><th>Prijs</th><th>Status</th><th>Video</th><th></th></tr></thead>
     <tbody>
     <% lijst.forEach(function(t){ %>
       <tr>
@@ -19,6 +19,12 @@
         <td><%= getal(t.uren) %></td>
         <td><%= euro(t.prijs) %><% if (t.prijsType==='btw') { %> <span class="pill" style="background:#e8eee3;color:#25402a">excl. BTW</span><% } else if (t.prijsType==='marge') { %> <span class="pill" style="background:#f1eee5;color:#6c7363">marge</span><% } %></td>
         <td><span class="pill <%= t.status %>"><%= t.status %></span></td>
+        <td>
+          <% if (!t.fotos || !t.fotos.length) { %><span class="pill" style="background:#f1eee5;color:#6c7363">geen foto's</span>
+          <% } else if (t.videoStatus === 'klaar') { %><span class="pill" style="background:#e8eee3;color:#25402a">✓ klaar</span>
+          <% } else if (t.videoStatus === 'bezig' || t.videoStatus === 'wachtrij') { %><span class="pill" style="background:#f5f0e0;color:#7a6a3d">bezig…</span>
+          <% } else { %><span class="pill" style="background:#f6e7e3;color:#8a4a3a" title="<%= t.videoFout || '' %>">wacht op nieuwe poging</span><% } %>
+        </td>
         <td style="text-align:right;white-space:nowrap">
           <a class="btn btn-out btn-sm" href="/uadmin/trekkers/<%= t.id %>">Bewerk</a>
           <form method="post" action="/uadmin/trekkers/<%= t.id %>/delete" style="display:inline" onsubmit="return confirm('Deze trekker definitief verwijderen?')">
