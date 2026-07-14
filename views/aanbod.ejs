@@ -16,10 +16,32 @@
       <select name="merk" onchange="this.form.submit()"><option value="">Alle merken</option><% merken.forEach(function(m){ %><option value="<%= m %>" <%= filter.merk===m?'selected':'' %>><%= m %></option><% }) %></select>
       <select name="sort" onchange="this.form.submit()"><option value="">Sorteer op</option><option value="jaar" <%= filter.sort==='jaar'?'selected':'' %>>Bouwjaar (nieuwste)</option><option value="prijs-op" <%= filter.sort==='prijs-op'?'selected':'' %>>Prijs (laag → hoog)</option><option value="prijs-af" <%= filter.sort==='prijs-af'?'selected':'' %>>Prijs (hoog → laag)</option></select>
       <button class="btn btn-fill" type="submit">Zoek</button>
-      <span class="telling"><%= lijst.length %> trekker<%= lijst.length===1?'':'s' %></span>
+      <span class="telling"><%= totaal %> trekker<%= totaal===1?'':'s' %></span>
     </form>
-    <% if (lijst.length === 0) { %><p style="color:var(--muted)">Geen trekkers gevonden. <a href="/aanbod" style="color:var(--green)">Bekijk het hele aanbod</a>.</p><% } %>
-    <div class="grid4"><% lijst.forEach(function(t){ %><%- include('partials/card', { t: t }) %><% }) %></div>
+    <% if (totaal === 0) { %><p style="color:var(--muted)">Geen trekkers gevonden. <a href="/aanbod" style="color:var(--green)">Bekijk het hele aanbod</a>.</p><% } %>
+    <div class="grid3"><% lijst.forEach(function(t){ %><%- include('partials/card', { t: t }) %><% }) %></div>
+    <% if (paginas > 1) { %>
+      <%
+        // Link naar een pagina, met behoud van zoekterm, merk en sortering
+        function pagUrl(p) {
+          var qs = [];
+          if (filter.q) qs.push('q=' + encodeURIComponent(filter.q));
+          if (filter.merk) qs.push('merk=' + encodeURIComponent(filter.merk));
+          if (filter.sort) qs.push('sort=' + encodeURIComponent(filter.sort));
+          if (p > 1) qs.push('pagina=' + p);
+          return '/aanbod' + (qs.length ? '?' + qs.join('&') : '') + '#aanbod-grid';
+        }
+      %>
+      <nav class="paginering" aria-label="Pagina's van het aanbod">
+        <% if (pagina > 1) { %><a class="p-stap" href="<%= pagUrl(pagina - 1) %>" aria-label="Vorige pagina">&#8249;</a><% } %>
+        <% for (var p = 1; p <= paginas; p++) { %>
+          <% if (p === pagina) { %><span class="p-nr actief" aria-current="page"><%= p %></span>
+          <% } else { %><a class="p-nr" href="<%= pagUrl(p) %>"><%= p %></a><% } %>
+        <% } %>
+        <% if (pagina < paginas) { %><a class="p-stap" href="<%= pagUrl(pagina + 1) %>" aria-label="Volgende pagina">&#8250;</a><% } %>
+      </nav>
+      <div class="paginering-info">Pagina <%= pagina %> van <%= paginas %></div>
+    <% } %>
   </div>
 </section>
 
