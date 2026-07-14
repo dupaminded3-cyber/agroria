@@ -23,11 +23,18 @@ Zoek in de HTML op `VERVANG-DOOR` — daar staan alle plekken die je moet invull
 
 1. **Links**: webversie, campagne-landingspagina, keuzehulp, afspraak plannen,
    e-mailvoorkeuren en afmelden (verplicht!).
-2. **Logo**: de tekst "ING" in de header vervangen door het officiële logo
-   (img-tag, hoogte ± 40 px, gehost op een publieke URL).
-3. **Testimonial**: vervang de fictieve quote door een echte klantquote
-   (met schriftelijke toestemming) plus foto.
-4. **Rekenvoorbeeld**: de bedragen (€ 11.605 / € 20.789) zijn fictief
+2. **Afbeeldingen hosten**: de afbeeldingen staan in de map `afbeeldingen/` en
+   worden nu met relatieve paden geladen (werkt lokaal in de browser). Vóór
+   verzending moeten ze op een publieke URL staan (jullie e-mailplatform of CDN)
+   en de `src`-paden aangepast worden.
+3. **Foto's zijn AI-gegenereerd** (de drie klantfoto's en de testimonial-foto).
+   Voor de echte campagne vervangen door officiële ING-beeldbank-foto's of echte
+   klanten met schriftelijke toestemming — AI-personen als "klant" presenteren
+   ligt gevoelig richting AFM/reclamecode.
+4. **Logo**: het officiële ING-logo (`ing-logo.png` + witte footer-variant
+   `ing-logo-wit.png`) is opgenomen. Vervang eventueel door de versie uit
+   jullie eigen brand-portal.
+5. **Rekenvoorbeeld**: de bedragen (€ 11.605 / € 20.789) zijn fictief
    (15 jaar, € 10.000, 1% rente vs. 5% netto rendement). Laat de aannames
    en de disclaimer controleren door compliance.
 
@@ -56,5 +63,6 @@ logo, leeuw). Dit bestand is een opzet/concept om dat proces te starten.
   fallbacks), Gmail, Apple Mail en op mobiel (responsive vanaf 640 px breed).
 - Lettertypes: Georgia (koppen) en Arial (tekst) als veilige e-mailfallbacks
   voor de ING-huisstijl. Webfonts worden door veel e-mailclients genegeerd.
-- Geen externe afbeeldingen nodig; alles rendert ook met afbeeldingen uit.
+- Alle afbeeldingen hebben alt-teksten en vaste afmetingen, zodat de mail ook
+  met afbeeldingen uitgeschakeld leesbaar blijft.
 - Test vóór verzending met bijvoorbeeld Litmus of Email on Acid.
