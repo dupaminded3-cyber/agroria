@@ -196,7 +196,17 @@ app.get('/aanbod', (req, res) => {
   else if (sort === 'jaar') lijst.sort((a, b) => b.bouwjaar - a.bouwjaar);
   lijst.sort((a, b) => (a.status === 'verkocht' ? 1 : 0) - (b.status === 'verkocht' ? 1 : 0));
   const merken = [...new Set(data.tractors.filter(zichtbaar).map(t => t.merk))].sort();
-  res.render('aanbod', { lijst, merken, filter: { merk, q, sort }, page: (data.pages.aanbod || {}) });
+  // Paginering: 9 trekkers per pagina (drie rijen van drie), verkochte
+  // machines schuiven door de sortering hierboven vanzelf naar het einde.
+  const PER_PAGINA = 9;
+  const totaal = lijst.length;
+  const paginas = Math.max(1, Math.ceil(totaal / PER_PAGINA));
+  const pagina = Math.min(Math.max(parseInt(req.query.pagina) || 1, 1), paginas);
+  const paginaLijst = lijst.slice((pagina - 1) * PER_PAGINA, pagina * PER_PAGINA);
+  res.render('aanbod', {
+    lijst: paginaLijst, totaal, pagina, paginas,
+    merken, filter: { merk, q, sort }, page: (data.pages.aanbod || {})
+  });
 });
 
 // De aparte verkocht-pagina is vervallen: verkochte machines staan gewoon

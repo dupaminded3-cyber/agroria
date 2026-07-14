@@ -113,6 +113,13 @@ header.site{position:sticky;top:0;z-index:60;background:var(--paper);border-bott
 /* CARDS — topmodellen */
 .grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:22px}
 .grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
+/* Paginering aanbod — rustig en chic, met goud voor de actieve pagina */
+.paginering{display:flex;justify-content:center;align-items:center;gap:10px;margin-top:44px;flex-wrap:wrap}
+.paginering .p-nr,.paginering .p-stap{display:flex;align-items:center;justify-content:center;min-width:42px;height:42px;padding:0 6px;border:1px solid var(--line);border-radius:2px;font-family:var(--display);font-weight:600;font-size:1.02rem;color:var(--ink);transition:.2s;background:var(--paper)}
+.paginering a.p-nr:hover,.paginering a.p-stap:hover{border-color:var(--gold);color:var(--soil);transform:translateY(-1px)}
+.paginering .p-nr.actief{background:var(--forest);border-color:var(--forest);color:var(--gold-soft)}
+.paginering .p-stap{font-size:1.3rem;line-height:1}
+.paginering-info{text-align:center;color:var(--muted-2);font-size:.82rem;letter-spacing:.06em;margin-top:14px;text-transform:uppercase}
 .card{background:var(--paper);border:1px solid var(--line);border-radius:3px;overflow:hidden;transition:.28s;display:flex;flex-direction:column}
 .card:hover{transform:translateY(-7px);box-shadow:0 30px 60px -32px rgba(20,24,15,.55);border-color:var(--gold-soft)}
 .card .pic{position:relative;height:200px;background:linear-gradient(160deg,#EBE8DE,#DDD8C9);overflow:hidden;display:flex;align-items:center;justify-content:center}
