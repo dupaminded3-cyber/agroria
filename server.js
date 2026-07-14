@@ -108,6 +108,24 @@ async function verwerkUploads(req, res, next) {
 // --- Basis-instellingen ---
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
+
+// Eén officieel adres voor de zoekmachines: draait de site op het eigen domein
+// (SITE_URL, bijv. https://www.agroria.nl), stuur dan bezoekers die via een
+// ander adres binnenkomen (bijv. agroria.onrender.com of het kale agroria.nl)
+// blijvend (301) door naar dat officiële adres. Dit voorkomt "dubbele site"
+// in Google en bundelt alle waarde op één domein. Op localhost gebeurt er niets.
+const CANONIEK_HOST = (() => {
+  try { return new URL(SITE_URL).host; } catch (e) { return ''; }
+})();
+app.use((req, res, next) => {
+  if (!IS_PROD || !CANONIEK_HOST || CANONIEK_HOST.startsWith('localhost')) return next();
+  const host = (req.headers.host || '').toLowerCase();
+  if (host && host !== CANONIEK_HOST) {
+    return res.redirect(301, SITE_URL + req.originalUrl);
+  }
+  next();
+});
+
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
