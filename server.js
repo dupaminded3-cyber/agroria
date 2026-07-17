@@ -128,6 +128,14 @@ app.use(session({
 // --- Hulpfuncties beschikbaar in alle templates ---
 app.locals.euro = (n) => '€ ' + Number(n || 0).toLocaleString('nl-NL');
 app.locals.getal = (n) => Number(n || 0).toLocaleString('nl-NL');
+// Bedrag met centen, zoals op een factuur hoort: € 29.500,00
+app.locals.euroBedrag = (n) => '€ ' + Number(n || 0).toLocaleString('nl-NL', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+// Datum in Nederlandse notatie (17-07-2026) vanuit een yyyy-mm-dd invoerveld
+app.locals.datumNL = (d) => {
+  if (!d) return '';
+  const m = String(d).match(/^(\d{4})-(\d{2})-(\d{2})/);
+  return m ? `${m[3]}-${m[2]}-${m[1]}` : String(d);
+};
 app.locals.firstFoto = (t) => (t.fotos && t.fotos[0]) ? '/uploads/' + t.fotos[0] : null;
 app.locals.omschrijvingHtml = omschrijvingHtml;
 app.locals.omschrijvingText = omschrijvingText;
@@ -782,6 +790,175 @@ app.post('/uadmin/paginas/foto/delete', requireAuth, (req, res) => {
     }
   }
   res.redirect('/uadmin/paginas?ok=1');
+});
+
+// ---- Facturen ----
+// Facturen worden bewaard in data.facturen (db.json). Vanuit het beheer maak
+// je een factuur op, en via de printweergave sla je hem op als PDF (Ctrl+P).
+
+// Bedragen mogen op z'n Nederlands ingevuld worden: "29.500", "29500,50" of
+// "29500.50" — alles wordt netjes omgerekend naar een getal (negatief mag,
+// bijv. voor een inruil die van de prijs af gaat).
+function parseBedrag(s) {
+  let t = String(s || '').trim().replace(/[€\s]/g, '');
+  if (!t) return 0;
+  if (t.includes(',')) {
+    // Nederlandse notatie: punten zijn duizendtallen, komma is de decimaal.
+    t = t.replace(/\./g, '').replace(',', '.');
+  } else if (/^-?\d{1,3}(\.\d{3})+$/.test(t)) {
+    // Alleen punten als duizendtallen (bijv. "29.500"): punten weghalen.
+    t = t.replace(/\./g, '');
+  }
+  const n = parseFloat(t);
+  return isNaN(n) ? 0 : n;
+}
+
+// Volgend factuurnummer in de vorm AGR-2026-0001 (per jaar oplopend).
+function volgendFactuurnummer(data) {
+  const jaar = new Date().getFullYear();
+  const prefix = 'AGR-' + jaar + '-';
+  let hoogste = 0;
+  (data.facturen || []).forEach(f => {
+    const m = String(f.nummer || '').match(new RegExp('^' + prefix + '(\\d+)$'));
+    if (m) hoogste = Math.max(hoogste, parseInt(m[1], 10));
+  });
+  return prefix + String(hoogste + 1).padStart(4, '0');
+}
+
+// Rekent de totalen van een factuur uit (subtotaal, evt. BTW, restant).
+function factuurTotalen(f) {
+  const regels = f.regels || [];
+  const subtotaal = regels.reduce((som, r) => som + Number(r.bedrag || 0), 0);
+  let btw = 0, totaal = subtotaal;
+  if (f.prijsType === 'btw') {
+    btw = Math.round(subtotaal * 0.21 * 100) / 100;
+    totaal = Math.round((subtotaal + btw) * 100) / 100;
+  }
+  const aanbetaling = Number(f.aanbetaling || 0);
+  const restant = Math.round((totaal - aanbetaling) * 100) / 100;
+  return { subtotaal, btw, totaal, aanbetaling, restant };
+}
+app.locals.factuurTotalen = factuurTotalen;
+
+app.get('/uadmin/facturen', requireAuth, (req, res) => {
+  const data = db.read();
+  res.render('admin/facturen', { lijst: data.facturen || [], active: 'facturen' });
+});
+
+app.get('/uadmin/facturen/nieuw', requireAuth, (req, res) => {
+  const data = db.read();
+  // Vanuit een trekker gestart? Dan alvast de machinegegevens invullen.
+  const t = req.query.trekker ? data.tractors.find(x => x.id === req.query.trekker) : null;
+  res.render('admin/factuur-form', {
+    factuur: null,
+    voorstelNummer: volgendFactuurnummer(data),
+    trekker: t || null,
+    trekkers: data.tractors.filter(x => x.status !== 'verwijderd'),
+    bank: (data.settings || {}).bank || {},
+    opgeslagen: false,
+    active: 'facturen'
+  });
+});
+
+app.get('/uadmin/facturen/:id', requireAuth, (req, res) => {
+  const data = db.read();
+  const factuur = (data.facturen || []).find(f => f.id === req.params.id);
+  if (!factuur) return res.redirect('/uadmin/facturen');
+  res.render('admin/factuur-form', {
+    factuur,
+    voorstelNummer: factuur.nummer,
+    trekker: null,
+    trekkers: data.tractors.filter(x => x.status !== 'verwijderd'),
+    bank: (data.settings || {}).bank || {},
+    opgeslagen: req.query.ok,
+    active: 'facturen'
+  });
+});
+
+app.post('/uadmin/facturen/:id?', requireAuth, (req, res) => {
+  const data = db.read();
+  if (!data.facturen) data.facturen = [];
+  const b = req.body;
+
+  // Factuurregels: omschrijving + bedrag per regel (lege regels overslaan).
+  const omschrijvingen = [].concat(b.regel_omschrijving || []);
+  const bedragen = [].concat(b.regel_bedrag || []);
+  const regels = omschrijvingen
+    .map((om, i) => ({ omschrijving: String(om || '').trim(), bedrag: parseBedrag(bedragen[i]) }))
+    .filter(r => r.omschrijving);
+
+  const velden = {
+    nummer: (b.nummer || '').trim() || volgendFactuurnummer(data),
+    datum: b.datum || new Date().toISOString().slice(0, 10),
+    vervaldatum: b.vervaldatum || '',
+    status: ['concept', 'verstuurd', 'betaald'].includes(b.status) ? b.status : 'concept',
+    klant: {
+      naam: (b.klant_naam || '').trim(),
+      bedrijf: (b.klant_bedrijf || '').trim(),
+      adres: (b.klant_adres || '').trim(),
+      postcodePlaats: (b.klant_postcodeplaats || '').trim(),
+      land: (b.klant_land || '').trim(),
+      email: (b.klant_email || '').trim(),
+      telefoon: (b.klant_telefoon || '').trim(),
+      kvk: (b.klant_kvk || '').trim(),
+      btw: (b.klant_btw || '').trim()
+    },
+    machine: {
+      naam: (b.machine_naam || '').trim(),
+      bouwjaar: (b.machine_bouwjaar || '').trim(),
+      uren: (b.machine_uren || '').trim(),
+      pk: (b.machine_pk || '').trim(),
+      transmissie: (b.machine_transmissie || '').trim(),
+      serienummer: (b.machine_serienummer || '').trim(),
+      kenteken: (b.machine_kenteken || '').trim()
+    },
+    regels,
+    prijsType: (b.prijsType === 'btw') ? 'btw' : 'marge',
+    aanbetaling: parseBedrag(b.aanbetaling),
+    aanbetalingVervalt: b.aanbetaling_vervalt || '',
+    levering: (b.levering || '').trim(),
+    opmerking: (b.opmerking || '').trim(),
+    // Vaste Agroria-garantie standaard aan; per factuur uit te zetten
+    // (bijv. voor een los werktuig zonder garantie).
+    garantie: b.garantie !== 'uit'
+  };
+
+  // Bankgegevens: op de factuur bewaren én als standaard onthouden voor de volgende.
+  const bank = {
+    iban: (b.bank_iban || '').trim(),
+    bic: (b.bank_bic || '').trim(),
+    tnv: (b.bank_tnv || '').trim()
+  };
+  velden.bank = bank;
+  if (!data.settings) data.settings = {};
+  if (bank.iban || bank.bic || bank.tnv) data.settings.bank = bank;
+
+  let id = req.params.id;
+  if (id) {
+    const f = data.facturen.find(x => x.id === id);
+    if (!f) return res.redirect('/uadmin/facturen');
+    Object.assign(f, velden);
+  } else {
+    id = db.id();
+    data.facturen.unshift(Object.assign({ id, createdAt: new Date().toISOString() }, velden));
+  }
+  db.write(data);
+  res.redirect('/uadmin/facturen/' + id + '?ok=1');
+});
+
+app.post('/uadmin/facturen/:id/delete', requireAuth, (req, res) => {
+  const data = db.read();
+  data.facturen = (data.facturen || []).filter(f => f.id !== req.params.id);
+  db.write(data);
+  res.redirect('/uadmin/facturen');
+});
+
+// Printweergave: de opgemaakte A4-factuur. Opslaan als PDF via afdrukken.
+app.get('/uadmin/facturen/:id/print', requireAuth, (req, res) => {
+  const data = db.read();
+  const factuur = (data.facturen || []).find(f => f.id === req.params.id);
+  if (!factuur) return res.redirect('/uadmin/facturen');
+  res.render('admin/factuur-print', { factuur, totalen: factuurTotalen(factuur) });
 });
 
 // ---- Aanvragen (inbox) ----

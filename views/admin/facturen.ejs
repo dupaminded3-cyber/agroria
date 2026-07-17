@@ -1,0 +1,42 @@
+<%- include('_head', { titel: 'Facturen' }) %>
+<%- include('_side') %>
+<div class="topbar">
+  <div><h1>Facturen</h1><div class="sub"><%= lijst.length %> factu<%= lijst.length===1?'ur':'ren' %> in beheer</div></div>
+  <a class="btn btn-fill" href="/uadmin/facturen/nieuw">+ Factuur maken</a>
+</div>
+<div class="panel">
+  <% if (lijst.length===0){ %>
+    <div style="padding:40px 22px;color:var(--muted)">
+      Je hebt nog geen facturen gemaakt. <a href="/uadmin/facturen/nieuw" style="color:var(--green);font-weight:600">Maak je eerste factuur →</a>
+      <div style="margin-top:10px;font-size:.86rem">Tip: na het opslaan open je de <b>printweergave</b> en kies je "Opslaan als PDF" — zo heb je direct een nette PDF-factuur met het Agroria-logo.</div>
+    </div>
+  <% } else { %>
+  <table class="list">
+    <thead><tr><th>Nummer</th><th>Datum</th><th>Klant</th><th>Machine</th><th>Totaal</th><th>Status</th><th></th></tr></thead>
+    <tbody>
+    <% lijst.forEach(function(f){ var t = factuurTotalen(f); %>
+      <tr>
+        <td><b><%= f.nummer %></b></td>
+        <td><%= datumNL(f.datum) %></td>
+        <td><%= f.klant && (f.klant.bedrijf || f.klant.naam) || '—' %></td>
+        <td><%= f.machine && f.machine.naam || '—' %></td>
+        <td><b><%= euroBedrag(t.totaal) %></b></td>
+        <td>
+          <% if (f.status==='betaald'){ %><span class="pill beschikbaar">betaald</span>
+          <% } else if (f.status==='verstuurd'){ %><span class="pill nieuw">verstuurd</span>
+          <% } else { %><span class="pill gereserveerd">concept</span><% } %>
+        </td>
+        <td style="text-align:right;white-space:nowrap">
+          <a class="btn btn-out btn-sm" href="/uadmin/facturen/<%= f.id %>/print" target="_blank">PDF / print</a>
+          <a class="btn btn-out btn-sm" href="/uadmin/facturen/<%= f.id %>">Bewerk</a>
+          <form method="post" action="/uadmin/facturen/<%= f.id %>/delete" style="display:inline" onsubmit="return confirm('Deze factuur definitief verwijderen?')">
+            <button class="btn btn-danger btn-sm" type="submit">Verwijder</button>
+          </form>
+        </td>
+      </tr>
+    <% }) %>
+    </tbody>
+  </table>
+  <% } %>
+</div>
+<%- include('_foot') %>

@@ -55,6 +55,15 @@ Dan is je wachtwoord `MijnWachtwoord`.
 - **Pagina's & foto's**: pas de teksten en foto's per pagina aan,
   en upload hier ook je **logo** en de **grote hero-foto** van de homepage.
 - **Aanvragen**: alle vragen en inruil-aanvragen komen hier binnen.
+- **Facturen**: maak professionele facturen in de Agroria-huisstijl, met je
+  logo en de garantievoorwaarden er automatisch netjes op (12 maanden
+  volledige garantie + 6 maanden geld-terug bij motorisch defect).
+  - Start een factuur direct vanuit een trekker (knop **"Factuur"** in de
+    trekkerlijst) — de machinegegevens en prijs worden dan alvast ingevuld.
+  - Kies **margeregeling** (één totaalprijs) of **BTW-regeling** (21% BTW
+    wordt apart uitgerekend en vermeld), en vul eventueel een **aanbetaling**
+    in voor een betaalschema.
+  - Klik op **"PDF / print"** en kies "Opslaan als PDF" — klaar om te mailen.
 
 ## Tip voor de "wow" — zet er je eigen foto's op
 
