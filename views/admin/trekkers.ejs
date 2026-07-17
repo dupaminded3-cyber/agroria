@@ -26,6 +26,7 @@
           <% } else { %><span class="pill" style="background:#f6e7e3;color:#8a4a3a" title="<%= t.videoFout || '' %>">wacht op nieuwe poging</span><% } %>
         </td>
         <td style="text-align:right;white-space:nowrap">
+          <a class="btn btn-out btn-sm" href="/uadmin/facturen/nieuw?trekker=<%= t.id %>" title="Maak een factuur met de gegevens van deze trekker">Factuur</a>
           <a class="btn btn-out btn-sm" href="/uadmin/trekkers/<%= t.id %>">Bewerk</a>
           <form method="post" action="/uadmin/trekkers/<%= t.id %>/delete" style="display:inline" onsubmit="return confirm('Deze trekker definitief verwijderen?')">
             <button class="btn btn-danger btn-sm" type="submit">Verwijder</button>

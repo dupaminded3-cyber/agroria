@@ -1,0 +1,181 @@
+<%- include('_head', { titel: factuur ? 'Factuur bewerken' : 'Factuur maken' }) %>
+<%- include('_side') %>
+<%
+  // Startwaarden: bij een nieuwe factuur alvast slim ingevuld (vandaag,
+  // vervaldatum over 14 dagen, en — indien gekozen — de trekkergegevens).
+  var vandaag = new Date().toISOString().slice(0,10);
+  var over14 = new Date(Date.now() + 14*24*3600*1000).toISOString().slice(0,10);
+  var f = factuur || {
+    nummer: voorstelNummer,
+    datum: vandaag,
+    vervaldatum: over14,
+    status: 'concept',
+    klant: {}, machine: {}, regels: [],
+    prijsType: 'marge', aanbetaling: 0, aanbetalingVervalt: '',
+    levering: '', opmerking: '', garantie: true, bank: bank || {}
+  };
+  if (!factuur && trekker) {
+    f.machine = {
+      naam: (trekker.merk + ' ' + trekker.model).trim(),
+      bouwjaar: trekker.bouwjaar || '', uren: trekker.uren || '',
+      pk: trekker.pk || '', transmissie: trekker.transmissie || ''
+    };
+    f.prijsType = trekker.prijsType === 'btw' ? 'btw' : 'marge';
+    f.regels = [{ omschrijving: 'Verkoopprijs ' + trekker.merk + ' ' + trekker.model + ' (rijklaar geleverd)', bedrag: trekker.prijs || 0 }];
+  }
+  var fb = f.bank || bank || {};
+  // Bedrag netjes tonen in het invulveld: 29500.5 -> "29500,50"
+  function invoerBedrag(n){
+    n = Number(n || 0);
+    if (!n) return '';
+    return (Math.round(n * 100) / 100).toFixed(2).replace('.', ',');
+  }
+%>
+<div class="topbar">
+  <div><h1><%= factuur ? 'Factuur bewerken' : 'Nieuwe factuur' %></h1>
+    <div class="sub"><a href="/uadmin/facturen" style="color:var(--muted)">← Terug naar facturen</a></div></div>
+  <% if (factuur) { %>
+    <a class="btn btn-fill" href="/uadmin/facturen/<%= factuur.id %>/print" target="_blank">Bekijk / opslaan als PDF ↗</a>
+  <% } %>
+</div>
+
+<% if (typeof opgeslagen !== 'undefined' && opgeslagen) { %>
+  <div class="melding ok">Factuur opgeslagen. Klik rechtsboven op <b>"Bekijk / opslaan als PDF"</b> voor de opgemaakte factuur.</div>
+<% } %>
+
+<% if (!factuur) { %>
+<div class="panel" style="padding:18px 22px;margin-bottom:20px">
+  <form method="get" action="/uadmin/facturen/nieuw" style="display:flex;gap:12px;align-items:center;flex-wrap:wrap">
+    <b style="font-size:.9rem">Snel starten vanuit een trekker:</b>
+    <select name="trekker" style="border:1px solid var(--line);border-radius:8px;padding:9px 12px;font-family:inherit;font-size:.9rem;background:#fff">
+      <option value="">— kies een trekker uit het aanbod —</option>
+      <% trekkers.forEach(function(t){ %>
+        <option value="<%= t.id %>" <%= trekker && trekker.id===t.id ? 'selected' : '' %>><%= t.merk %> <%= t.model %> (<%= t.bouwjaar %>) — <%= euro(t.prijs) %></option>
+      <% }) %>
+    </select>
+    <button class="btn btn-out btn-sm" type="submit">Gegevens overnemen</button>
+  </form>
+</div>
+<% } %>
+
+<form method="post" action="/uadmin/facturen<%= factuur ? '/'+factuur.id : '' %>">
+
+<div class="panel" style="padding:28px;margin-bottom:20px">
+  <h3 style="font-family:var(--display);font-weight:600;margin-bottom:18px">Factuurgegevens</h3>
+  <div class="formgrid">
+    <div class="field"><label>Factuurnummer</label><input name="nummer" value="<%= f.nummer %>" required></div>
+    <div class="field"><label>Status</label>
+      <select name="status">
+        <option value="concept" <%= f.status==='concept'?'selected':'' %>>Concept</option>
+        <option value="verstuurd" <%= f.status==='verstuurd'?'selected':'' %>>Verstuurd</option>
+        <option value="betaald" <%= f.status==='betaald'?'selected':'' %>>Betaald</option>
+      </select>
+    </div>
+    <div class="field"><label>Factuurdatum</label><input type="date" name="datum" value="<%= f.datum %>" required></div>
+    <div class="field"><label>Vervaldatum</label><input type="date" name="vervaldatum" value="<%= f.vervaldatum %>"><div class="hint">Uiterste betaaldatum (van het volledige bedrag of het restant).</div></div>
+  </div>
+</div>
+
+<div class="panel" style="padding:28px;margin-bottom:20px">
+  <h3 style="font-family:var(--display);font-weight:600;margin-bottom:18px">Klant (factuuradres)</h3>
+  <div class="formgrid">
+    <div class="field"><label>Naam</label><input name="klant_naam" value="<%= f.klant.naam || '' %>" placeholder="Bijv. J. van den Berg" required></div>
+    <div class="field"><label>Bedrijfsnaam — optioneel</label><input name="klant_bedrijf" value="<%= f.klant.bedrijf || '' %>" placeholder="Bijv. Maatschap Van den Berg"></div>
+    <div class="field"><label>Adres</label><input name="klant_adres" value="<%= f.klant.adres || '' %>" placeholder="Straat en huisnummer"></div>
+    <div class="field"><label>Postcode en plaats</label><input name="klant_postcodeplaats" value="<%= f.klant.postcodePlaats || '' %>" placeholder="1234 AB Plaatsnaam"></div>
+    <div class="field"><label>Land — optioneel</label><input name="klant_land" value="<%= f.klant.land || '' %>" placeholder="Nederland / België / Duitsland"></div>
+    <div class="field"><label>E-mail — optioneel</label><input name="klant_email" value="<%= f.klant.email || '' %>"></div>
+    <div class="field"><label>Telefoon — optioneel</label><input name="klant_telefoon" value="<%= f.klant.telefoon || '' %>"></div>
+    <div class="field"><label>KvK-nummer klant — optioneel</label><input name="klant_kvk" value="<%= f.klant.kvk || '' %>"></div>
+    <div class="field"><label>BTW-nummer klant — optioneel</label><input name="klant_btw" value="<%= f.klant.btw || '' %>"><div class="hint">Handig bij zakelijke klanten of levering binnen de EU.</div></div>
+  </div>
+</div>
+
+<div class="panel" style="padding:28px;margin-bottom:20px">
+  <h3 style="font-family:var(--display);font-weight:600;margin-bottom:18px">Machine</h3>
+  <div class="formgrid">
+    <div class="field"><label>Merk en model</label><input name="machine_naam" value="<%= f.machine.naam || '' %>" placeholder="Bijv. Fendt 724 Vario"></div>
+    <div class="field"><label>Bouwjaar</label><input name="machine_bouwjaar" value="<%= f.machine.bouwjaar || '' %>" placeholder="2019"></div>
+    <div class="field"><label>Draaiuren</label><input name="machine_uren" value="<%= f.machine.uren || '' %>" placeholder="3250"></div>
+    <div class="field"><label>Vermogen (pk)</label><input name="machine_pk" value="<%= f.machine.pk || '' %>" placeholder="240"></div>
+    <div class="field"><label>Transmissie</label><input name="machine_transmissie" value="<%= f.machine.transmissie || '' %>" placeholder="Vario / Powershift …"></div>
+    <div class="field"><label>Serie-/chassisnummer — optioneel</label><input name="machine_serienummer" value="<%= f.machine.serienummer || '' %>"></div>
+    <div class="field"><label>Kenteken — optioneel</label><input name="machine_kenteken" value="<%= f.machine.kenteken || '' %>"></div>
+  </div>
+</div>
+
+<div class="panel" style="padding:28px;margin-bottom:20px">
+  <h3 style="font-family:var(--display);font-weight:600;margin-bottom:6px">Specificatie (factuurregels)</h3>
+  <div class="hint" style="margin-bottom:16px">Eén regel per onderdeel. Een aftrek (bijv. inruil of korting) vul je in als <b>negatief</b> bedrag, bijv. <code>-12500</code>. Bedragen mogen met of zonder punten/komma's: <code>29500</code>, <code>29.500</code> of <code>29500,50</code>.</div>
+  <div id="regels">
+    <% (f.regels.length ? f.regels : [{omschrijving:'',bedrag:''}]).forEach(function(r){ %>
+      <div class="regel" style="display:flex;gap:12px;margin-bottom:10px">
+        <input name="regel_omschrijving" value="<%= r.omschrijving %>" placeholder="Omschrijving — bijv. Verkoopprijs Fendt 724 Vario (rijklaar geleverd)" style="flex:1;border:1px solid var(--line);border-radius:9px;padding:12px 13px;font-family:var(--body);font-size:.94rem">
+        <input name="regel_bedrag" value="<%= typeof r.bedrag === 'number' ? invoerBedrag(r.bedrag) : r.bedrag %>" placeholder="Bedrag in €" style="width:170px;border:1px solid var(--line);border-radius:9px;padding:12px 13px;font-family:var(--body);font-size:.94rem;text-align:right">
+        <button type="button" class="btn btn-danger btn-sm regel-weg" title="Regel verwijderen">×</button>
+      </div>
+    <% }) %>
+  </div>
+  <button type="button" class="btn btn-out btn-sm" id="regelErbij">+ Regel toevoegen</button>
+
+  <div class="formgrid" style="margin-top:22px">
+    <div class="field full">
+      <label>Prijsregeling</label>
+      <select name="prijsType">
+        <option value="marge" <%= f.prijsType!=='btw'?'selected':'' %>>Margeregeling — bedragen zijn totaalprijzen, BTW niet apart vermeld (gebruikte machines)</option>
+        <option value="btw" <%= f.prijsType==='btw'?'selected':'' %>>BTW-regeling — bedragen zijn excl. BTW; 21% BTW wordt apart op de factuur gezet</option>
+      </select>
+    </div>
+    <div class="field"><label>Aanbetaling — optioneel</label><input name="aanbetaling" value="<%= invoerBedrag(f.aanbetaling) %>" placeholder="Bijv. 5000"><div class="hint">Vul je hier een bedrag in, dan toont de factuur een betaalschema: aanbetaling + restant bij levering.</div></div>
+    <div class="field"><label>Vervaldatum aanbetaling</label><input type="date" name="aanbetaling_vervalt" value="<%= f.aanbetalingVervalt %>"></div>
+  </div>
+</div>
+
+<div class="panel" style="padding:28px;margin-bottom:20px">
+  <h3 style="font-family:var(--display);font-weight:600;margin-bottom:18px">Levering, garantie en betaling</h3>
+  <div class="formgrid">
+    <div class="field full"><label>Levering — optioneel</label><textarea name="levering" rows="2" placeholder="Bijv.: De trekker wordt rijklaar en gratis geleverd op het adres van koper."><%= f.levering %></textarea></div>
+    <div class="field full">
+      <label>Garantie op de factuur</label>
+      <select name="garantie">
+        <option value="aan" <%= f.garantie!==false?'selected':'' %>>Agroria-garantie tonen — 12 maanden volledige garantie + 6 maanden geld-terug bij motorisch defect</option>
+        <option value="uit" <%= f.garantie===false?'selected':'' %>>Geen garantieblok op deze factuur</option>
+      </select>
+      <div class="hint">De volledige garantievoorwaarden staan automatisch en netjes opgemaakt op de factuur zelf.</div>
+    </div>
+    <div class="field full"><label>Eigen opmerking op de factuur — optioneel</label><textarea name="opmerking" rows="2" placeholder="Bijv.: Zoals besproken op het erf d.d. 12-07-2026."><%= f.opmerking %></textarea></div>
+    <div class="field"><label>IBAN</label><input name="bank_iban" value="<%= fb.iban || '' %>" placeholder="NL00 BANK 0123 4567 89"></div>
+    <div class="field"><label>BIC — optioneel</label><input name="bank_bic" value="<%= fb.bic || '' %>" placeholder="INGBNL2A"></div>
+    <div class="field"><label>Ten name van</label><input name="bank_tnv" value="<%= fb.tnv || '' %>" placeholder="Agroria Landbouwvoertuigen"><div class="hint">De bankgegevens worden onthouden voor de volgende factuur.</div></div>
+  </div>
+</div>
+
+<div class="formactions" style="margin-bottom:34px">
+  <button class="btn btn-fill" type="submit"><%= factuur ? 'Wijzigingen opslaan' : 'Factuur opslaan' %></button>
+  <a class="btn btn-out" href="/uadmin/facturen">Annuleren</a>
+</div>
+</form>
+
+<script>
+  // Factuurregels toevoegen/verwijderen
+  (function(){
+    var houder = document.getElementById('regels');
+    document.getElementById('regelErbij').addEventListener('click', function(){
+      var eerste = houder.querySelector('.regel');
+      var kopie = eerste.cloneNode(true);
+      kopie.querySelectorAll('input').forEach(function(i){ i.value=''; });
+      houder.appendChild(kopie);
+    });
+    houder.addEventListener('click', function(e){
+      var knop = e.target.closest('.regel-weg');
+      if (!knop) return;
+      var regels = houder.querySelectorAll('.regel');
+      if (regels.length <= 1) {
+        regels[0].querySelectorAll('input').forEach(function(i){ i.value=''; });
+        return;
+      }
+      knop.closest('.regel').remove();
+    });
+  })();
+</script>
+<%- include('_foot') %>
