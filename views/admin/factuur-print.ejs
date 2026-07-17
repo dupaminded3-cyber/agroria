@@ -124,10 +124,7 @@
 
   .opmerking{margin-top:6mm;font-size:.8rem;color:#3A4137;background:var(--cream);border:1px solid var(--line);border-radius:10px;padding:12px 16px;line-height:1.6}
 
-  /* ---- Ondertekening & voet ---- */
-  .tekenen{margin-top:8mm;display:grid;grid-template-columns:1fr 1fr;gap:10mm;page-break-inside:avoid}
-  .tekenvak{border-top:1px solid var(--ink);padding-top:6px;font-size:.72rem;color:var(--muted)}
-  .tekenvak b{display:block;color:var(--ink);font-size:.78rem;margin-bottom:2px}
+  /* ---- Voet ---- */
   .voet{margin-top:auto;padding-top:8mm}
   .voet .lijn{height:2px;background:linear-gradient(90deg,var(--forest),var(--gold));border-radius:2px;margin-bottom:9px}
   .voet p{font-size:.66rem;color:var(--muted);text-align:center;line-height:1.7}
@@ -219,7 +216,6 @@
         <div class="ml">Geleverde machine</div>
         <div class="mn"><%= machine.naam %></div>
       </div>
-      <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#D9C08F"><circle cx="8" cy="17" r="4" stroke-width="1.4"/><circle cx="18" cy="16" r="2.4" stroke-width="1.4"/><path d="M5 13V8h6l2 5" stroke-width="1.4" stroke-linejoin="round"/></svg>
     </div>
     <% if (machineSpecs.length) { %>
     <div class="specs">
@@ -314,12 +310,6 @@
   <% if (f.opmerking) { %>
     <div class="opmerking"><%= f.opmerking %></div>
   <% } %>
-
-  <!-- Ondertekening -->
-  <div class="tekenen">
-    <div class="tekenvak"><b>Agroria Landbouwvoertuigen</b>Naam en handtekening verkoper</div>
-    <div class="tekenvak"><b><%= klant.naam || 'Koper' %></b>Naam en handtekening koper</div>
-  </div>
 
   <!-- Voet -->
   <div class="voet">
