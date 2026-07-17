@@ -42,8 +42,15 @@
   .werkbalk .vul{background:var(--forest);color:#fff}
   .werkbalk .rand{background:#fff;color:var(--ink);border:1px solid #cfccc0}
 
-  .vel{width:210mm;min-height:297mm;margin:14px auto 30px;background:var(--paper);box-shadow:0 24px 60px -28px rgba(29,38,28,.45);display:flex;flex-direction:column}
-  .binnen{padding:15mm 16mm 10mm;flex:1;display:flex;flex-direction:column}
+  .vel{width:210mm;min-height:297mm;margin:14px auto 30px;background:var(--paper);box-shadow:0 24px 60px -28px rgba(29,38,28,.45)}
+  /* Tabelconstructie: de kop- en voetrij herhalen zich bij het afdrukken op
+     elke pagina en zorgen zo zélf voor witruimte boven- en onderaan. Daardoor
+     kan de paginamarge van de browser op 0 — en zonder marge drukt Chrome
+     géén kop-/voettekst (zoals de URL) af. */
+  .ptab{width:100%;border-collapse:collapse}
+  .pt-rand{height:0}
+  .pt-cel{vertical-align:top}
+  .binnen{padding:15mm 16mm 10mm;min-height:272mm;display:flex;flex-direction:column}
 
   /* ---- Kop ---- */
   .kop{display:flex;justify-content:space-between;align-items:flex-start;gap:24px}
@@ -134,9 +141,12 @@
     html,body{background:#fff}
     .werkbalk{display:none}
     .vel{width:auto;min-height:auto;margin:0;box-shadow:none}
-    /* Paginamarge via @page, zodat óók pagina 2 nette witruimte heeft. */
-    @page{size:A4;margin:12mm 14mm 11mm}
-    .binnen{padding:2mm 1mm}
+    /* Paginamarge 0: dan drukt de browser geen kop-/voettekst (URL, datum,
+       paginanummer) af. De witruimte per pagina komt uit de tabelranden. */
+    @page{size:A4;margin:0}
+    .pt-boven .pt-rand{height:12mm}
+    .pt-onder .pt-rand{height:11mm}
+    .binnen{padding:0 15mm;min-height:0}
   }
 </style>
 </head>
@@ -147,7 +157,11 @@
   <button class="vul" onclick="window.print()">Opslaan als PDF / afdrukken</button>
 </div>
 
-<div class="vel"><div class="binnen">
+<div class="vel">
+<table class="ptab">
+  <thead class="pt-boven"><tr><td><div class="pt-rand"></div></td></tr></thead>
+  <tbody><tr><td class="pt-cel">
+<div class="binnen">
 
   <!-- Kop -->
   <div class="kop">
@@ -325,6 +339,10 @@
     </p>
   </div>
 
-</div></div>
+</div>
+  </td></tr></tbody>
+  <tfoot class="pt-onder"><tr><td><div class="pt-rand"></div></td></tr></tfoot>
+</table>
+</div>
 </body>
 </html>
