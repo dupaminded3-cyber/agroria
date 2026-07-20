@@ -102,9 +102,9 @@
   table.spec td{padding:8px 2px;font-size:.86rem;border-bottom:1px solid var(--line)}
   table.spec td:last-child{text-align:right;font-variant-numeric:tabular-nums;font-weight:600;white-space:nowrap}
   table.spec td.neg{color:#8a4a3a}
-  .totalen{margin-top:7px;margin-left:auto;width:82mm}
-  .totalen .rij{display:flex;justify-content:space-between;padding:5px 12px;font-size:.84rem}
-  .totalen .rij span:last-child{font-variant-numeric:tabular-nums;font-weight:600}
+  .totalen{margin-top:7px;margin-left:auto;width:96mm}
+  .totalen .rij{display:flex;justify-content:space-between;gap:12px;padding:5px 12px;font-size:.84rem}
+  .totalen .rij span:last-child{font-variant-numeric:tabular-nums;font-weight:600;white-space:nowrap}
   .totalen .eind{margin-top:4px;background:linear-gradient(120deg,var(--forest),var(--forest2));color:#fff;border-radius:10px;padding:10px 14px;display:flex;justify-content:space-between;align-items:center}
   .totalen .eind b{font-size:.7rem;letter-spacing:.16em;text-transform:uppercase;color:var(--gold-soft)}
   .totalen .eind span{font-family:var(--display);font-weight:600;font-size:1.15rem;font-variant-numeric:tabular-nums}
@@ -252,6 +252,10 @@
       <div class="rij"><span>BTW 21%</span><span><%= euroBedrag(t.btw) %></span></div>
     <% } %>
     <div class="eind"><b>Totale koopsom<%= o.prijsType === 'btw' ? ' (incl. BTW)' : '' %></b><span><%= euroBedrag(t.totaal) %></span></div>
+    <% if (heeftAanbetaling) { %>
+      <div class="rij" style="padding-top:9px"><span>Waarvan aanbetaling<% if (o.aanbetalingVervalt) { %> (uiterlijk <%= datumNL(o.aanbetalingVervalt) %>)<% } %></span><span><%= euroBedrag(t.aanbetaling) %></span></div>
+      <div class="rij"><span>Restant bij levering</span><span><%= euroBedrag(t.restant) %></span></div>
+    <% } %>
   </div>
 
   <!-- Artikelen -->
