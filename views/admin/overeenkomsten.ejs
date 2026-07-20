@@ -12,31 +12,126 @@
 <div class="panel" style="padding:22px;margin-bottom:20px">
   <h3 style="font-family:var(--display);font-weight:600;margin-bottom:6px">Handtekening van de verkoper</h3>
   <div class="hint" style="margin-bottom:14px">
-    Upload één keer een foto of scan van je handtekening (op wit papier, recht van boven gefotografeerd).
-    Die komt daarna automatisch in het ondertekenvak "Verkoper" op elke koopovereenkomst te staan.
+    Zet één keer je handtekening — die komt daarna automatisch in het ondertekenvak "Verkoper" op elke koopovereenkomst te staan.
+    <b>Teken hem hieronder</b> met je muis of vinger, of upload een foto/scan (op wit papier, recht van boven gefotografeerd).
   </div>
-  <form method="post" action="/uadmin/overeenkomsten/handtekening" enctype="multipart/form-data" style="display:flex;gap:14px;align-items:flex-end;flex-wrap:wrap">
-    <div class="field" style="margin:0">
-      <label>Naam ondertekenaar</label>
-      <input name="ondertekenaar" value="<%= ondertekenaar %>" placeholder="Bijv. J. (Johan) Agroria" style="min-width:240px">
+
+  <div class="field" style="margin:0 0 16px;max-width:340px">
+    <label>Naam ondertekenaar</label>
+    <input id="ondertekenaarVeld" name="ondertekenaar" value="<%= ondertekenaar %>" placeholder="Bijv. J. (Johan) Agroria">
+  </div>
+
+  <div style="display:flex;gap:26px;flex-wrap:wrap;align-items:flex-start">
+    <div>
+      <label style="display:block;font-size:.8rem;font-weight:600;margin-bottom:7px">Optie 1 — teken je handtekening</label>
+      <canvas id="tekenvlak" width="1120" height="360" style="width:560px;max-width:100%;height:180px;border:1.5px dashed var(--line);border-radius:12px;background:#fff;cursor:crosshair;touch-action:none;display:block"></canvas>
+      <div style="display:flex;gap:10px;margin-top:10px">
+        <button class="btn btn-fill btn-sm" type="button" id="tekenOpslaan">Handtekening opslaan</button>
+        <button class="btn btn-out btn-sm" type="button" id="tekenWissen">Wissen</button>
+      </div>
+      <div class="hint" id="tekenStatus" style="margin-top:8px;display:none"></div>
     </div>
-    <div class="field" style="margin:0">
-      <label>Handtekening (foto/scan)</label>
-      <input type="file" name="handtekening" accept="image/*">
+    <div>
+      <label style="display:block;font-size:.8rem;font-weight:600;margin-bottom:7px">Optie 2 — upload een foto of scan</label>
+      <form method="post" action="/uadmin/overeenkomsten/handtekening" enctype="multipart/form-data" style="display:flex;gap:12px;align-items:center;flex-wrap:wrap">
+        <input type="hidden" name="ondertekenaar" class="ondertekenaarKopie" value="<%= ondertekenaar %>">
+        <input type="file" name="handtekening" accept="image/*" required>
+        <button class="btn btn-out btn-sm" type="submit">Uploaden</button>
+      </form>
     </div>
-    <button class="btn btn-fill" type="submit">Opslaan</button>
-  </form>
+  </div>
+
   <% if (handtekening) { %>
-    <div style="display:flex;align-items:center;gap:16px;margin-top:16px">
-      <img src="<%= handtekening %>" alt="Handtekening" style="max-height:70px;max-width:240px;border:1px solid var(--line);border-radius:9px;background:#fff;padding:6px 12px">
+    <div style="display:flex;align-items:center;gap:16px;margin-top:18px;padding-top:16px;border-top:1px solid var(--line)">
+      <div>
+        <div style="font-size:.78rem;font-weight:700;margin-bottom:6px">Huidige handtekening:</div>
+        <img src="<%= handtekening %>" alt="Handtekening" style="max-height:70px;max-width:240px;border:1px solid var(--line);border-radius:9px;background:#fff;padding:6px 12px">
+      </div>
       <form method="post" action="/uadmin/overeenkomsten/handtekening/delete" onsubmit="return confirm('Handtekening verwijderen?')">
         <button class="btn btn-danger btn-sm" type="submit">Verwijder handtekening</button>
       </form>
     </div>
   <% } else { %>
-    <div class="hint" style="margin-top:12px">Er is nog geen handtekening ingesteld — het ondertekenvak blijft dan leeg om met pen te tekenen.</div>
+    <div class="hint" style="margin-top:14px">Er is nog geen handtekening ingesteld — het ondertekenvak blijft dan leeg om met pen te tekenen.</div>
   <% } %>
 </div>
+
+<script>
+  // Handtekening tekenen: muis, vinger of pen. Wordt opgeslagen als afbeelding,
+  // via hetzelfde uploadkanaal als een foto/scan.
+  (function(){
+    var canvas = document.getElementById('tekenvlak');
+    if (!canvas) return;
+    var ctx = canvas.getContext('2d');
+    ctx.lineWidth = 5;                 // (canvas is 2x zo groot als getoond, voor scherpte)
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+    ctx.strokeStyle = '#1c2a5e';       // klassieke donkerblauwe inkt
+    var bezig = false, leeg = true;
+    var status = document.getElementById('tekenStatus');
+    var naamVeld = document.getElementById('ondertekenaarVeld');
+
+    // Naam meesturen met de upload-variant (optie 2) als die gebruikt wordt.
+    naamVeld.addEventListener('input', function(){
+      document.querySelectorAll('.ondertekenaarKopie').forEach(function(k){ k.value = naamVeld.value; });
+    });
+
+    function positie(e){
+      var r = canvas.getBoundingClientRect();
+      return {
+        x: (e.clientX - r.left) * (canvas.width / r.width),
+        y: (e.clientY - r.top) * (canvas.height / r.height)
+      };
+    }
+    canvas.addEventListener('pointerdown', function(e){
+      e.preventDefault();
+      canvas.setPointerCapture(e.pointerId);
+      bezig = true; leeg = false;
+      var p = positie(e);
+      ctx.beginPath();
+      ctx.moveTo(p.x, p.y);
+      ctx.lineTo(p.x + 0.1, p.y + 0.1); // ook een enkele "tik" laat een puntje achter
+      ctx.stroke();
+    });
+    canvas.addEventListener('pointermove', function(e){
+      if (!bezig) return;
+      e.preventDefault();
+      var p = positie(e);
+      ctx.lineTo(p.x, p.y);
+      ctx.stroke();
+    });
+    ['pointerup','pointercancel'].forEach(function(ev){
+      canvas.addEventListener(ev, function(){ bezig = false; });
+    });
+
+    document.getElementById('tekenWissen').addEventListener('click', function(){
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      leeg = true;
+      if (status) status.style.display = 'none';
+    });
+
+    document.getElementById('tekenOpslaan').addEventListener('click', function(){
+      if (leeg) {
+        status.style.display = 'block';
+        status.textContent = 'Teken eerst je handtekening in het vak hierboven.';
+        return;
+      }
+      status.style.display = 'block';
+      status.textContent = 'Opslaan…';
+      canvas.toBlob(function(blob){
+        var fd = new FormData();
+        fd.append('ondertekenaar', naamVeld.value);
+        fd.append('handtekening', blob, 'handtekening.png');
+        fetch('/uadmin/overeenkomsten/handtekening', { method: 'POST', body: fd })
+          .then(function(r){
+            if (r.ok || r.redirected) { location.href = '/uadmin/overeenkomsten?ok=1'; }
+            else { status.textContent = 'Opslaan mislukt — probeer het opnieuw.'; }
+          })
+          .catch(function(){ status.textContent = 'Opslaan mislukt — controleer je verbinding.'; });
+      }, 'image/png');
+    });
+  })();
+</script>
 
 <div class="panel">
   <% if (lijst.length===0){ %>
