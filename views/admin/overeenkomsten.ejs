@@ -1,0 +1,75 @@
+<%- include('_head', { titel: 'Koopovereenkomsten' }) %>
+<%- include('_side') %>
+<div class="topbar">
+  <div><h1>Koopovereenkomsten</h1><div class="sub"><%= lijst.length %> overeenkomst<%= lijst.length===1?'':'en' %> in beheer</div></div>
+  <a class="btn btn-fill" href="/uadmin/overeenkomsten/nieuw">+ Overeenkomst opstellen</a>
+</div>
+
+<% if (typeof opgeslagen !== 'undefined' && opgeslagen) { %>
+  <div class="melding ok">Opgeslagen.</div>
+<% } %>
+
+<div class="panel" style="padding:22px;margin-bottom:20px">
+  <h3 style="font-family:var(--display);font-weight:600;margin-bottom:6px">Handtekening van de verkoper</h3>
+  <div class="hint" style="margin-bottom:14px">
+    Upload één keer een foto of scan van je handtekening (op wit papier, recht van boven gefotografeerd).
+    Die komt daarna automatisch in het ondertekenvak "Verkoper" op elke koopovereenkomst te staan.
+  </div>
+  <form method="post" action="/uadmin/overeenkomsten/handtekening" enctype="multipart/form-data" style="display:flex;gap:14px;align-items:flex-end;flex-wrap:wrap">
+    <div class="field" style="margin:0">
+      <label>Naam ondertekenaar</label>
+      <input name="ondertekenaar" value="<%= ondertekenaar %>" placeholder="Bijv. J. (Johan) Agroria" style="min-width:240px">
+    </div>
+    <div class="field" style="margin:0">
+      <label>Handtekening (foto/scan)</label>
+      <input type="file" name="handtekening" accept="image/*">
+    </div>
+    <button class="btn btn-fill" type="submit">Opslaan</button>
+  </form>
+  <% if (handtekening) { %>
+    <div style="display:flex;align-items:center;gap:16px;margin-top:16px">
+      <img src="<%= handtekening %>" alt="Handtekening" style="max-height:70px;max-width:240px;border:1px solid var(--line);border-radius:9px;background:#fff;padding:6px 12px">
+      <form method="post" action="/uadmin/overeenkomsten/handtekening/delete" onsubmit="return confirm('Handtekening verwijderen?')">
+        <button class="btn btn-danger btn-sm" type="submit">Verwijder handtekening</button>
+      </form>
+    </div>
+  <% } else { %>
+    <div class="hint" style="margin-top:12px">Er is nog geen handtekening ingesteld — het ondertekenvak blijft dan leeg om met pen te tekenen.</div>
+  <% } %>
+</div>
+
+<div class="panel">
+  <% if (lijst.length===0){ %>
+    <div style="padding:40px 22px;color:var(--muted)">
+      Je hebt nog geen koopovereenkomsten opgesteld. <a href="/uadmin/overeenkomsten/nieuw" style="color:var(--green);font-weight:600">Stel je eerste overeenkomst op →</a>
+      <div style="margin-top:10px;font-size:.86rem">Tip: na het opslaan open je de <b>printweergave</b> en kies je "Opslaan als PDF" — onderteken bij levering samen met de klant.</div>
+    </div>
+  <% } else { %>
+  <table class="list">
+    <thead><tr><th>Nummer</th><th>Datum</th><th>Koper</th><th>Machine</th><th>Koopsom</th><th>Status</th><th></th></tr></thead>
+    <tbody>
+    <% lijst.forEach(function(o){ var t = factuurTotalen(o); %>
+      <tr>
+        <td><b><%= o.nummer %></b></td>
+        <td><%= datumNL(o.datum) %></td>
+        <td><%= o.klant && (o.klant.bedrijf || o.klant.naam) || '—' %></td>
+        <td><%= o.machine && o.machine.naam || '—' %></td>
+        <td><b><%= euroBedrag(t.totaal) %></b></td>
+        <td>
+          <% if (o.status==='getekend'){ %><span class="pill beschikbaar">getekend</span>
+          <% } else { %><span class="pill gereserveerd">concept</span><% } %>
+        </td>
+        <td style="text-align:right;white-space:nowrap">
+          <a class="btn btn-out btn-sm" href="/uadmin/overeenkomsten/<%= o.id %>/print" target="_blank">PDF / print</a>
+          <a class="btn btn-out btn-sm" href="/uadmin/overeenkomsten/<%= o.id %>">Bewerk</a>
+          <form method="post" action="/uadmin/overeenkomsten/<%= o.id %>/delete" style="display:inline" onsubmit="return confirm('Deze overeenkomst definitief verwijderen?')">
+            <button class="btn btn-danger btn-sm" type="submit">Verwijder</button>
+          </form>
+        </td>
+      </tr>
+    <% }) %>
+    </tbody>
+  </table>
+  <% } %>
+</div>
+<%- include('_foot') %>

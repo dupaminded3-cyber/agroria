@@ -961,6 +961,182 @@ app.get('/uadmin/facturen/:id/print', requireAuth, (req, res) => {
   res.render('admin/factuur-print', { factuur, totalen: factuurTotalen(factuur) });
 });
 
+// ---- Koopovereenkomsten ----
+// Zelfde opzet als de facturen: opstellen in het beheer, daarna via de
+// printweergave opslaan als PDF. De handtekening van de verkoper (instelbaar
+// onder "Koopovereenkomsten") staat automatisch in het ondertekenvak.
+
+// Volgend overeenkomstnummer in de vorm AGR-KO-2026-0001 (per jaar oplopend).
+function volgendOvereenkomstnummer(data) {
+  const jaar = new Date().getFullYear();
+  const prefix = 'AGR-KO-' + jaar + '-';
+  let hoogste = 0;
+  (data.overeenkomsten || []).forEach(o => {
+    const m = String(o.nummer || '').match(new RegExp('^' + prefix + '(\\d+)$'));
+    if (m) hoogste = Math.max(hoogste, parseInt(m[1], 10));
+  });
+  return prefix + String(hoogste + 1).padStart(4, '0');
+}
+
+app.get('/uadmin/overeenkomsten', requireAuth, (req, res) => {
+  const data = db.read();
+  res.render('admin/overeenkomsten', {
+    lijst: data.overeenkomsten || [],
+    handtekening: (data.settings || {}).handtekening || '',
+    ondertekenaar: (data.settings || {}).ondertekenaar || '',
+    active: 'overeenkomsten',
+    opgeslagen: req.query.ok
+  });
+});
+
+app.get('/uadmin/overeenkomsten/nieuw', requireAuth, (req, res) => {
+  const data = db.read();
+  // Vanuit een trekker of een bestaande factuur gestart? Dan alvast invullen.
+  const t = req.query.trekker ? data.tractors.find(x => x.id === req.query.trekker) : null;
+  const fac = req.query.factuur ? (data.facturen || []).find(x => x.id === req.query.factuur) : null;
+  res.render('admin/overeenkomst-form', {
+    overeenkomst: null,
+    voorstelNummer: volgendOvereenkomstnummer(data),
+    trekker: t || null,
+    vanFactuur: fac || null,
+    trekkers: data.tractors.filter(x => x.status !== 'verwijderd'),
+    bank: (data.settings || {}).bank || {},
+    plaatsStandaard: ((data.pages || {}).contact || {}).plaatsnaam === 'Hoofdvestiging' ? 'Utrecht' : (((data.pages || {}).contact || {}).plaatsnaam || 'Utrecht'),
+    opgeslagen: false,
+    active: 'overeenkomsten'
+  });
+});
+
+app.get('/uadmin/overeenkomsten/:id', requireAuth, (req, res) => {
+  const data = db.read();
+  const overeenkomst = (data.overeenkomsten || []).find(o => o.id === req.params.id);
+  if (!overeenkomst) return res.redirect('/uadmin/overeenkomsten');
+  res.render('admin/overeenkomst-form', {
+    overeenkomst,
+    voorstelNummer: overeenkomst.nummer,
+    trekker: null,
+    vanFactuur: null,
+    trekkers: data.tractors.filter(x => x.status !== 'verwijderd'),
+    bank: (data.settings || {}).bank || {},
+    plaatsStandaard: '',
+    opgeslagen: req.query.ok,
+    active: 'overeenkomsten'
+  });
+});
+
+// Handtekening van de verkoper instellen (LET OP: vóór de :id?-route,
+// anders wordt "handtekening" als overeenkomst-id gelezen).
+app.post('/uadmin/overeenkomsten/handtekening', requireAuth, upload.single('handtekening'), verwerkUploads, (req, res) => {
+  const data = db.read();
+  if (!data.settings) data.settings = {};
+  if (req.file) data.settings.handtekening = '/uploads/' + req.file.filename;
+  if (req.body.ondertekenaar !== undefined) data.settings.ondertekenaar = (req.body.ondertekenaar || '').trim();
+  db.write(data);
+  res.redirect('/uadmin/overeenkomsten?ok=1');
+});
+
+app.post('/uadmin/overeenkomsten/handtekening/delete', requireAuth, (req, res) => {
+  const data = db.read();
+  if (data.settings && data.settings.handtekening) {
+    const fname = data.settings.handtekening.replace('/uploads/', '');
+    const p = path.join(db.DATA_DIR, 'uploads', fname);
+    if (fs.existsSync(p)) try { fs.unlinkSync(p); } catch (e) {}
+    data.settings.handtekening = '';
+    db.write(data);
+  }
+  res.redirect('/uadmin/overeenkomsten?ok=1');
+});
+
+app.post('/uadmin/overeenkomsten/:id?', requireAuth, (req, res) => {
+  const data = db.read();
+  if (!data.overeenkomsten) data.overeenkomsten = [];
+  const b = req.body;
+
+  const omschrijvingen = [].concat(b.regel_omschrijving || []);
+  const bedragen = [].concat(b.regel_bedrag || []);
+  const regels = omschrijvingen
+    .map((om, i) => ({ omschrijving: String(om || '').trim(), bedrag: parseBedrag(bedragen[i]) }))
+    .filter(r => r.omschrijving);
+
+  const velden = {
+    nummer: (b.nummer || '').trim() || volgendOvereenkomstnummer(data),
+    datum: b.datum || new Date().toISOString().slice(0, 10),
+    plaats: (b.plaats || '').trim(),
+    status: ['concept', 'getekend'].includes(b.status) ? b.status : 'concept',
+    klant: {
+      naam: (b.klant_naam || '').trim(),
+      bedrijf: (b.klant_bedrijf || '').trim(),
+      adres: (b.klant_adres || '').trim(),
+      postcodePlaats: (b.klant_postcodeplaats || '').trim(),
+      land: (b.klant_land || '').trim(),
+      email: (b.klant_email || '').trim(),
+      telefoon: (b.klant_telefoon || '').trim(),
+      kvk: (b.klant_kvk || '').trim(),
+      btw: (b.klant_btw || '').trim()
+    },
+    machine: {
+      naam: (b.machine_naam || '').trim(),
+      bouwjaar: (b.machine_bouwjaar || '').trim(),
+      uren: (b.machine_uren || '').trim(),
+      pk: (b.machine_pk || '').trim(),
+      transmissie: (b.machine_transmissie || '').trim(),
+      serienummer: (b.machine_serienummer || '').trim(),
+      kenteken: (b.machine_kenteken || '').trim()
+    },
+    regels,
+    prijsType: (b.prijsType === 'btw') ? 'btw' : 'marge',
+    aanbetaling: parseBedrag(b.aanbetaling),
+    aanbetalingVervalt: b.aanbetaling_vervalt || '',
+    leverdatum: b.leverdatum || '',
+    levering: (b.levering || '').trim(),
+    // Import uit het buitenland (bijv. Duitsland): voegt het RDW-/kenteken-
+    // artikel over het invoertraject toe aan de overeenkomst.
+    importLand: (b.import_land || '').trim(),
+    bijzonderheden: (b.bijzonderheden || '').trim()
+  };
+
+  const bank = {
+    iban: (b.bank_iban || '').trim(),
+    bic: (b.bank_bic || '').trim(),
+    tnv: (b.bank_tnv || '').trim()
+  };
+  velden.bank = bank;
+  if (!data.settings) data.settings = {};
+  if (bank.iban || bank.bic || bank.tnv) data.settings.bank = bank;
+
+  let id = req.params.id;
+  if (id) {
+    const o = data.overeenkomsten.find(x => x.id === id);
+    if (!o) return res.redirect('/uadmin/overeenkomsten');
+    Object.assign(o, velden);
+  } else {
+    id = db.id();
+    data.overeenkomsten.unshift(Object.assign({ id, createdAt: new Date().toISOString() }, velden));
+  }
+  db.write(data);
+  res.redirect('/uadmin/overeenkomsten/' + id + '?ok=1');
+});
+
+app.post('/uadmin/overeenkomsten/:id/delete', requireAuth, (req, res) => {
+  const data = db.read();
+  data.overeenkomsten = (data.overeenkomsten || []).filter(o => o.id !== req.params.id);
+  db.write(data);
+  res.redirect('/uadmin/overeenkomsten');
+});
+
+// Printweergave: de opgemaakte A4-koopovereenkomst (opslaan als PDF via afdrukken).
+app.get('/uadmin/overeenkomsten/:id/print', requireAuth, (req, res) => {
+  const data = db.read();
+  const overeenkomst = (data.overeenkomsten || []).find(o => o.id === req.params.id);
+  if (!overeenkomst) return res.redirect('/uadmin/overeenkomsten');
+  res.render('admin/overeenkomst-print', {
+    overeenkomst,
+    totalen: factuurTotalen(overeenkomst),
+    handtekening: (data.settings || {}).handtekening || '',
+    ondertekenaar: (data.settings || {}).ondertekenaar || ''
+  });
+});
+
 // ---- Aanvragen (inbox) ----
 app.get('/uadmin/aanvragen', requireAuth, (req, res) => {
   const data = db.read();
