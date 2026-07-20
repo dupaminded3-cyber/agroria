@@ -1,0 +1,371 @@
+<%
+  // Printbare A4-koopovereenkomst in de Agroria-huisstijl.
+  // Opslaan als PDF: knop rechtsboven (of Ctrl+P → "Opslaan als PDF").
+  var o = overeenkomst;
+  var t = totalen;
+  var klant = o.klant || {};
+  var machine = o.machine || {};
+  var ob = o.bank || {};
+  var web = (typeof SITE_URL !== 'undefined' ? SITE_URL : '').replace(/^https?:\/\//,'');
+  var heeftAanbetaling = t.aanbetaling > 0;
+  var koperNaam = klant.bedrijf ? (klant.bedrijf + (klant.naam ? ', vertegenwoordigd door ' + klant.naam : '')) : (klant.naam || 'Koper');
+  var machineSpecs = [
+    ['Bouwjaar', machine.bouwjaar],
+    ['Draaiuren', machine.uren ? getal(machine.uren) + ' u' : ''],
+    ['Vermogen', machine.pk ? machine.pk + ' pk' : ''],
+    ['Transmissie', machine.transmissie],
+    ['Serie-/chassisnr.', machine.serienummer],
+    ['Kenteken', machine.kenteken]
+  ].filter(function(r){ return r[1]; });
+  var nr = 0; // artikelnummering (loopt automatisch mee met optionele artikelen)
+%><!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Koopovereenkomst <%= o.nummer %> — Agroria Landbouwvoertuigen</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Hanken+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --forest:#25402A; --forest2:#1B2F1F; --green:#4E7B3E;
+    --gold:#C0A063; --gold-soft:#D9C08F; --paper:#FFFFFF; --cream:#F7F5EE;
+    --ink:#1D261C; --muted:#6B7464; --line:#E4E1D5;
+    --display:'Fraunces',Georgia,serif; --body:'Hanken Grotesk',system-ui,sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{background:#E9E7DE}
+  body{font-family:var(--body);color:var(--ink);-webkit-print-color-adjust:exact;print-color-adjust:exact}
+
+  /* Werkbalk (niet mee afgedrukt) */
+  .werkbalk{max-width:210mm;margin:18px auto 0;display:flex;gap:10px;justify-content:flex-end;padding:0 4px}
+  .werkbalk a,.werkbalk button{font-family:var(--body);font-weight:600;font-size:.9rem;padding:10px 18px;border-radius:9px;border:none;cursor:pointer;text-decoration:none}
+  .werkbalk .vul{background:var(--forest);color:#fff}
+  .werkbalk .rand{background:#fff;color:var(--ink);border:1px solid #cfccc0}
+
+  .vel{width:210mm;min-height:297mm;margin:14px auto 30px;background:var(--paper);box-shadow:0 24px 60px -28px rgba(29,38,28,.45)}
+  /* Tabelconstructie: kop- en voetrij herhalen zich bij het afdrukken op elke
+     pagina en zorgen zo zélf voor witruimte — de paginamarge van de browser
+     kan dan op 0, waardoor er geen URL/datum op het document komt. */
+  .ptab{width:100%;border-collapse:collapse}
+  .pt-rand{height:0}
+  .pt-cel{vertical-align:top}
+  .binnen{padding:15mm 16mm 10mm;min-height:272mm;display:flex;flex-direction:column}
+
+  /* ---- Kop ---- */
+  .kop{display:flex;justify-content:space-between;align-items:flex-start;gap:24px}
+  .kop .logo img{max-height:30mm;max-width:58mm;display:block}
+  .woordmerk .a-mono{width:52px;height:52px;border-radius:12px;background:linear-gradient(150deg,var(--forest),var(--forest2));color:var(--gold);display:grid;place-items:center;font-family:var(--display);font-size:1.8rem;font-weight:700}
+  .woordmerk b{display:block;font-family:var(--display);font-weight:700;font-size:1.75rem;letter-spacing:.14em;color:var(--forest);margin-top:9px}
+  .woordmerk small{display:block;font-size:.6rem;letter-spacing:.34em;text-transform:uppercase;color:var(--gold);font-weight:700;margin-top:3px}
+  .kop-rechts{text-align:right}
+  .kop-rechts .titel{font-family:var(--display);font-weight:600;font-size:1.9rem;line-height:1.05;color:var(--forest);letter-spacing:.05em}
+  .kop-rechts .ondertitel{font-size:.66rem;letter-spacing:.3em;text-transform:uppercase;color:var(--gold);font-weight:700;margin-top:7px}
+  .kop-meta{margin-top:14px;display:inline-block;text-align:left;border:1px solid var(--line);border-radius:10px;overflow:hidden}
+  .kop-meta div{display:flex;font-size:.78rem}
+  .kop-meta div+div{border-top:1px solid var(--line)}
+  .kop-meta span{padding:6px 14px}
+  .kop-meta span:first-child{width:105px;background:var(--cream);color:var(--muted);font-weight:600}
+  .kop-meta span:last-child{font-weight:700;min-width:118px}
+  .getekend-stempel{display:inline-block;margin-top:10px;border:2px solid var(--green);color:var(--green);font-weight:700;font-size:.7rem;letter-spacing:.22em;text-transform:uppercase;padding:5px 14px;border-radius:6px;transform:rotate(-2deg)}
+
+  .goudlijn{height:3px;background:linear-gradient(90deg,var(--gold),var(--gold-soft) 55%,transparent);margin:8mm 0 0;border-radius:2px}
+
+  /* ---- Partijen ---- */
+  .partijen{display:grid;grid-template-columns:1fr 1fr;gap:8mm;margin-top:6mm}
+  .blok .eyebrow{font-size:.62rem;letter-spacing:.26em;text-transform:uppercase;color:var(--gold);font-weight:700;margin-bottom:7px;display:flex;align-items:center;gap:8px}
+  .blok .eyebrow::after{content:'';flex:1;height:1px;background:var(--line)}
+  .blok .naam{font-family:var(--display);font-weight:600;font-size:1rem;color:var(--forest)}
+  .blok p{font-size:.8rem;line-height:1.6;color:#3A4137;margin-top:4px}
+  .blok p .stil{color:var(--muted)}
+  .aanhef{margin-top:5mm;font-size:.8rem;color:#3A4137;line-height:1.6}
+  .aanhef b{color:var(--forest)}
+
+  /* ---- Machine ---- */
+  .machine{margin-top:6mm;border:1px solid var(--line);border-radius:12px;overflow:hidden;page-break-inside:avoid}
+  .machine .mkop{background:linear-gradient(120deg,var(--forest),var(--forest2));color:#fff;padding:11px 18px}
+  .machine .mkop .ml{font-size:.6rem;letter-spacing:.28em;text-transform:uppercase;color:var(--gold-soft);font-weight:700}
+  .machine .mkop .mn{font-family:var(--display);font-weight:600;font-size:1.15rem;margin-top:2px}
+  .machine .specs{display:grid;grid-template-columns:repeat(3,1fr);background:var(--cream)}
+  .machine .spec{padding:9px 18px;border-top:1px solid var(--line)}
+  .machine .spec:nth-child(3n+2),.machine .spec:nth-child(3n){border-left:1px solid var(--line)}
+  .machine .spec b{display:block;font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);font-weight:700;margin-bottom:2px}
+  .machine .spec span{font-size:.84rem;font-weight:600;color:var(--ink)}
+
+  /* ---- Koopsom ---- */
+  .sectiekop{margin-top:6mm;font-size:.62rem;letter-spacing:.26em;text-transform:uppercase;color:var(--gold);font-weight:700;display:flex;align-items:center;gap:8px}
+  .sectiekop::after{content:'';flex:1;height:1px;background:var(--line)}
+  table.spec{width:100%;border-collapse:collapse;margin-top:8px}
+  table.spec th{text-align:left;font-size:.62rem;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);padding:7px 2px;border-bottom:1.5px solid var(--forest)}
+  table.spec th:last-child{text-align:right}
+  table.spec td{padding:8px 2px;font-size:.86rem;border-bottom:1px solid var(--line)}
+  table.spec td:last-child{text-align:right;font-variant-numeric:tabular-nums;font-weight:600;white-space:nowrap}
+  table.spec td.neg{color:#8a4a3a}
+  .totalen{margin-top:7px;margin-left:auto;width:82mm}
+  .totalen .rij{display:flex;justify-content:space-between;padding:5px 12px;font-size:.84rem}
+  .totalen .rij span:last-child{font-variant-numeric:tabular-nums;font-weight:600}
+  .totalen .eind{margin-top:4px;background:linear-gradient(120deg,var(--forest),var(--forest2));color:#fff;border-radius:10px;padding:10px 14px;display:flex;justify-content:space-between;align-items:center}
+  .totalen .eind b{font-size:.7rem;letter-spacing:.16em;text-transform:uppercase;color:var(--gold-soft)}
+  .totalen .eind span{font-family:var(--display);font-weight:600;font-size:1.15rem;font-variant-numeric:tabular-nums}
+
+  /* ---- Artikelen ---- */
+  .artikelen{margin-top:7mm}
+  .artikel{margin-bottom:5mm;page-break-inside:avoid}
+  .artikel h3{font-family:var(--display);font-weight:600;font-size:.98rem;color:var(--forest);margin-bottom:4px}
+  .artikel h3 .anr{color:var(--gold);margin-right:8px}
+  .artikel p, .artikel li{font-size:.78rem;line-height:1.62;color:#3A4137}
+  .artikel p + p{margin-top:4px}
+  .artikel ol{margin:2px 0 0 17px}
+  .artikel li{padding:2px 0}
+  .artikel li b, .artikel p b{color:var(--forest)}
+  .artikel.garantie-artikel{border:1px solid var(--gold-soft);border-left:4px solid var(--gold);border-radius:12px;padding:14px 16px 12px;background:#FCFAF4}
+  .artikel .kleine{font-size:.68rem;color:var(--muted);margin-top:8px;line-height:1.55;border-top:1px dashed var(--gold-soft);padding-top:7px}
+
+  /* ---- Ondertekening ---- */
+  .onderteken{margin-top:8mm;page-break-inside:avoid}
+  .onderteken .intro{font-size:.8rem;color:#3A4137;line-height:1.6;margin-bottom:6mm}
+  .tekengrid{display:grid;grid-template-columns:1fr 1fr;gap:10mm}
+  .tekenvak{border:1px solid var(--line);border-radius:12px;padding:14px 16px;background:var(--cream)}
+  .tekenvak .rol{font-size:.62rem;letter-spacing:.22em;text-transform:uppercase;color:var(--gold);font-weight:700;margin-bottom:4px}
+  .tekenvak .wie{font-weight:700;font-size:.86rem;color:var(--ink)}
+  .tekenvak .namens{font-size:.74rem;color:var(--muted);margin-top:1px}
+  .tekenvak .ruimte{height:22mm;display:flex;align-items:center;justify-content:center;margin:6px 0 4px}
+  .tekenvak .ruimte img{max-height:21mm;max-width:100%;mix-blend-mode:multiply}
+  .tekenvak .lijn{border-top:1px solid var(--ink);padding-top:5px;font-size:.68rem;color:var(--muted);display:flex;justify-content:space-between}
+
+  .voet{margin-top:auto;padding-top:7mm}
+  .voet .lijn{height:2px;background:linear-gradient(90deg,var(--forest),var(--gold));border-radius:2px;margin-bottom:9px}
+  .voet p{font-size:.66rem;color:var(--muted);text-align:center;line-height:1.7}
+  .voet b{color:var(--forest)}
+
+  @media print{
+    html,body{background:#fff}
+    .werkbalk{display:none}
+    .vel{width:auto;min-height:auto;margin:0;box-shadow:none}
+    @page{size:A4;margin:0}
+    .pt-boven .pt-rand{height:12mm}
+    .pt-onder .pt-rand{height:11mm}
+    .binnen{padding:0 15mm;min-height:0}
+  }
+</style>
+</head>
+<body>
+
+<div class="werkbalk">
+  <a class="rand" href="/uadmin/overeenkomsten/<%= o.id %>">← Bewerken</a>
+  <button class="vul" onclick="window.print()">Opslaan als PDF / afdrukken</button>
+</div>
+
+<div class="vel">
+<table class="ptab">
+  <thead class="pt-boven"><tr><td><div class="pt-rand"></div></td></tr></thead>
+  <tbody><tr><td class="pt-cel">
+<div class="binnen">
+
+  <!-- Kop -->
+  <div class="kop">
+    <div>
+      <% if (typeof logo !== 'undefined' && logo) { %>
+        <div class="logo"><img src="<%= logo %>" alt="Agroria Landbouwvoertuigen"></div>
+      <% } else { %>
+        <div class="woordmerk">
+          <div class="a-mono">A</div>
+          <b>AGRORIA</b>
+          <small>Landbouwvoertuigen</small>
+        </div>
+      <% } %>
+    </div>
+    <div class="kop-rechts">
+      <div class="titel">KOOP–<br>OVEREENKOMST</div>
+      <div class="ondertitel">Betrouwbare trekkers · met garantie</div>
+      <div class="kop-meta">
+        <div><span>Nummer</span><span><%= o.nummer %></span></div>
+        <div><span>Datum</span><span><%= datumNL(o.datum) %></span></div>
+        <% if (o.plaats) { %><div><span>Plaats</span><span><%= o.plaats %></span></div><% } %>
+      </div>
+      <% if (o.status === 'getekend') { %><div><span class="getekend-stempel">Getekend</span></div><% } %>
+    </div>
+  </div>
+
+  <div class="goudlijn"></div>
+
+  <!-- Partijen -->
+  <div class="partijen">
+    <div class="blok">
+      <div class="eyebrow">Verkoper</div>
+      <div class="naam">Agroria Landbouwvoertuigen</div>
+      <p>
+        <% if (contact.adres) { %><%= contact.adres %><br><% } %>
+        <% if (contact.kvk) { %><span class="stil">KvK</span> <%= contact.kvk %> <% } %><% if (contact.btw) { %>· <span class="stil">BTW</span> <%= contact.btw %><br><% } else if (contact.kvk) { %><br><% } %>
+        <% if (contact.telefoon) { %><span class="stil">Telefoon</span> <%= contact.telefoon %><br><% } %>
+        <% if (contact.email) { %><%= contact.email %><% } %><% if (web) { %> · <%= web %><% } %>
+      </p>
+    </div>
+    <div class="blok">
+      <div class="eyebrow">Koper</div>
+      <div class="naam"><%= klant.bedrijf || klant.naam %></div>
+      <p>
+        <% if (klant.bedrijf && klant.naam) { %>Vertegenwoordigd door <%= klant.naam %><br><% } %>
+        <% if (klant.adres) { %><%= klant.adres %><br><% } %>
+        <% if (klant.postcodePlaats) { %><%= klant.postcodePlaats %><% } %><% if (klant.land) { %> (<%= klant.land %>)<% } %><% if (klant.postcodePlaats || klant.land) { %><br><% } %>
+        <% if (klant.email) { %><span class="stil">E-mail</span> <%= klant.email %><br><% } %>
+        <% if (klant.telefoon) { %><span class="stil">Telefoon</span> <%= klant.telefoon %><br><% } %>
+        <% if (klant.kvk) { %><span class="stil">KvK</span> <%= klant.kvk %> <% } %><% if (klant.btw) { %>· <span class="stil">BTW</span> <%= klant.btw %><% } %>
+      </p>
+    </div>
+  </div>
+
+  <p class="aanhef">Verkoper en koper — hierna gezamenlijk <b>"partijen"</b> — verklaren het volgende te zijn overeengekomen:</p>
+
+  <!-- Machine -->
+  <div class="machine">
+    <div class="mkop">
+      <div class="ml">De machine</div>
+      <div class="mn"><%= machine.naam %></div>
+    </div>
+    <% if (machineSpecs.length) { %>
+    <div class="specs">
+      <% machineSpecs.forEach(function(s){ %>
+        <div class="spec"><b><%= s[0] %></b><span><%= s[1] %></span></div>
+      <% }) %>
+    </div>
+    <% } %>
+  </div>
+
+  <!-- Koopsom -->
+  <div class="sectiekop">Koopsom</div>
+  <table class="spec">
+    <thead><tr><th>Omschrijving</th><th>Bedrag</th></tr></thead>
+    <tbody>
+      <% (o.regels || []).forEach(function(r){ %>
+        <tr>
+          <td><%= r.omschrijving %></td>
+          <td class="<%= r.bedrag < 0 ? 'neg' : '' %>"><%= r.bedrag < 0 ? '− ' + euroBedrag(Math.abs(r.bedrag)) : euroBedrag(r.bedrag) %></td>
+        </tr>
+      <% }) %>
+    </tbody>
+  </table>
+  <div class="totalen">
+    <% if (o.prijsType === 'btw') { %>
+      <div class="rij"><span>Subtotaal (excl. BTW)</span><span><%= euroBedrag(t.subtotaal) %></span></div>
+      <div class="rij"><span>BTW 21%</span><span><%= euroBedrag(t.btw) %></span></div>
+    <% } %>
+    <div class="eind"><b>Totale koopsom<%= o.prijsType === 'btw' ? ' (incl. BTW)' : '' %></b><span><%= euroBedrag(t.totaal) %></span></div>
+  </div>
+
+  <!-- Artikelen -->
+  <div class="artikelen">
+
+    <div class="artikel">
+      <h3><span class="anr">Artikel <%= ++nr %></span>Verkoop en staat van de machine</h3>
+      <p>Verkoper verkoopt en levert aan koper de hierboven omschreven machine. Verkoper verklaart bevoegd te zijn tot deze verkoop en dat de machine vrij is van beslag en van niet-gemelde financiële lasten. Verkoper heeft de herkomst en historie van de machine naar beste weten volledig en transparant aan koper kenbaar gemaakt; de machine is vóór verkoop technisch gecontroleerd. Koper is in de gelegenheid gesteld de machine te bezichtigen en te beproeven, dan wel doet dit uiterlijk bij de aflevering.</p>
+    </div>
+
+    <div class="artikel">
+      <h3><span class="anr">Artikel <%= ++nr %></span>Koopsom en betaling</h3>
+      <p>De totale koopsom bedraagt <b><%= euroBedrag(t.totaal) %></b><%= o.prijsType === 'btw' ? ' (inclusief 21% BTW)' : '' %>, zoals gespecificeerd in het overzicht hierboven.
+      <% if (o.prijsType !== 'btw') { %>Op deze verkoop is de margeregeling voor gebruikte goederen (art. 28b Wet OB) van toepassing: BTW is in de prijs begrepen, wordt niet afzonderlijk vermeld en is niet als voorbelasting aftrekbaar.<% } %></p>
+      <% if (heeftAanbetaling) { %>
+        <p>Betaling vindt plaats in twee termijnen<% if (ob.iban) { %> op rekening <b><%= ob.iban %></b><% if (ob.tnv) { %> ten name van <%= ob.tnv %><% } %><% } %>, onder vermelding van het overeenkomstnummer:</p>
+        <ol>
+          <li><b>Aanbetaling</b> van <b><%= euroBedrag(t.aanbetaling) %></b><% if (o.aanbetalingVervalt) { %>, te voldoen uiterlijk <%= datumNL(o.aanbetalingVervalt) %><% } %>. Na ontvangst wordt de machine voor koper gereserveerd en wordt de levering in gang gezet.</li>
+          <li><b>Restant</b> van <b><%= euroBedrag(t.restant) %></b>, te voldoen uiterlijk bij aflevering.</li>
+        </ol>
+      <% } else { %>
+        <p>De koopsom wordt<% if (ob.iban) { %> voldaan op rekening <b><%= ob.iban %></b><% if (ob.tnv) { %> ten name van <%= ob.tnv %><% } %>,<% } %> uiterlijk bij aflevering volledig voldaan, onder vermelding van het overeenkomstnummer.</p>
+      <% } %>
+    </div>
+
+    <div class="artikel">
+      <h3><span class="anr">Artikel <%= ++nr %></span>Levering</h3>
+      <p>De machine wordt <b>rijklaar</b> geleverd: technisch nagekeken, onderhouden en gereed voor direct gebruik. Verkoper verzorgt het transport tot op het adres van koper <b>kosteloos</b>.
+      <% if (o.leverdatum) { %>De beoogde leverdatum is <b><%= datumNL(o.leverdatum) %></b>; deze datum is indicatief en wordt in onderling overleg definitief vastgesteld.<% } else { %>De leverdatum wordt in onderling overleg vastgesteld.<% } %>
+      Bij aflevering vindt een gezamenlijke inspectie en overdracht plaats.</p>
+      <% if (o.levering) { %><p><%= o.levering %></p><% } %>
+    </div>
+
+    <% if (o.importLand) { %>
+    <div class="artikel">
+      <h3><span class="anr">Artikel <%= ++nr %></span>Import en registratie</h3>
+      <p>De machine wordt door verkoper geïmporteerd uit <b><%= o.importLand %></b>. Verkoper verzorgt het volledige invoertraject en draagt de kosten daarvan: het transport naar Nederland, de RDW-beoordeling, de inschrijving in het Nederlandse kentekenregister en de afgifte van het Nederlandse kenteken, inclusief de bijbehorende buitenlandse voertuigdocumenten. De machine wordt geleverd voorzien van Nederlandse kentekenregistratie. Door de doorlooptijd van de RDW-procedure geldt de afgesproken leverdatum als indicatief. Verkoper adviseert koper om vóór de leverdatum een (minimaal WA-)verzekering op het kenteken af te sluiten, zodat de machine direct na aflevering verzekerd de weg op kan.</p>
+    </div>
+    <% } %>
+
+    <div class="artikel">
+      <h3><span class="anr">Artikel <%= ++nr %></span>Eigendomsvoorbehoud en risico</h3>
+      <p>De machine blijft eigendom van verkoper totdat koper de volledige koopsom heeft voldaan. Tot het moment van aflevering wordt de machine door verkoper zorgvuldig gestald en beheerd; het risico van verlies of beschadiging gaat pas bij de feitelijke aflevering over op koper. Reeds door koper betaalde bedragen blijven bij verlies of beschadiging vóór aflevering volledig gedekt: in dat geval levert verkoper een gelijkwaardige machine of betaalt hij alle betaalde bedragen terug.</p>
+    </div>
+
+    <div class="artikel garantie-artikel">
+      <h3><span class="anr">Artikel <%= ++nr %></span>Agroria-garantie — 12 maanden volledig + 6 maanden geld-terug</h3>
+      <ol>
+        <li><b>12 maanden volledige garantie.</b> Vanaf de leveringsdatum geldt op de machine twaalf maanden volledige garantie op de techniek: motor, transmissie, aandrijflijn, hydrauliek en elektronica. Doet zich in deze periode een technisch gebrek voor, dan wordt dit kosteloos door of namens verkoper hersteld.</li>
+        <li><b>6 maanden geld-terug-garantie bij motorisch defect.</b> Openbaart zich binnen zes maanden na levering een ernstig defect aan de motor of aandrijflijn dat niet redelijkerwijs te herstellen is, dan neemt verkoper de machine terug en ontvangt koper het volledige aankoopbedrag retour.</li>
+        <li><b>Uitgesloten van garantie</b> zijn slijtage- en verbruiksdelen, waaronder banden, verlichting, filters, oliën en vloeistoffen, remvoeringen, koppelingsslijtage, ruiten en cosmetische onderdelen (o.a. lak, bekleding en kunststofdelen).</li>
+        <li><b>Voorwaarden.</b> De garantie geldt bij normaal agrarisch gebruik en regulier onderhoud. Een gebrek dient direct na constatering, en in ieder geval binnen de garantietermijn, schriftelijk aan verkoper te worden gemeld. Herstel vindt plaats door of in opdracht van verkoper, na voorafgaand overleg. Schade door overbelasting, onjuist gebruik of eigen aanpassingen valt buiten de garantie.</li>
+      </ol>
+      <div class="kleine">Deze garantie doet niets af aan de wettelijke rechten van koper — die blijven onverkort gelden, naast en bovenop deze Agroria-garantie.</div>
+    </div>
+
+    <div class="artikel">
+      <h3><span class="anr">Artikel <%= ++nr %></span>Niet-nakoming en ontbinding</h3>
+      <p>Kan verkoper de machine onverhoopt niet leveren, dan heeft koper recht op volledige en onmiddellijke terugbetaling van alle reeds betaalde bedragen, waaronder de aanbetaling. Komt een partij een verplichting uit deze overeenkomst niet na, dan stelt de andere partij haar daarvan schriftelijk in kennis en krijgt zij een redelijke termijn om alsnog na te komen. Blijft nakoming ook daarna uit, dan mag de andere partij de overeenkomst ontbinden. Partijen spannen zich in geschillen eerst in goed onderling overleg op te lossen.</p>
+    </div>
+
+    <% if (o.bijzonderheden) { %>
+    <div class="artikel">
+      <h3><span class="anr">Artikel <%= ++nr %></span>Bijzondere afspraken</h3>
+      <p><%= o.bijzonderheden %></p>
+    </div>
+    <% } %>
+
+    <div class="artikel">
+      <h3><span class="anr">Artikel <%= ++nr %></span>Slotbepalingen</h3>
+      <p>Op deze overeenkomst is Nederlands recht van toepassing. Wijzigingen of aanvullingen gelden alleen als zij schriftelijk tussen partijen zijn vastgelegd. De factuur voor deze verkoop vloeit voort uit en is onlosmakelijk verbonden met deze overeenkomst; de bepalingen, garanties en voorwaarden van deze overeenkomst zijn daarop onverkort van toepassing.</p>
+    </div>
+
+  </div>
+
+  <!-- Ondertekening -->
+  <div class="onderteken">
+    <p class="intro">Aldus overeengekomen en <b>in tweevoud</b> opgemaakt en ondertekend<% if (o.plaats) { %> te <b><%= o.plaats %></b><% } %> op <b><%= datumNL(o.datum) %></b>:</p>
+    <div class="tekengrid">
+      <div class="tekenvak">
+        <div class="rol">Verkoper</div>
+        <div class="wie">Agroria Landbouwvoertuigen</div>
+        <% if (ondertekenaar) { %><div class="namens">Namens deze: <%= ondertekenaar %></div><% } %>
+        <div class="ruimte"><% if (handtekening) { %><img src="<%= handtekening %>" alt="Handtekening verkoper"><% } %></div>
+        <div class="lijn"><span>Handtekening verkoper</span><span>Datum: <%= datumNL(o.datum) %></span></div>
+      </div>
+      <div class="tekenvak">
+        <div class="rol">Koper</div>
+        <div class="wie"><%= klant.bedrijf || klant.naam || 'Koper' %></div>
+        <% if (klant.bedrijf && klant.naam) { %><div class="namens">Namens deze: <%= klant.naam %></div><% } %>
+        <div class="ruimte"></div>
+        <div class="lijn"><span>Handtekening koper</span><span>Datum:</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Voet -->
+  <div class="voet">
+    <div class="lijn"></div>
+    <p>
+      <b>Agroria Landbouwvoertuigen</b>
+      <% if (contact.adres) { %> · <%= contact.adres %><% } %>
+      <% if (contact.kvk) { %> · KvK <%= contact.kvk %><% } %>
+      <% if (contact.btw) { %> · BTW <%= contact.btw %><% } %><br>
+      <% if (contact.telefoon) { %><%= contact.telefoon %> · <% } %>
+      <% if (contact.email) { %><%= contact.email %><% } %><% if (web) { %> · <%= web %><% } %>
+      — Koopovereenkomst <%= o.nummer %>
+    </p>
+  </div>
+
+</div>
+  </td></tr></tbody>
+  <tfoot class="pt-onder"><tr><td><div class="pt-rand"></div></td></tr></tfoot>
+</table>
+</div>
+</body>
+</html>

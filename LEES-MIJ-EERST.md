@@ -64,6 +64,16 @@ Dan is je wachtwoord `MijnWachtwoord`.
     wordt apart uitgerekend en vermeld), en vul eventueel een **aanbetaling**
     in voor een betaalschema.
   - Klik op **"PDF / print"** en kies "Opslaan als PDF" — klaar om te mailen.
+- **Koopovereenkomsten**: stel een professionele koopovereenkomst op in de
+  Agroria-huisstijl, met eigendomsvoorbehoud, de garantievoorwaarden
+  (12 maanden volledig + 6 maanden geld-terug bij motorisch defect) en
+  ondertekenvakken voor verkoper en koper.
+  - Upload één keer je **handtekening** (foto/scan) — die staat daarna
+    automatisch in het ondertekenvak "Verkoper" op elke overeenkomst.
+  - Start direct vanuit een **trekker** of vanuit een bestaande **factuur**
+    (knop "Overeenkomst" in de facturenlijst) — alles wordt vooringevuld.
+  - Bij import uit Duitsland/België komt er automatisch een artikel bij over
+    het invoertraject (RDW-beoordeling en Nederlands kenteken).
 
 ## Tip voor de "wow" — zet er je eigen foto's op
 
