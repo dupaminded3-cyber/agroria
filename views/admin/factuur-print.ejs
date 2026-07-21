@@ -130,6 +130,8 @@
   .garantie .kleine{font-size:.68rem;color:var(--muted);margin-top:9px;line-height:1.55;border-top:1px dashed var(--gold-soft);padding-top:8px}
 
   .opmerking{margin-top:6mm;font-size:.8rem;color:#3A4137;background:var(--cream);border:1px solid var(--line);border-radius:10px;padding:12px 16px;line-height:1.6}
+  .koppeling{margin-top:6mm;font-size:.78rem;color:#3A4137;background:#FCFAF4;border:1px solid var(--gold-soft);border-left:4px solid var(--gold);border-radius:10px;padding:11px 16px;line-height:1.6;page-break-inside:avoid}
+  .koppeling b{color:var(--forest)}
 
   /* ---- Voet ---- */
   .voet{margin-top:auto;padding-top:8mm}
@@ -221,6 +223,13 @@
       </p>
     </div>
   </div>
+
+  <!-- Koppeling met de koopovereenkomst -->
+  <% if (f.overeenkomst && f.overeenkomst.nummer) { %>
+  <div class="koppeling">
+    Deze factuur vloeit voort uit en is onlosmakelijk verbonden met <b>koopovereenkomst <%= f.overeenkomst.nummer %></b><% if (f.overeenkomst.datum) { %> d.d. <b><%= datumNL(f.overeenkomst.datum) %></b><% } %> tussen Agroria Landbouwvoertuigen en <%= klant.bedrijf || klant.naam %><% if (machine.naam) { %>, betreffende de <%= machine.naam %><% } %>. De bepalingen, garanties en voorwaarden van die koopovereenkomst — waaronder de Agroria-garantie — zijn onverkort op deze factuur van toepassing.
+  </div>
+  <% } %>
 
   <!-- Machine -->
   <% if (machine.naam) { %>

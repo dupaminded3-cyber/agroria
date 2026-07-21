@@ -72,6 +72,10 @@ Dan is je wachtwoord `MijnWachtwoord`.
     automatisch in het ondertekenvak "Verkoper" op elke overeenkomst.
   - Start direct vanuit een **trekker** of vanuit een bestaande **factuur**
     (knop "Overeenkomst" in de facturenlijst) — alles wordt vooringevuld.
+  - Andersom kan ook: klik bij een overeenkomst op **"Factuur"** en de
+    bijbehorende factuur wordt klaargezet met dezelfde gegevens, inclusief
+    een verwijzing op de factuur dat hij voortvloeit uit die koopovereenkomst
+    (waarmee de voorwaarden en garanties ervan van toepassing zijn).
   - Bij import uit Duitsland/België komt er automatisch een artikel bij over
     het invoertraject (RDW-beoordeling en Nederlands kenteken).
 
