@@ -43,7 +43,10 @@
   <div><h1><%= overeenkomst ? 'Overeenkomst bewerken' : 'Nieuwe koopovereenkomst' %></h1>
     <div class="sub"><a href="/uadmin/overeenkomsten" style="color:var(--muted)">← Terug naar overeenkomsten</a></div></div>
   <% if (overeenkomst) { %>
-    <a class="btn btn-fill" href="/uadmin/overeenkomsten/<%= overeenkomst.id %>/print" target="_blank">Bekijk / opslaan als PDF ↗</a>
+    <div style="display:flex;gap:10px">
+      <a class="btn btn-out" href="/uadmin/facturen/nieuw?overeenkomst=<%= overeenkomst.id %>" title="Maak de bijbehorende factuur — alle gegevens en de verwijzing naar deze overeenkomst worden overgenomen">Maak factuur</a>
+      <a class="btn btn-fill" href="/uadmin/overeenkomsten/<%= overeenkomst.id %>/print" target="_blank">Bekijk / opslaan als PDF ↗</a>
+    </div>
   <% } %>
 </div>
 

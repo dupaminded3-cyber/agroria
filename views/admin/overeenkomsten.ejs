@@ -155,6 +155,7 @@
           <% } else { %><span class="pill gereserveerd">concept</span><% } %>
         </td>
         <td style="text-align:right;white-space:nowrap">
+          <a class="btn btn-out btn-sm" href="/uadmin/facturen/nieuw?overeenkomst=<%= o.id %>" title="Maak de bijbehorende factuur — alle gegevens en de verwijzing naar deze overeenkomst worden overgenomen">Factuur</a>
           <a class="btn btn-out btn-sm" href="/uadmin/overeenkomsten/<%= o.id %>/print" target="_blank">PDF / print</a>
           <a class="btn btn-out btn-sm" href="/uadmin/overeenkomsten/<%= o.id %>">Bewerk</a>
           <form method="post" action="/uadmin/overeenkomsten/<%= o.id %>/delete" style="display:inline" onsubmit="return confirm('Deze overeenkomst definitief verwijderen?')">

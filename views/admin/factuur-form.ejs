@@ -12,9 +12,22 @@
     status: 'concept',
     klant: {}, machine: {}, regels: [],
     prijsType: 'marge', aanbetaling: 0, aanbetalingVervalt: '',
-    levering: '', opmerking: '', garantie: true, bank: bank || {}
+    levering: '', opmerking: '', garantie: true, bank: bank || {},
+    overeenkomst: {}
   };
-  if (!factuur && trekker) {
+  if (!factuur && typeof vanOvereenkomst !== 'undefined' && vanOvereenkomst) {
+    // Factuur gestart vanuit een koopovereenkomst: alles overnemen en de
+    // verwijzing naar de overeenkomst alvast invullen.
+    f.klant = vanOvereenkomst.klant || {};
+    f.machine = vanOvereenkomst.machine || {};
+    f.regels = vanOvereenkomst.regels || [];
+    f.prijsType = vanOvereenkomst.prijsType || 'marge';
+    f.aanbetaling = vanOvereenkomst.aanbetaling || 0;
+    f.aanbetalingVervalt = vanOvereenkomst.aanbetalingVervalt || '';
+    f.levering = vanOvereenkomst.levering || '';
+    f.bank = vanOvereenkomst.bank || bank || {};
+    f.overeenkomst = { nummer: vanOvereenkomst.nummer, datum: vanOvereenkomst.datum };
+  } else if (!factuur && trekker) {
     f.machine = {
       naam: (trekker.merk + ' ' + trekker.model).trim(),
       bouwjaar: trekker.bouwjaar || '', uren: trekker.uren || '',
@@ -73,6 +86,8 @@
     </div>
     <div class="field"><label>Factuurdatum</label><input type="date" name="datum" value="<%= f.datum %>" required></div>
     <div class="field"><label>Vervaldatum</label><input type="date" name="vervaldatum" value="<%= f.vervaldatum %>"><div class="hint">Uiterste betaaldatum (van het volledige bedrag of het restant).</div></div>
+    <div class="field"><label>Koopovereenkomst-nummer — optioneel</label><input name="ov_nummer" value="<%= (f.overeenkomst && f.overeenkomst.nummer) || '' %>" placeholder="Bijv. AGR-KO-2026-0001"><div class="hint">Vul je dit in, dan vermeldt de factuur dat hij voortvloeit uit die koopovereenkomst en dat de voorwaarden en garanties daarvan van toepassing zijn.</div></div>
+    <div class="field"><label>Datum koopovereenkomst</label><input type="date" name="ov_datum" value="<%= (f.overeenkomst && f.overeenkomst.datum) || '' %>"></div>
   </div>
 </div>
 

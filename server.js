@@ -847,12 +847,14 @@ app.get('/uadmin/facturen', requireAuth, (req, res) => {
 
 app.get('/uadmin/facturen/nieuw', requireAuth, (req, res) => {
   const data = db.read();
-  // Vanuit een trekker gestart? Dan alvast de machinegegevens invullen.
+  // Vanuit een trekker of een koopovereenkomst gestart? Dan alvast invullen.
   const t = req.query.trekker ? data.tractors.find(x => x.id === req.query.trekker) : null;
+  const ov = req.query.overeenkomst ? (data.overeenkomsten || []).find(x => x.id === req.query.overeenkomst) : null;
   res.render('admin/factuur-form', {
     factuur: null,
     voorstelNummer: volgendFactuurnummer(data),
     trekker: t || null,
+    vanOvereenkomst: ov || null,
     trekkers: data.tractors.filter(x => x.status !== 'verwijderd'),
     bank: (data.settings || {}).bank || {},
     opgeslagen: false,
@@ -868,6 +870,7 @@ app.get('/uadmin/facturen/:id', requireAuth, (req, res) => {
     factuur,
     voorstelNummer: factuur.nummer,
     trekker: null,
+    vanOvereenkomst: null,
     trekkers: data.tractors.filter(x => x.status !== 'verwijderd'),
     bank: (data.settings || {}).bank || {},
     opgeslagen: req.query.ok,
@@ -892,6 +895,12 @@ app.post('/uadmin/facturen/:id?', requireAuth, (req, res) => {
     datum: b.datum || new Date().toISOString().slice(0, 10),
     vervaldatum: b.vervaldatum || '',
     status: ['concept', 'verstuurd', 'betaald'].includes(b.status) ? b.status : 'concept',
+    // Koppeling met de koopovereenkomst: komt als verwijzing op de factuur,
+    // zodat de voorwaarden en garanties van de overeenkomst erop van toepassing zijn.
+    overeenkomst: {
+      nummer: (b.ov_nummer || '').trim(),
+      datum: b.ov_datum || ''
+    },
     klant: {
       naam: (b.klant_naam || '').trim(),
       bedrijf: (b.klant_bedrijf || '').trim(),
