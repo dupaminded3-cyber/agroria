@@ -44,16 +44,62 @@ async function verwijderAanvraagFotos(aanvraagId) {
 
 async function slaSiteAfbeeldingOp(buffer, type) {
   const map = veiligeMap('site');
-  const naam = `${type}-${crypto.randomBytes(6).toString('hex')}.jpg`;
+  const extensie = type === 'logo' ? 'png' : 'jpg';
+  const naam = `${type}-${crypto.randomBytes(6).toString('hex')}.${extensie}`;
 
-  const breedte = type === 'logo' ? 600 : 2400;
-  await sharp(buffer)
-    .rotate()
-    .resize({ width: breedte, withoutEnlargement: true })
-    .jpeg({ quality: 88, mozjpeg: true })
-    .toFile(path.join(map, naam));
+  const pipeline = sharp(buffer).rotate();
+
+  if (type === 'logo') {
+    // Logo's: transparantie behouden + transparante randen wegsnijden
+    // zodat ze in de header niet \"mini\" ogen door veel lege marge.
+    await pipeline
+      .ensureAlpha()
+      .trim({ threshold: 1 })
+      .resize({
+        width: 880,
+        height: 260,
+        fit: 'inside',
+      })
+      .png({ compressionLevel: 9, adaptiveFiltering: true })
+      .toFile(path.join(map, naam));
+  } else {
+    await pipeline
+      .resize({ width: 2400, withoutEnlargement: true })
+      .jpeg({ quality: 88, mozjpeg: true })
+      .toFile(path.join(map, naam));
+  }
 
   return `site/${naam}`;
 }
 
-module.exports = { slaOffertefotoOp, verwijderAanvraagFotos, slaSiteAfbeeldingOp };
+async function slaProjectAfbeeldingOp(buffer) {
+  const map = veiligeMap('projecten');
+  const naam = `project-${crypto.randomBytes(7).toString('hex')}.jpg`;
+
+  await sharp(buffer)
+    .rotate()
+    .resize({ width: 1600, height: 1200, fit: 'cover' })
+    .jpeg({ quality: 84, mozjpeg: true })
+    .toFile(path.join(map, naam));
+
+  return `projecten/${naam}`;
+}
+
+function verwijderUpload(relatievePad) {
+  if (!relatievePad) return;
+  // Bescherm tegen path traversal: alleen binnen UPLOADS_DIR verwijderen.
+  const doel = path.join(UPLOADS_DIR, relatievePad);
+  const genormaliseerd = path.normalize(doel);
+  if (!genormaliseerd.startsWith(UPLOADS_DIR)) return;
+  if (fs.existsSync(genormaliseerd) && fs.statSync(genormaliseerd).isFile()) {
+    fs.rmSync(genormaliseerd, { force: true });
+  }
+}
+
+module.exports = {
+  slaOffertefotoOp,
+  verwijderAanvraagFotos,
+  slaSiteAfbeeldingOp,
+  slaProjectAfbeeldingOp,
+  verwijderUpload,
+};

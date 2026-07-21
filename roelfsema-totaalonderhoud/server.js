@@ -5,9 +5,17 @@ const session = require('express-session');
 const bcrypt = require('bcryptjs');
 const sanitizeHtml = require('sanitize-html');
 
-const { readDb, writeDb, UPLOADS_DIR, DIENSTEN, PERIODES, STIJLEN } = require('./lib/db');
+const { readDb, writeDb, UPLOADS_DIR, DIENSTEN, PERIODES, STIJLEN, standaardStats, nieuwId } = require('./lib/db');
 const { offerteUpload, enkeleAfbeeldingUpload, MAX_FOTOS } = require('./lib/upload');
-const { slaOffertefotoOp, verwijderAanvraagFotos, slaSiteAfbeeldingOp } = require('./lib/imaging');
+const {
+  slaOffertefotoOp,
+  verwijderAanvraagFotos,
+  slaSiteAfbeeldingOp,
+  slaProjectAfbeeldingOp,
+  verwijderUpload,
+} = require('./lib/imaging');
+
+const SITE_URL = (process.env.SITE_URL || '').replace(/\/$/, '');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -90,15 +98,29 @@ function schoon(tekst, maxLengte = 5000) {
 // ---------- Openbare pagina's ----------
 
 app.get('/', (req, res) => {
-  res.render('home', { titel: null });
+  const db = readDb();
+  res.render('home', {
+    titel: null,
+    projecten: db.projecten.slice(0, 3),
+    heeftProjecten: db.projecten.length > 0,
+    reviews: db.reviews.slice(0, 6),
+    faq: db.faq.slice(0, 5),
+    stats: db.instellingen.site.stats || standaardStats(),
+  });
 });
 
 app.get('/diensten', (req, res) => {
   res.render('diensten', { titel: 'Diensten' });
 });
 
+app.get('/projecten', (req, res) => {
+  const db = readDb();
+  res.render('projecten', { titel: 'Projecten', projecten: db.projecten });
+});
+
 app.get('/over-ons', (req, res) => {
-  res.render('over-ons', { titel: 'Over ons' });
+  const db = readDb();
+  res.render('over-ons', { titel: 'Over ons', reviews: db.reviews.slice(0, 6), faq: db.faq });
 });
 
 app.get('/ontwerpen', (req, res) => {
@@ -202,6 +224,31 @@ app.post('/offerte-aanvragen', (req, res) => {
 
 app.get('/bedankt', (req, res) => {
   res.render('bedankt', { titel: 'Bedankt' });
+});
+
+// ---------- SEO ----------
+
+function basisUrl(req) {
+  if (SITE_URL) return SITE_URL;
+  return `${req.protocol}://${req.get('host')}`;
+}
+
+app.get('/sitemap.xml', (req, res) => {
+  const basis = basisUrl(req);
+  const paden = ['/', '/diensten', '/projecten', '/over-ons', '/contact', '/offerte-aanvragen'];
+  const items = paden
+    .map((p) => `  <url>\n    <loc>${basis}${p}</loc>\n    <changefreq>monthly</changefreq>\n  </url>`)
+    .join('\n');
+  res.type('application/xml').send(
+    `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${items}\n</urlset>\n`
+  );
+});
+
+app.get('/robots.txt', (req, res) => {
+  const basis = basisUrl(req);
+  res.type('text/plain').send(
+    `User-agent: *\nDisallow: /uadmin\n\nSitemap: ${basis}/sitemap.xml\n`
+  );
 });
 
 // ---------- Beheerpaneel (uadmin) ----------
@@ -334,11 +381,25 @@ app.post('/uadmin/paginas', vereistLogin, (req, res) => {
     heroSubtitel: schoon(req.body.heroSubtitel, 600) || db.instellingen.site.heroSubtitel,
     overOns: schoon(req.body.overOns, 4000) || db.instellingen.site.overOns,
     telefoon: schoon(req.body.telefoon, 60),
+    whatsapp: schoon(req.body.whatsapp, 60),
     email: schoon(req.body.email, 160),
     adres: schoon(req.body.adres, 200),
+    werkgebied: schoon(req.body.werkgebied, 200),
     kvk: schoon(req.body.kvk, 40),
     btw: schoon(req.body.btw, 40),
   };
+
+  // Cijfers/statistieken (max 4)
+  const waarden = [].concat(req.body.statWaarde || []);
+  const labels = [].concat(req.body.statLabel || []);
+  const stats = [];
+  for (let i = 0; i < Math.min(waarden.length, 4); i++) {
+    const waarde = schoon(waarden[i], 20);
+    const label = schoon(labels[i], 120);
+    if (waarde || label) stats.push({ id: `stat${i + 1}`, waarde, label });
+  }
+  if (stats.length) db.instellingen.site.stats = stats;
+
   writeDb(db);
   res.render('admin/paginas', { titel: "Pagina's & foto's", layoutAdmin: true, opgeslagen: true });
 });
@@ -363,6 +424,155 @@ app.post('/uadmin/paginas/hero', vereistLogin, (req, res) => {
     }
     res.redirect('/uadmin/paginas');
   });
+});
+
+// ---------- Beheer: Projecten ----------
+
+app.get('/uadmin/projecten', vereistLogin, (req, res) => {
+  const db = readDb();
+  res.render('admin/projecten', { titel: 'Projecten', layoutAdmin: true, projecten: db.projecten });
+});
+
+app.get('/uadmin/projecten/nieuw', vereistLogin, (req, res) => {
+  res.render('admin/project-form', { titel: 'Nieuw project', layoutAdmin: true, project: null });
+});
+
+app.post('/uadmin/projecten/nieuw', vereistLogin, (req, res) => {
+  offerteUpload.fields([
+    { name: 'voorFoto', maxCount: 1 },
+    { name: 'naFoto', maxCount: 1 },
+  ])(req, res, async (err) => {
+    const db = readDb();
+    const project = {
+      id: nieuwId(),
+      titel: schoon(req.body.titel, 140) || 'Naamloos project',
+      categorie: schoon(req.body.categorie, 80),
+      omschrijving: schoon(req.body.omschrijving, 2000),
+      voorFoto: null,
+      naFoto: null,
+      createdAt: new Date().toISOString(),
+    };
+    try {
+      if (req.files && req.files.voorFoto) project.voorFoto = await slaProjectAfbeeldingOp(req.files.voorFoto[0].buffer);
+      if (req.files && req.files.naFoto) project.naFoto = await slaProjectAfbeeldingOp(req.files.naFoto[0].buffer);
+    } catch (e) {
+      console.error('Projectfoto fout:', e);
+    }
+    db.projecten.unshift(project);
+    writeDb(db);
+    res.redirect('/uadmin/projecten');
+  });
+});
+
+app.get('/uadmin/projecten/:id', vereistLogin, (req, res) => {
+  const db = readDb();
+  const project = db.projecten.find((p) => p.id === req.params.id);
+  if (!project) return res.redirect('/uadmin/projecten');
+  res.render('admin/project-form', { titel: 'Project bewerken', layoutAdmin: true, project });
+});
+
+app.post('/uadmin/projecten/:id', vereistLogin, (req, res) => {
+  offerteUpload.fields([
+    { name: 'voorFoto', maxCount: 1 },
+    { name: 'naFoto', maxCount: 1 },
+  ])(req, res, async (err) => {
+    const db = readDb();
+    const project = db.projecten.find((p) => p.id === req.params.id);
+    if (!project) return res.redirect('/uadmin/projecten');
+    project.titel = schoon(req.body.titel, 140) || project.titel;
+    project.categorie = schoon(req.body.categorie, 80);
+    project.omschrijving = schoon(req.body.omschrijving, 2000);
+    try {
+      if (req.files && req.files.voorFoto) {
+        verwijderUpload(project.voorFoto);
+        project.voorFoto = await slaProjectAfbeeldingOp(req.files.voorFoto[0].buffer);
+      }
+      if (req.files && req.files.naFoto) {
+        verwijderUpload(project.naFoto);
+        project.naFoto = await slaProjectAfbeeldingOp(req.files.naFoto[0].buffer);
+      }
+    } catch (e) {
+      console.error('Projectfoto fout:', e);
+    }
+    writeDb(db);
+    res.redirect('/uadmin/projecten');
+  });
+});
+
+app.post('/uadmin/projecten/:id/verwijderen', vereistLogin, (req, res) => {
+  const db = readDb();
+  const index = db.projecten.findIndex((p) => p.id === req.params.id);
+  if (index !== -1) {
+    verwijderUpload(db.projecten[index].voorFoto);
+    verwijderUpload(db.projecten[index].naFoto);
+    db.projecten.splice(index, 1);
+    writeDb(db);
+  }
+  res.redirect('/uadmin/projecten');
+});
+
+// ---------- Beheer: Reviews ----------
+
+app.get('/uadmin/reviews', vereistLogin, (req, res) => {
+  const db = readDb();
+  res.render('admin/reviews', { titel: 'Reviews', layoutAdmin: true, reviews: db.reviews });
+});
+
+app.post('/uadmin/reviews', vereistLogin, (req, res) => {
+  const db = readDb();
+  const review = {
+    id: nieuwId(),
+    naam: schoon(req.body.naam, 120) || 'Anoniem',
+    functie: schoon(req.body.functie, 140),
+    tekst: schoon(req.body.tekst, 1200),
+    sterren: Math.min(5, Math.max(1, parseInt(req.body.sterren, 10) || 5)),
+  };
+  if (review.tekst) {
+    db.reviews.unshift(review);
+    writeDb(db);
+  }
+  res.redirect('/uadmin/reviews');
+});
+
+app.post('/uadmin/reviews/:id/verwijderen', vereistLogin, (req, res) => {
+  const db = readDb();
+  const index = db.reviews.findIndex((r) => r.id === req.params.id);
+  if (index !== -1) {
+    db.reviews.splice(index, 1);
+    writeDb(db);
+  }
+  res.redirect('/uadmin/reviews');
+});
+
+// ---------- Beheer: FAQ ----------
+
+app.get('/uadmin/faq', vereistLogin, (req, res) => {
+  const db = readDb();
+  res.render('admin/faq', { titel: 'Veelgestelde vragen', layoutAdmin: true, faq: db.faq });
+});
+
+app.post('/uadmin/faq', vereistLogin, (req, res) => {
+  const db = readDb();
+  const item = {
+    id: nieuwId(),
+    vraag: schoon(req.body.vraag, 240),
+    antwoord: schoon(req.body.antwoord, 2000),
+  };
+  if (item.vraag && item.antwoord) {
+    db.faq.push(item);
+    writeDb(db);
+  }
+  res.redirect('/uadmin/faq');
+});
+
+app.post('/uadmin/faq/:id/verwijderen', vereistLogin, (req, res) => {
+  const db = readDb();
+  const index = db.faq.findIndex((f) => f.id === req.params.id);
+  if (index !== -1) {
+    db.faq.splice(index, 1);
+    writeDb(db);
+  }
+  res.redirect('/uadmin/faq');
 });
 
 app.get('/uadmin/account', vereistLogin, (req, res) => {

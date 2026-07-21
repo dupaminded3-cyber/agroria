@@ -2,8 +2,8 @@
 <%- include('partials/header') %>
 
   <main>
-    <section class="pagina-hero">
-      <div class="hero__blob hero__blob--1" aria-hidden="true"></div>
+    <section class="pagina-hero pagina-hero--foto">
+      <div class="pagina-hero__bg" aria-hidden="true"><img src="/img/hero-overons.jpg" alt=""></div>
       <div class="container reveal">
         <p class="eyebrow eyebrow--center">Over ons</p>
         <h1>Onderhoud waar u op kan bouwen</h1>
@@ -62,6 +62,14 @@
         </div>
       </div>
     </section>
+
+    <% if (reviews && reviews.length) { %>
+      <%- include('partials/reviews', { reviews: reviews }) %>
+    <% } %>
+
+    <% if (faq && faq.length) { %>
+      <%- include('partials/faq', { faq: faq }) %>
+    <% } %>
 
     <section class="cta-band">
       <div class="container cta-band__inner">

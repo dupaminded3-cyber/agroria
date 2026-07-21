@@ -1,0 +1,50 @@
+<%- include('partials/head') %>
+<%- include('partials/header') %>
+
+  <main>
+    <section class="pagina-hero pagina-hero--foto">
+      <div class="pagina-hero__bg" aria-hidden="true"><img src="/img/hero-projecten.jpg" alt=""></div>
+      <div class="container reveal">
+        <p class="eyebrow eyebrow--center">Projecten</p>
+        <h1>Ons werk in beeld</h1>
+        <p class="pagina-hero__intro">Sleep over de foto's om het verschil vóór en ná ons werk te zien. Een indruk van de kwaliteit en zorg die wij in elk project leggen.</p>
+      </div>
+    </section>
+
+    <section class="sectie">
+      <div class="container">
+        <% if (projecten && projecten.length) { %>
+          <div class="projecten-grid">
+            <% projecten.forEach(function(project) { %>
+              <%- include('partials/project-kaart', { project: project }) %>
+            <% }) %>
+          </div>
+        <% } else { %>
+          <div class="leeg-blok reveal">
+            <svg viewBox="0 0 24 24" fill="none"><path d="M4 16l4-4 4 4 8-8M4 20h16" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <h2>Binnenkort: onze projecten</h2>
+            <p>We zijn onze mooiste projecten aan het verzamelen. Binnenkort ziet u hier voor- en na-beelden van uitgevoerd werk. Benieuwd wat wij voor u kunnen doen?</p>
+            <a href="/offerte-aanvragen" class="btn btn--accent">
+              Vraag een offerte aan
+              <svg viewBox="0 0 24 24" fill="none"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </a>
+          </div>
+        <% } %>
+      </div>
+    </section>
+
+    <section class="cta-band">
+      <div class="container cta-band__inner">
+        <div>
+          <h2>Uw pand ook zo opgeleverd?</h2>
+          <p>Vraag vrijblijvend een offerte aan en voeg gerust foto's van de situatie toe.</p>
+        </div>
+        <a href="/offerte-aanvragen" class="btn btn--accent btn--groot">
+          Offerte aanvragen
+          <svg viewBox="0 0 24 24" fill="none"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </a>
+      </div>
+    </section>
+  </main>
+
+<%- include('partials/footer') %>

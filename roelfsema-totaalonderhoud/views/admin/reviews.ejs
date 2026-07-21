@@ -1,0 +1,60 @@
+<%- include('_head') %>
+<%- include('_side') %>
+
+        <div class="admin-paneel admin-paneel--smal" style="max-width:640px;">
+          <h2 class="detail-subkop">Nieuwe review toevoegen</h2>
+          <form action="/uadmin/reviews" method="POST" class="form">
+            <div class="form__rij">
+              <label>
+                <span>Naam *</span>
+                <input type="text" name="naam" required maxlength="120" />
+              </label>
+              <label>
+                <span>Functie / plaats (optioneel)</span>
+                <input type="text" name="functie" maxlength="140" placeholder="Bijv. Vastgoedbeheerder, Groningen" />
+              </label>
+            </div>
+            <label>
+              <span>Aantal sterren</span>
+              <select name="sterren">
+                <option value="5">5 sterren</option>
+                <option value="4">4 sterren</option>
+                <option value="3">3 sterren</option>
+                <option value="2">2 sterren</option>
+                <option value="1">1 ster</option>
+              </select>
+            </label>
+            <label>
+              <span>Review *</span>
+              <textarea name="tekst" rows="4" required maxlength="1200"></textarea>
+            </label>
+            <button type="submit" class="btn btn--accent">Review toevoegen</button>
+          </form>
+        </div>
+
+        <div class="admin-paneel">
+          <h2 class="detail-subkop">Bestaande reviews</h2>
+          <% if (!reviews.length) { %>
+            <p class="admin-leeg">Nog geen reviews. Voeg hierboven de eerste toe. Reviews verschijnen automatisch op de homepage en de "Over ons"-pagina.</p>
+          <% } else { %>
+            <table class="admin-tabel">
+              <thead><tr><th>Naam</th><th>Sterren</th><th>Review</th><th></th></tr></thead>
+              <tbody>
+                <% reviews.forEach(function(r) { %>
+                  <tr>
+                    <td><strong><%= r.naam %></strong><% if (r.functie) { %><br><span style="color:var(--tekst-zacht);font-size:0.82rem;"><%= r.functie %></span><% } %></td>
+                    <td><%= '★'.repeat(r.sterren) %></td>
+                    <td style="max-width:360px;"><%= r.tekst %></td>
+                    <td>
+                      <form action="/uadmin/reviews/<%= r.id %>/verwijderen" method="POST" onsubmit="return confirm('Deze review verwijderen?');">
+                        <button type="submit" class="admin-link-gevaar">Verwijderen</button>
+                      </form>
+                    </td>
+                  </tr>
+                <% }) %>
+              </tbody>
+            </table>
+          <% } %>
+        </div>
+
+<%- include('_foot') %>

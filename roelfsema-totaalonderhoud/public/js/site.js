@@ -94,13 +94,20 @@
   });
 })();
 
-// Geanimeerde tellers in de metrics-strip.
+// Geanimeerde tellers in de metrics-strip. Ondersteunt waarden als
+// "24u", "50+", "100%" door het getal te animeren en het voor-/achtervoegsel
+// te behouden.
 (function () {
   var tellers = document.querySelectorAll('.js-teller');
   if (!tellers.length) return;
 
   function animeer(teller) {
-    var doel = parseInt(teller.getAttribute('data-target') || '0', 10);
+    var waarde = teller.getAttribute('data-waarde') || teller.textContent || '';
+    var match = waarde.match(/^(\D*)(\d+)(.*)$/);
+    if (!match) return; // geen getal: laat staan zoals het is
+    var voor = match[1];
+    var doel = parseInt(match[2], 10);
+    var na = match[3];
     var duur = 1300;
     var start = null;
 
@@ -108,7 +115,7 @@
       if (!start) start = ts;
       var p = Math.min((ts - start) / duur, 1);
       var eased = 1 - Math.pow(1 - p, 3);
-      teller.textContent = String(Math.round(doel * eased));
+      teller.textContent = voor + Math.round(doel * eased) + na;
       if (p < 1) window.requestAnimationFrame(frame);
     }
     window.requestAnimationFrame(frame);
@@ -129,6 +136,22 @@
   }, { threshold: 0.65 });
 
   tellers.forEach(function (t) { observer.observe(t); });
+})();
+
+// Voor/na-vergelijker: sleep de balk om het verschil te zien.
+(function () {
+  var sliders = document.querySelectorAll('[data-ba]');
+  if (!sliders.length) return;
+
+  sliders.forEach(function (ba) {
+    var range = ba.querySelector('[data-ba-range]');
+    if (!range) return;
+    function update() {
+      ba.style.setProperty('--pos', range.value);
+    }
+    range.addEventListener('input', update);
+    update();
+  });
 })();
 
 // Subtiele parallax op het grote watermerk in de over-ons sectie.

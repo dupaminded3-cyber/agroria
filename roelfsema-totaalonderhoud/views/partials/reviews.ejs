@@ -1,0 +1,24 @@
+<section class="sectie reviews-sectie">
+  <div class="container">
+    <div class="sectie__kop-blok reveal">
+      <p class="eyebrow eyebrow--center">Wat klanten zeggen</p>
+      <h2 class="sectie__titel">Tevreden opdrachtgevers</h2>
+    </div>
+    <div class="reviews-grid">
+      <% reviews.forEach(function(review, i) { %>
+        <figure class="review-kaart reveal" style="--vertraging: <%= (i % 3) * 90 %>ms">
+          <div class="review-kaart__sterren" aria-label="<%= review.sterren %> van 5 sterren">
+            <% for (var s = 0; s < 5; s++) { %>
+              <svg viewBox="0 0 24 24" class="<%= s < review.sterren ? 'is-vol' : '' %>"><path d="M12 2l2.9 6.3 6.9.7-5.1 4.6 1.4 6.8L12 17.8 6 20.4l1.4-6.8L2.3 9l6.9-.7L12 2z" fill="currentColor"/></svg>
+            <% } %>
+          </div>
+          <blockquote>“<%= review.tekst %>”</blockquote>
+          <figcaption>
+            <span class="review-kaart__naam"><%= review.naam %></span>
+            <% if (review.functie) { %><span class="review-kaart__functie"><%= review.functie %></span><% } %>
+          </figcaption>
+        </figure>
+      <% }) %>
+    </div>
+  </div>
+</section>

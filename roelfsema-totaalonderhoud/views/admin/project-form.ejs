@@ -1,0 +1,43 @@
+<%- include('_head') %>
+<%- include('_side') %>
+
+        <a href="/uadmin/projecten" class="admin-terug">← Terug naar projecten</a>
+
+        <div class="admin-paneel admin-paneel--smal" style="max-width:640px;">
+          <form action="<%= project ? '/uadmin/projecten/' + project.id : '/uadmin/projecten/nieuw' %>" method="POST" enctype="multipart/form-data" class="form">
+            <label>
+              <span>Titel *</span>
+              <input type="text" name="titel" required maxlength="140" value="<%= project ? project.titel : '' %>" />
+            </label>
+            <label>
+              <span>Categorie (bijv. "Renovatie", "Schilderwerk")</span>
+              <input type="text" name="categorie" maxlength="80" value="<%= project ? (project.categorie || '') : '' %>" />
+            </label>
+            <label>
+              <span>Korte omschrijving</span>
+              <textarea name="omschrijving" rows="4" maxlength="2000"><%= project ? (project.omschrijving || '') : '' %></textarea>
+            </label>
+
+            <div class="form__rij">
+              <label>
+                <span>Foto "Voor"</span>
+                <% if (project && project.voorFoto) { %>
+                  <img src="<%= project.voorFoto.charAt(0) === '/' ? project.voorFoto : '/uploads/' + project.voorFoto %>" alt="" class="admin-preview" style="max-width:100%;" />
+                <% } %>
+                <input type="file" name="voorFoto" accept="image/*" />
+              </label>
+              <label>
+                <span>Foto "Na"</span>
+                <% if (project && project.naFoto) { %>
+                  <img src="<%= project.naFoto.charAt(0) === '/' ? project.naFoto : '/uploads/' + project.naFoto %>" alt="" class="admin-preview" style="max-width:100%;" />
+                <% } %>
+                <input type="file" name="naFoto" accept="image/*" />
+              </label>
+            </div>
+            <p class="admin-uitleg">Tip: gebruik voor "voor" en "na" foto's vanuit dezelfde hoek voor het mooiste effect. Zonder foto's toont de site een nette placeholder.</p>
+
+            <button type="submit" class="btn btn--accent"><%= project ? 'Wijzigingen opslaan' : 'Project toevoegen' %></button>
+          </form>
+        </div>
+
+<%- include('_foot') %>

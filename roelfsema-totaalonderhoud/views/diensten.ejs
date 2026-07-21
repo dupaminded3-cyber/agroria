@@ -2,64 +2,210 @@
 <%- include('partials/header') %>
 
   <main>
-    <section class="pagina-hero">
-      <div class="hero__blob hero__blob--1" aria-hidden="true"></div>
+    <section class="pagina-hero pagina-hero--foto">
+      <div class="pagina-hero__bg" aria-hidden="true"><img src="/img/hero-diensten.jpg" alt=""></div>
       <div class="container reveal">
         <p class="eyebrow eyebrow--center">Diensten</p>
         <h1>Alles voor het onderhoud van uw pand</h1>
         <p class="pagina-hero__intro">Eén vast team voor onderhoud, renovatie en klussen — voor vastgoedbeheerders, verhuurders, VvE's en particulieren die geen zin hebben in losse aannemers en gemiste afspraken.</p>
+        <div class="pagina-hero__acties">
+          <a href="/offerte-aanvragen" class="btn btn--accent">
+            Vraag een offerte aan
+            <svg viewBox="0 0 24 24" fill="none"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </a>
+          <a href="/projecten" class="btn btn--outline">Bekijk ons werk</a>
+        </div>
       </div>
     </section>
 
-    <section class="sectie">
-      <div class="container diensten-lijst">
-        <article class="dienst-rij reveal">
-          <div class="dienst-rij__nummer">01</div>
-          <div>
-            <h2>Vastgoedonderhoud</h2>
-            <p>Onderhoud is het meest waardevol als het structureel en preventief gebeurt. Wij stellen samen met u een onderhoudsplan op, voeren periodieke inspecties uit en verhelpen gebreken voordat ze uitgroeien tot kostbare problemen. Zo houdt u grip op zowel de conditie als de kosten van uw vastgoed.</p>
+    <!-- Overzicht van diensten als premium kaarten -->
+    <section class="sectie diensten-overzicht">
+      <div class="container">
+        <div class="sectie__kop-blok reveal">
+          <p class="eyebrow eyebrow--center">Ons aanbod</p>
+          <h2 class="sectie__titel">Zes diensten, één aanspreekpunt</h2>
+          <p class="sectie__intro">Van periodiek onderhoud tot complete renovatie — u heeft aan ons genoeg.</p>
+        </div>
+
+        <div class="dienst-kaarten">
+          <article class="dienst-icoon-kaart reveal" style="--vertraging: 0ms">
+            <span class="dienst-icoon-kaart__icoon">
+              <svg viewBox="0 0 24 24" fill="none"><path d="M3 11l9-8 9 8M5 9.5V20h14V9.5M9.5 20v-5h5v5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </span>
+            <h3>Vastgoedonderhoud</h3>
+            <p>Structureel en preventief onderhoud dat uw pand in topconditie houdt.</p>
+            <ul class="dienst-mini-check">
+              <li>Periodieke inspecties</li>
+              <li>Onderhoudsplan op maat</li>
+            </ul>
+          </article>
+
+          <article class="dienst-icoon-kaart reveal" style="--vertraging: 70ms">
+            <span class="dienst-icoon-kaart__icoon">
+              <svg viewBox="0 0 24 24" fill="none"><circle cx="8" cy="15" r="4" stroke="currentColor" stroke-width="1.6"/><path d="M10.5 12.5L20 3M17 6l2 2M14 9l2 2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </span>
+            <h3>Mutatieonderhoud</h3>
+            <p>Snel en vakkundig opgeknapt tussen twee huurders in — zonder onnodige leegstand.</p>
+            <ul class="dienst-mini-check">
+              <li>Snelle doorlooptijd</li>
+              <li>Verhuurklare oplevering</li>
+            </ul>
+          </article>
+
+          <article class="dienst-icoon-kaart reveal" style="--vertraging: 140ms">
+            <span class="dienst-icoon-kaart__icoon">
+              <svg viewBox="0 0 24 24" fill="none"><path d="M14 6l4 4M3 21l3-1 11-11-3-3L3 17l0 4z" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M15 4l5 5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+            </span>
+            <h3>Renovatie &amp; verbouw</h3>
+            <p>Van badkamer tot complete verbouwing, van eerste schets tot sleutelklare oplevering.</p>
+            <ul class="dienst-mini-check">
+              <li>Advies over materiaal</li>
+              <li>Strakke uitvoering</li>
+            </ul>
+          </article>
+
+          <article class="dienst-icoon-kaart reveal" style="--vertraging: 0ms">
+            <span class="dienst-icoon-kaart__icoon">
+              <svg viewBox="0 0 24 24" fill="none"><path d="M4 7h11V4H4v3zM15 5.5h4V10H9v3M11 13v7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </span>
+            <h3>Schilderwerk &amp; afwerking</h3>
+            <p>Binnen- en buitenschilderwerk en stukadoorswerk met oog voor detail.</p>
+            <ul class="dienst-mini-check">
+              <li>Duurzame materialen</li>
+              <li>Nette, strakke lijnen</li>
+            </ul>
+          </article>
+
+          <article class="dienst-icoon-kaart reveal" style="--vertraging: 70ms">
+            <span class="dienst-icoon-kaart__icoon">
+              <svg viewBox="0 0 24 24" fill="none"><path d="M3 12l9-8 9 8M6 10v8h12v-8" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </span>
+            <h3>Dak- en gevelonderhoud</h3>
+            <p>Tijdige inspectie en onderhoud van daken en gevels voorkomt kostbare schade.</p>
+            <ul class="dienst-mini-check">
+              <li>Voorkomt lekkage</li>
+              <li>Inspectie &amp; herstel</li>
+            </ul>
+          </article>
+
+          <article class="dienst-icoon-kaart reveal" style="--vertraging: 140ms">
+            <span class="dienst-icoon-kaart__icoon">
+              <svg viewBox="0 0 24 24" fill="none"><path d="M14.7 6.3a4 4 0 00-5.4 5.4l-6 6 2 2 6-6a4 4 0 005.4-5.4l-2.3 2.3-2-2 2.3-2.3z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>
+            </span>
+            <h3>Klein onderhoud &amp; reparaties</h3>
+            <p>Voor de kleine klussen die toch echt gedaan moeten worden — snel geregeld.</p>
+            <ul class="dienst-mini-check">
+              <li>Korte wachttijd</li>
+              <li>Eén vaste klussendienst</li>
+            </ul>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- Uitgelichte diensten met beeld -->
+    <section class="sectie diensten-features">
+      <div class="container">
+        <article class="dienst-feature reveal">
+          <div class="dienst-feature__beeld">
+            <img src="/img/vakman-aan-het-werk.jpg" alt="Vakman aan het werk" loading="lazy" />
+            <span class="dienst-feature__cijfer">01</span>
+          </div>
+          <div class="dienst-feature__tekst">
+            <p class="eyebrow">Vastgoedonderhoud</p>
+            <h2>Grip op de conditie én de kosten van uw vastgoed</h2>
+            <p>Onderhoud is het meest waardevol als het structureel en preventief gebeurt. Wij stellen samen met u een onderhoudsplan op, voeren periodieke inspecties uit en verhelpen gebreken voordat ze uitgroeien tot kostbare problemen.</p>
+            <ul class="dienst-checklist">
+              <li>Periodieke inspecties met heldere rapportage</li>
+              <li>Preventief onderhoud dat grotere schade voorkomt</li>
+              <li>Vaste afspraken voor beheerders en portefeuilles</li>
+            </ul>
+            <a href="/offerte-aanvragen" class="btn btn--outline">
+              Vraag vrijblijvend advies
+              <svg viewBox="0 0 24 24" fill="none"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </a>
           </div>
         </article>
-        <article class="dienst-rij reveal">
-          <div class="dienst-rij__nummer">02</div>
-          <div>
-            <h2>Mutatieonderhoud</h2>
-            <p>Bij een huurderswisseling telt elke dag. Wij inspecteren de woning direct na vertrek, stellen snel een werkomschrijving op en knappen de woning vakkundig op — van kleine reparaties tot een complete opfrisbeurt — zodat u zonder onnodige leegstand weer kunt verhuren.</p>
+
+        <article class="dienst-feature dienst-feature--omgekeerd reveal">
+          <div class="dienst-feature__beeld">
+            <img src="/img/project-badkamer-na.jpg" alt="Gerenoveerde badkamer" loading="lazy" />
+            <span class="dienst-feature__cijfer">02</span>
+          </div>
+          <div class="dienst-feature__tekst">
+            <p class="eyebrow">Renovatie &amp; verbouw</p>
+            <h2>Van gedateerd naar sleutelklaar, zonder verrassingen</h2>
+            <p>Van een badkamer- of keukenrenovatie tot een complete verbouwing: wij begeleiden het hele traject, denken mee over indeling en materialen en zorgen voor een strakke uitvoering en een nette oplevering.</p>
+            <ul class="dienst-checklist">
+              <li>Eén aanspreekpunt van ontwerp tot oplevering</li>
+              <li>Heldere planning en transparante prijsafspraken</li>
+              <li>Vakkundige afwerking tot in het detail</li>
+            </ul>
+            <a href="/projecten" class="btn btn--outline">
+              Bekijk voor &amp; na
+              <svg viewBox="0 0 24 24" fill="none"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </a>
           </div>
         </article>
-        <article class="dienst-rij reveal">
-          <div class="dienst-rij__nummer">03</div>
-          <div>
-            <h2>Renovatie &amp; verbouw</h2>
-            <p>Van een badkamer- of keukenrenovatie tot een complete verbouwing: wij begeleiden het hele traject, denken mee over indeling en materialen en zorgen voor een strakke uitvoering en een nette oplevering — zonder verrassingen halverwege.</p>
+
+        <article class="dienst-feature reveal">
+          <div class="dienst-feature__beeld">
+            <img src="/img/project-gevel-na.jpg" alt="Vers geschilderde gevel" loading="lazy" />
+            <span class="dienst-feature__cijfer">03</span>
           </div>
-        </article>
-        <article class="dienst-rij reveal">
-          <div class="dienst-rij__nummer">04</div>
-          <div>
-            <h2>Schilderwerk &amp; afwerking</h2>
-            <p>Een verzorgde uitstraling begint bij goed schilder- en afwerkwerk. Wij verzorgen binnen- en buitenschilderwerk, stukadoorswerk en kleine afwerkklussen met oog voor detail en duurzame materialen.</p>
-          </div>
-        </article>
-        <article class="dienst-rij reveal">
-          <div class="dienst-rij__nummer">05</div>
-          <div>
-            <h2>Dak- en gevelonderhoud</h2>
-            <p>Daken en gevels staan continu bloot aan weersinvloeden. Met periodieke inspectie en gericht onderhoud voorkomen we vochtschade, lekkages en achterstallig onderhoud — vaak tegen een fractie van de kosten van herstel achteraf.</p>
-          </div>
-        </article>
-        <article class="dienst-rij reveal">
-          <div class="dienst-rij__nummer">06</div>
-          <div>
-            <h2>Klein onderhoud &amp; reparaties</h2>
-            <p>Niet elke klus is groot, maar wel belangrijk. Voor kleine reparaties en klussen schakelt u snel onze klussendienst in, zonder lange wachttijden en zonder gedoe met meerdere partijen.</p>
+          <div class="dienst-feature__tekst">
+            <p class="eyebrow">Schilderwerk, dak &amp; gevel</p>
+            <h2>Een verzorgde uitstraling die jaren meegaat</h2>
+            <p>Een goede buitenkant beschermt en verfraait. Wij verzorgen binnen- en buitenschilderwerk, herstellen houtrot en onderhouden daken en gevels — zodat kleine mankementen nooit uitgroeien tot kostbare schade.</p>
+            <ul class="dienst-checklist">
+              <li>Buiten- en binnenschilderwerk met duurzame verf</li>
+              <li>Houtrotherstel en gevelonderhoud</li>
+              <li>Dakinspectie en preventief onderhoud</li>
+            </ul>
+            <a href="/offerte-aanvragen" class="btn btn--outline">
+              Plan een inspectie
+              <svg viewBox="0 0 24 24" fill="none"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </a>
           </div>
         </article>
       </div>
+    </section>
 
-      <div class="container diensten-cta reveal">
+    <!-- Garanties / waarom wij -->
+    <section class="sectie diensten-garanties-sectie">
+      <div class="container">
+        <div class="sectie__kop-blok reveal">
+          <p class="eyebrow eyebrow--center">Onze belofte</p>
+          <h2 class="sectie__titel">Waarom opdrachtgevers voor ons kiezen</h2>
+        </div>
+        <div class="garanties-grid">
+          <div class="garantie-kaart reveal" style="--vertraging: 0ms">
+            <span class="garantie-kaart__nr">→</span>
+            <h3>Eén vast aanspreekpunt</h3>
+            <p>Geen wisselende onderaannemers of doorverwijzingen. U heeft één contactpersoon die uw pand kent.</p>
+          </div>
+          <div class="garantie-kaart reveal" style="--vertraging: 90ms">
+            <span class="garantie-kaart__nr">→</span>
+            <h3>Heldere offertes vooraf</h3>
+            <p>Transparante prijsafspraken in gewone taal, zonder kleine lettertjes of verrassingen achteraf.</p>
+          </div>
+          <div class="garantie-kaart reveal" style="--vertraging: 180ms">
+            <span class="garantie-kaart__nr">→</span>
+            <h3>Vakwerk &amp; nette oplevering</h3>
+            <p>We werken zorgvuldig, laten alles netjes achter en leveren op alsof het ons eigen pand is.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="cta-band">
+      <div class="container cta-band__inner">
+        <div>
+          <h2>Benieuwd wat wij voor uw pand kunnen doen?</h2>
+          <p>Vraag vrijblijvend een offerte aan en voeg gerust foto's van de situatie toe — dan weten wij precies waar het om gaat.</p>
+        </div>
         <a href="/offerte-aanvragen" class="btn btn--accent btn--groot">
-          Vraag een offerte aan
+          Offerte aanvragen
           <svg viewBox="0 0 24 24" fill="none"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
         </a>
       </div>

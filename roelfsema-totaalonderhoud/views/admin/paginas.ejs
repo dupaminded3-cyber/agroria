@@ -46,20 +46,37 @@
             </label>
 
             <h2 class="detail-subkop">Contactgegevens</h2>
+            <p class="admin-uitleg">Deze gegevens worden automatisch gekoppeld aan de bel-, WhatsApp- en mailknoppen op de contactpagina.</p>
             <div class="form__rij">
               <label>
                 <span>Telefoonnummer</span>
-                <input type="text" name="telefoon" value="<%= site.telefoon %>" />
+                <input type="text" name="telefoon" value="<%= site.telefoon %>" placeholder="Bijv. 06 12 34 56 78" />
               </label>
               <label>
                 <span>E-mailadres</span>
                 <input type="email" name="email" value="<%= site.email %>" />
               </label>
             </div>
-            <label>
-              <span>Adres / werkgebied</span>
-              <input type="text" name="adres" value="<%= site.adres %>" />
-            </label>
+            <div class="form__rij">
+              <label>
+                <span>WhatsApp-nummer</span>
+                <input type="text" name="whatsapp" value="<%= site.whatsapp || '' %>" placeholder="Leeg = zelfde als telefoonnummer" />
+              </label>
+              <label>
+                <span>&nbsp;</span>
+                <span class="admin-uitleg" style="margin:0;">Vul hier een apart WhatsApp-nummer in, of laat leeg om het telefoonnummer te gebruiken.</span>
+              </label>
+            </div>
+            <div class="form__rij">
+              <label>
+                <span>Adres</span>
+                <input type="text" name="adres" value="<%= site.adres %>" />
+              </label>
+              <label>
+                <span>Werkgebied (bijv. "Groningen en omstreken")</span>
+                <input type="text" name="werkgebied" value="<%= site.werkgebied || '' %>" />
+              </label>
+            </div>
             <div class="form__rij">
               <label>
                 <span>KvK-nummer</span>
@@ -70,6 +87,22 @@
                 <input type="text" name="btw" value="<%= site.btw %>" />
               </label>
             </div>
+
+            <h2 class="detail-subkop">Cijfers op de homepage</h2>
+            <p class="admin-uitleg">De vier blokken met kerncijfers onder de hero. Laat een regel leeg om die te verbergen. Voorbeeld waarde: <code>24u</code>, <code>50+</code>, <code>100%</code>.</p>
+            <% var _stats = (site.stats && site.stats.length ? site.stats : []); while (_stats.length < 4) { _stats.push({ waarde: '', label: '' }); } %>
+            <% _stats.slice(0, 4).forEach(function(stat) { %>
+              <div class="form__rij">
+                <label>
+                  <span>Waarde</span>
+                  <input type="text" name="statWaarde" value="<%= stat.waarde %>" maxlength="20" />
+                </label>
+                <label>
+                  <span>Omschrijving</span>
+                  <input type="text" name="statLabel" value="<%= stat.label %>" maxlength="120" />
+                </label>
+              </div>
+            <% }) %>
 
             <button type="submit" class="btn btn--accent">Wijzigingen opslaan</button>
           </form>

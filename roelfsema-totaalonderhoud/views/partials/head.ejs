@@ -3,9 +3,18 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title><%= typeof titel !== 'undefined' && titel ? titel + ' — ' + site.bedrijfsnaam : site.bedrijfsnaam + ' — ' + site.strapline %></title>
-  <meta name="description" content="<%= site.heroSubtitel %>" />
-  <link rel="icon" href="data:," />
+<% var _titel = (typeof titel !== 'undefined' && titel) ? titel + ' — ' + site.bedrijfsnaam : site.bedrijfsnaam + ' — ' + site.strapline; %>
+<% var _desc = (typeof metaBeschrijving !== 'undefined' && metaBeschrijving) ? metaBeschrijving : site.heroSubtitel; %>
+  <title><%= _titel %></title>
+  <meta name="description" content="<%= _desc %>" />
+  <meta name="theme-color" content="#16294f" />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="<%= site.bedrijfsnaam %>" />
+  <meta property="og:title" content="<%= _titel %>" />
+  <meta property="og:description" content="<%= _desc %>" />
+  <% if (site.logo) { %><meta property="og:image" content="/uploads/<%= site.logo %>" /><% } %>
+  <meta name="twitter:card" content="summary_large_image" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Cpath d='M20 3L36 14V36H24V24H16V36H4V14L20 3Z' fill='none' stroke='%2316294f' stroke-width='3' stroke-linejoin='round'/%3E%3C/svg%3E" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet" />

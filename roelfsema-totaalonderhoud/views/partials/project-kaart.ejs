@@ -1,0 +1,36 @@
+<%
+  function _fotoUrl(pad) { return pad && pad.charAt(0) === '/' ? pad : '/uploads/' + pad; }
+%>
+<article class="project-kaart reveal">
+  <div class="ba" data-ba>
+    <div class="ba__laag ba__laag--na">
+      <% if (project.naFoto) { %>
+        <img src="<%= _fotoUrl(project.naFoto) %>" alt="Na: <%= project.titel %>" loading="lazy" />
+      <% } else { %>
+        <div class="ba__placeholder ba__placeholder--na" aria-hidden="true">
+          <svg viewBox="0 0 200 150" xmlns="http://www.w3.org/2000/svg"><path d="M30 120V70L100 30L170 70V120" fill="none" stroke="currentColor" stroke-width="3" stroke-linejoin="round"/><path d="M20 120H180" stroke="currentColor" stroke-width="3" stroke-linecap="round"/><path d="M78 120V92H122V120" fill="none" stroke="currentColor" stroke-width="3"/></svg>
+        </div>
+      <% } %>
+    </div>
+    <div class="ba__laag ba__laag--voor" data-ba-voor>
+      <% if (project.voorFoto) { %>
+        <img src="<%= _fotoUrl(project.voorFoto) %>" alt="Voor: <%= project.titel %>" loading="lazy" />
+      <% } else { %>
+        <div class="ba__placeholder ba__placeholder--voor" aria-hidden="true">
+          <svg viewBox="0 0 200 150" xmlns="http://www.w3.org/2000/svg"><path d="M30 120V70L100 30L170 70V120" fill="none" stroke="currentColor" stroke-width="3" stroke-linejoin="round"/><path d="M20 120H180" stroke="currentColor" stroke-width="3" stroke-linecap="round"/><path d="M78 120V92H122V120" fill="none" stroke="currentColor" stroke-width="3"/></svg>
+        </div>
+      <% } %>
+    </div>
+    <span class="ba__label ba__label--voor" aria-hidden="true">Voor</span>
+    <span class="ba__label ba__label--na" aria-hidden="true">Na</span>
+    <span class="ba__handle" data-ba-handle aria-hidden="true">
+      <svg viewBox="0 0 24 24" fill="none"><path d="M9 6l-4 6 4 6M15 6l4 6-4 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </span>
+    <input type="range" min="0" max="100" value="50" class="ba__range" data-ba-range aria-label="Vergelijk voor en na" />
+  </div>
+  <div class="project-kaart__tekst">
+    <% if (project.categorie) { %><span class="project-kaart__categorie"><%= project.categorie %></span><% } %>
+    <h3><%= project.titel %></h3>
+    <% if (project.omschrijving) { %><p><%= project.omschrijving %></p><% } %>
+  </div>
+</article>
