@@ -19,7 +19,7 @@
         <td><b><%= f.nummer %></b></td>
         <td><%= datumNL(f.datum) %></td>
         <td><%= f.klant && (f.klant.bedrijf || f.klant.naam) || '—' %></td>
-        <td><%= f.machine && f.machine.naam || '—' %></td>
+        <td><%= machineNamen(f) %></td>
         <td><b><%= euroBedrag(t.totaal) %></b></td>
         <td>
           <% if (f.status==='betaald'){ %><span class="pill beschikbaar">betaald</span>

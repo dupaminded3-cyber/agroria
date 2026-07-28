@@ -144,6 +144,26 @@ app.locals.prijsInfo = prijsInfo;
 // "</script><script>...</script>" het blok niet kan doorbreken.
 app.locals.safeJsonLd = (obj) => JSON.stringify(obj).replace(/</g, '\\u003c');
 
+// Facturen/koopovereenkomsten: één of meer machines. Oude documenten hebben
+// alleen `machine`; nieuwere ook `machines[]`. Altijd een nette lijst teruggeven.
+function documentMachines(doc) {
+  if (!doc) return [];
+  if (Array.isArray(doc.machines) && doc.machines.length) {
+    return doc.machines.filter(m => m && String(m.naam || '').trim());
+  }
+  if (doc.machine && String(doc.machine.naam || '').trim()) return [doc.machine];
+  return [];
+}
+function machineNamen(doc) {
+  const namen = documentMachines(doc).map(m => String(m.naam || '').trim()).filter(Boolean);
+  if (!namen.length) return '—';
+  if (namen.length === 1) return namen[0];
+  if (namen.length === 2) return namen[0] + ' en ' + namen[1];
+  return namen.slice(0, -1).join(', ') + ' en ' + namen[namen.length - 1];
+}
+app.locals.documentMachines = documentMachines;
+app.locals.machineNamen = machineNamen;
+
 // Maakt sessie-info, contactgegevens en het logo beschikbaar in elke view
 app.use((req, res, next) => {
   const data = db.read();
@@ -840,6 +860,31 @@ function factuurTotalen(f) {
 }
 app.locals.factuurTotalen = factuurTotalen;
 
+// Machines uit het factuur-/overeenkomstformulier lezen (meerdere blokken).
+// Lege blokken (zonder merk/model) worden overgeslagen. Voor oude templates
+// die één veld stuurden blijft [].concat(...) werken.
+function parseMachines(body) {
+  const b = body || {};
+  const namen = [].concat(b.machine_naam || []);
+  const bouwjaren = [].concat(b.machine_bouwjaar || []);
+  const uren = [].concat(b.machine_uren || []);
+  const pks = [].concat(b.machine_pk || []);
+  const transmissies = [].concat(b.machine_transmissie || []);
+  const serienummers = [].concat(b.machine_serienummer || []);
+  const kentekens = [].concat(b.machine_kenteken || []);
+  return namen
+    .map((naam, i) => ({
+      naam: String(naam || '').trim(),
+      bouwjaar: String(bouwjaren[i] || '').trim(),
+      uren: String(uren[i] || '').trim(),
+      pk: String(pks[i] || '').trim(),
+      transmissie: String(transmissies[i] || '').trim(),
+      serienummer: String(serienummers[i] || '').trim(),
+      kenteken: String(kentekens[i] || '').trim()
+    }))
+    .filter(m => m.naam);
+}
+
 app.get('/uadmin/facturen', requireAuth, (req, res) => {
   const data = db.read();
   res.render('admin/facturen', { lijst: data.facturen || [], active: 'facturen' });
@@ -889,6 +934,7 @@ app.post('/uadmin/facturen/:id?', requireAuth, (req, res) => {
   const regels = omschrijvingen
     .map((om, i) => ({ omschrijving: String(om || '').trim(), bedrag: parseBedrag(bedragen[i]) }))
     .filter(r => r.omschrijving);
+  const machines = parseMachines(b);
 
   const velden = {
     nummer: (b.nummer || '').trim() || volgendFactuurnummer(data),
@@ -912,14 +958,10 @@ app.post('/uadmin/facturen/:id?', requireAuth, (req, res) => {
       kvk: (b.klant_kvk || '').trim(),
       btw: (b.klant_btw || '').trim()
     },
-    machine: {
-      naam: (b.machine_naam || '').trim(),
-      bouwjaar: (b.machine_bouwjaar || '').trim(),
-      uren: (b.machine_uren || '').trim(),
-      pk: (b.machine_pk || '').trim(),
-      transmissie: (b.machine_transmissie || '').trim(),
-      serienummer: (b.machine_serienummer || '').trim(),
-      kenteken: (b.machine_kenteken || '').trim()
+    // Meerdere machines mogelijk; `machine` blijft de eerste voor oude weergaven.
+    machines,
+    machine: machines[0] || {
+      naam: '', bouwjaar: '', uren: '', pk: '', transmissie: '', serienummer: '', kenteken: ''
     },
     regels,
     prijsType: (b.prijsType === 'btw') ? 'btw' : 'marge',
@@ -1066,6 +1108,7 @@ app.post('/uadmin/overeenkomsten/:id?', requireAuth, (req, res) => {
   const regels = omschrijvingen
     .map((om, i) => ({ omschrijving: String(om || '').trim(), bedrag: parseBedrag(bedragen[i]) }))
     .filter(r => r.omschrijving);
+  const machines = parseMachines(b);
 
   const velden = {
     nummer: (b.nummer || '').trim() || volgendOvereenkomstnummer(data),
@@ -1083,14 +1126,10 @@ app.post('/uadmin/overeenkomsten/:id?', requireAuth, (req, res) => {
       kvk: (b.klant_kvk || '').trim(),
       btw: (b.klant_btw || '').trim()
     },
-    machine: {
-      naam: (b.machine_naam || '').trim(),
-      bouwjaar: (b.machine_bouwjaar || '').trim(),
-      uren: (b.machine_uren || '').trim(),
-      pk: (b.machine_pk || '').trim(),
-      transmissie: (b.machine_transmissie || '').trim(),
-      serienummer: (b.machine_serienummer || '').trim(),
-      kenteken: (b.machine_kenteken || '').trim()
+    // Meerdere machines mogelijk; `machine` blijft de eerste voor oude weergaven.
+    machines,
+    machine: machines[0] || {
+      naam: '', bouwjaar: '', uren: '', pk: '', transmissie: '', serienummer: '', kenteken: ''
     },
     regels,
     prijsType: (b.prijsType === 'btw') ? 'btw' : 'marge',

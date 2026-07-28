@@ -4,19 +4,23 @@
   var o = overeenkomst;
   var t = totalen;
   var klant = o.klant || {};
-  var machine = o.machine || {};
+  var machines = documentMachines(o);
   var ob = o.bank || {};
   var web = (typeof SITE_URL !== 'undefined' ? SITE_URL : '').replace(/^https?:\/\//,'');
   var heeftAanbetaling = t.aanbetaling > 0;
   var koperNaam = klant.bedrijf ? (klant.bedrijf + (klant.naam ? ', vertegenwoordigd door ' + klant.naam : '')) : (klant.naam || 'Koper');
-  var machineSpecs = [
-    ['Bouwjaar', machine.bouwjaar],
-    ['Draaiuren', machine.uren ? getal(machine.uren) + ' u' : ''],
-    ['Vermogen', machine.pk ? machine.pk + ' pk' : ''],
-    ['Transmissie', machine.transmissie],
-    ['Serie-/chassisnr.', machine.serienummer],
-    ['Kenteken', machine.kenteken]
-  ].filter(function(r){ return r[1]; });
+  var meervoud = machines.length > 1;
+  var machineWoord = meervoud ? 'machines' : 'machine';
+  function specsVoor(machine){
+    return [
+      ['Bouwjaar', machine.bouwjaar],
+      ['Draaiuren', machine.uren ? getal(machine.uren) + ' u' : ''],
+      ['Vermogen', machine.pk ? machine.pk + ' pk' : ''],
+      ['Transmissie', machine.transmissie],
+      ['Serie-/chassisnr.', machine.serienummer],
+      ['Kenteken', machine.kenteken]
+    ].filter(function(r){ return r[1]; });
+  }
   var nr = 0; // artikelnummering (loopt automatisch mee met optionele artikelen)
 %><!DOCTYPE html>
 <html lang="nl">
@@ -84,6 +88,7 @@
 
   /* ---- Machine ---- */
   .machine{margin-top:6mm;border:1px solid var(--line);border-radius:12px;overflow:hidden;page-break-inside:avoid}
+  .machine + .machine{margin-top:3.5mm}
   .machine .mkop{background:linear-gradient(120deg,var(--forest),var(--forest2));color:#fff;padding:11px 18px}
   .machine .mkop .ml{font-size:.6rem;letter-spacing:.28em;text-transform:uppercase;color:var(--gold-soft);font-weight:700}
   .machine .mkop .mn{font-family:var(--display);font-weight:600;font-size:1.15rem;margin-top:2px}
@@ -218,10 +223,11 @@
 
   <p class="aanhef">Verkoper en koper — hierna gezamenlijk <b>"partijen"</b> — verklaren het volgende te zijn overeengekomen:</p>
 
-  <!-- Machine -->
+  <!-- Machine(s) -->
+  <% machines.forEach(function(machine, idx){ var machineSpecs = specsVoor(machine); %>
   <div class="machine">
     <div class="mkop">
-      <div class="ml">De machine</div>
+      <div class="ml"><%= meervoud ? ('Machine ' + (idx + 1) + ' van ' + machines.length) : 'De machine' %></div>
       <div class="mn"><%= machine.naam %></div>
     </div>
     <% if (machineSpecs.length) { %>
@@ -232,6 +238,7 @@
     </div>
     <% } %>
   </div>
+  <% }) %>
 
   <!-- Koopsom -->
   <div class="sectiekop">Koopsom</div>
@@ -262,8 +269,8 @@
   <div class="artikelen">
 
     <div class="artikel">
-      <h3><span class="anr">Artikel <%= ++nr %></span>Verkoop en staat van de machine</h3>
-      <p>Verkoper verkoopt en levert aan koper de hierboven omschreven machine. Verkoper verklaart bevoegd te zijn tot deze verkoop en dat de machine vrij is van beslag en van niet-gemelde financiële lasten. Verkoper heeft de herkomst en historie van de machine naar beste weten volledig en transparant aan koper kenbaar gemaakt; de machine is vóór verkoop technisch gecontroleerd. Koper is in de gelegenheid gesteld de machine te bezichtigen en te beproeven, dan wel doet dit uiterlijk bij de aflevering.</p>
+      <h3><span class="anr">Artikel <%= ++nr %></span>Verkoop en staat van de <%= machineWoord %></h3>
+      <p>Verkoper verkoopt en levert aan koper de hierboven omschreven <%= machineWoord %><% if (meervoud) { %> (<%= machineNamen(o) %>)<% } %>. Verkoper verklaart bevoegd te zijn tot deze verkoop en dat <%= meervoud ? 'de machines vrij zijn' : 'de machine vrij is' %> van beslag en van niet-gemelde financiële lasten. Verkoper heeft de herkomst en historie van <%= meervoud ? 'de machines' : 'de machine' %> naar beste weten volledig en transparant aan koper kenbaar gemaakt; <%= meervoud ? 'de machines zijn' : 'de machine is' %> vóór verkoop technisch gecontroleerd. Koper is in de gelegenheid gesteld <%= meervoud ? 'de machines' : 'de machine' %> te bezichtigen en te beproeven, dan wel doet dit uiterlijk bij de aflevering.</p>
     </div>
 
     <div class="artikel">
@@ -273,7 +280,7 @@
       <% if (heeftAanbetaling) { %>
         <p>Betaling vindt plaats in twee termijnen<% if (ob.iban) { %> op rekening <b><%= ob.iban %></b><% if (ob.tnv) { %> ten name van <%= ob.tnv %><% } %><% } %>, onder vermelding van het overeenkomstnummer:</p>
         <ol>
-          <li><b>Aanbetaling</b> van <b><%= euroBedrag(t.aanbetaling) %></b><% if (o.aanbetalingVervalt) { %>, te voldoen uiterlijk <%= datumNL(o.aanbetalingVervalt) %><% } %>. Na ontvangst wordt de machine voor koper gereserveerd en wordt de levering in gang gezet.</li>
+          <li><b>Aanbetaling</b> van <b><%= euroBedrag(t.aanbetaling) %></b><% if (o.aanbetalingVervalt) { %>, te voldoen uiterlijk <%= datumNL(o.aanbetalingVervalt) %><% } %>. Na ontvangst <%= meervoud ? 'worden de machines' : 'wordt de machine' %> voor koper gereserveerd en wordt de levering in gang gezet.</li>
           <li><b>Restant</b> van <b><%= euroBedrag(t.restant) %></b>, te voldoen uiterlijk bij aflevering.</li>
         </ol>
       <% } else { %>
@@ -283,7 +290,7 @@
 
     <div class="artikel">
       <h3><span class="anr">Artikel <%= ++nr %></span>Levering</h3>
-      <p>De machine wordt <b>rijklaar</b> geleverd: technisch nagekeken, onderhouden en gereed voor direct gebruik. Verkoper verzorgt het transport tot op het adres van koper <b>kosteloos</b>.
+      <p><%= meervoud ? 'De machines worden' : 'De machine wordt' %> <b>rijklaar</b> geleverd: technisch nagekeken, onderhouden en gereed voor direct gebruik. Verkoper verzorgt het transport tot op het adres van koper <b>kosteloos</b>.
       <% if (o.leverdatum) { %>De beoogde leverdatum is <b><%= datumNL(o.leverdatum) %></b>; deze datum is indicatief en wordt in onderling overleg definitief vastgesteld.<% } else { %>De leverdatum wordt in onderling overleg vastgesteld.<% } %>
       Bij aflevering vindt een gezamenlijke inspectie en overdracht plaats.</p>
       <% if (o.levering) { %><p><%= o.levering %></p><% } %>
@@ -292,20 +299,20 @@
     <% if (o.importLand) { %>
     <div class="artikel">
       <h3><span class="anr">Artikel <%= ++nr %></span>Import en registratie</h3>
-      <p>De machine wordt door verkoper geïmporteerd uit <b><%= o.importLand %></b>. Verkoper verzorgt het volledige invoertraject en draagt de kosten daarvan: het transport naar Nederland, de RDW-beoordeling, de inschrijving in het Nederlandse kentekenregister en de afgifte van het Nederlandse kenteken, inclusief de bijbehorende buitenlandse voertuigdocumenten. De machine wordt geleverd voorzien van Nederlandse kentekenregistratie. Door de doorlooptijd van de RDW-procedure geldt de afgesproken leverdatum als indicatief. Verkoper adviseert koper om vóór de leverdatum een (minimaal WA-)verzekering op het kenteken af te sluiten, zodat de machine direct na aflevering verzekerd de weg op kan.</p>
+      <p><%= meervoud ? 'De machines worden' : 'De machine wordt' %> door verkoper geïmporteerd uit <b><%= o.importLand %></b>. Verkoper verzorgt het volledige invoertraject en draagt de kosten daarvan: het transport naar Nederland, de RDW-beoordeling, de inschrijving in het Nederlandse kentekenregister en de afgifte van het Nederlandse kenteken, inclusief de bijbehorende buitenlandse voertuigdocumenten. <%= meervoud ? 'De machines worden' : 'De machine wordt' %> geleverd voorzien van Nederlandse kentekenregistratie. Door de doorlooptijd van de RDW-procedure geldt de afgesproken leverdatum als indicatief. Verkoper adviseert koper om vóór de leverdatum een (minimaal WA-)verzekering op <%= meervoud ? 'de kentekens' : 'het kenteken' %> af te sluiten, zodat <%= meervoud ? 'de machines' : 'de machine' %> direct na aflevering verzekerd de weg op <%= meervoud ? 'kunnen' : 'kan' %>.</p>
     </div>
     <% } %>
 
     <div class="artikel">
       <h3><span class="anr">Artikel <%= ++nr %></span>Eigendomsvoorbehoud en risico</h3>
-      <p>De machine blijft eigendom van verkoper totdat koper de volledige koopsom heeft voldaan. Tot het moment van aflevering wordt de machine door verkoper zorgvuldig gestald en beheerd; het risico van verlies of beschadiging gaat pas bij de feitelijke aflevering over op koper. Reeds door koper betaalde bedragen blijven bij verlies of beschadiging vóór aflevering volledig gedekt: in dat geval levert verkoper een gelijkwaardige machine of betaalt hij alle betaalde bedragen terug.</p>
+      <p><%= meervoud ? 'De machines blijven' : 'De machine blijft' %> eigendom van verkoper totdat koper de volledige koopsom heeft voldaan. Tot het moment van aflevering <%= meervoud ? 'worden de machines' : 'wordt de machine' %> door verkoper zorgvuldig gestald en beheerd; het risico van verlies of beschadiging gaat pas bij de feitelijke aflevering over op koper. Reeds door koper betaalde bedragen blijven bij verlies of beschadiging vóór aflevering volledig gedekt: in dat geval levert verkoper <%= meervoud ? 'gelijkwaardige machines' : 'een gelijkwaardige machine' %> of betaalt hij alle betaalde bedragen terug.</p>
     </div>
 
     <div class="artikel garantie-artikel">
       <h3><span class="anr">Artikel <%= ++nr %></span>Agroria-garantie — 12 maanden volledig + 6 maanden geld-terug</h3>
       <ol>
-        <li><b>12 maanden volledige garantie.</b> Vanaf de leveringsdatum geldt op de machine twaalf maanden volledige garantie op de techniek: motor, transmissie, aandrijflijn, hydrauliek en elektronica. Doet zich in deze periode een technisch gebrek voor, dan wordt dit kosteloos door of namens verkoper hersteld.</li>
-        <li><b>6 maanden geld-terug-garantie bij motorisch defect.</b> Openbaart zich binnen zes maanden na levering een ernstig defect aan de motor of aandrijflijn dat niet redelijkerwijs te herstellen is, dan neemt verkoper de machine terug en ontvangt koper het volledige aankoopbedrag retour.</li>
+        <li><b>12 maanden volledige garantie.</b> Vanaf de leveringsdatum geldt op <%= meervoud ? 'elke machine' : 'de machine' %> twaalf maanden volledige garantie op de techniek: motor, transmissie, aandrijflijn, hydrauliek en elektronica. Doet zich in deze periode een technisch gebrek voor, dan wordt dit kosteloos door of namens verkoper hersteld.</li>
+        <li><b>6 maanden geld-terug-garantie bij motorisch defect.</b> Openbaart zich binnen zes maanden na levering een ernstig defect aan de motor of aandrijflijn dat niet redelijkerwijs te herstellen is, dan neemt verkoper <%= meervoud ? 'de betreffende machine' : 'de machine' %> terug en ontvangt koper het volledige aankoopbedrag retour.</li>
         <li><b>Uitgesloten van garantie</b> zijn slijtage- en verbruiksdelen, waaronder banden, verlichting, filters, oliën en vloeistoffen, remvoeringen, koppelingsslijtage, ruiten en cosmetische onderdelen (o.a. lak, bekleding en kunststofdelen).</li>
         <li><b>Voorwaarden.</b> De garantie geldt bij normaal agrarisch gebruik en regulier onderhoud. Een gebrek dient direct na constatering, en in ieder geval binnen de garantietermijn, schriftelijk aan verkoper te worden gemeld. Herstel vindt plaats door of in opdracht van verkoper, na voorafgaand overleg. Schade door overbelasting, onjuist gebruik of eigen aanpassingen valt buiten de garantie.</li>
       </ol>
@@ -314,7 +321,7 @@
 
     <div class="artikel">
       <h3><span class="anr">Artikel <%= ++nr %></span>Niet-nakoming en ontbinding</h3>
-      <p>Kan verkoper de machine onverhoopt niet leveren, dan heeft koper recht op volledige en onmiddellijke terugbetaling van alle reeds betaalde bedragen, waaronder de aanbetaling. Komt een partij een verplichting uit deze overeenkomst niet na, dan stelt de andere partij haar daarvan schriftelijk in kennis en krijgt zij een redelijke termijn om alsnog na te komen. Blijft nakoming ook daarna uit, dan mag de andere partij de overeenkomst ontbinden. Partijen spannen zich in geschillen eerst in goed onderling overleg op te lossen.</p>
+      <p>Kan verkoper <%= meervoud ? 'de machines' : 'de machine' %> onverhoopt niet leveren, dan heeft koper recht op volledige en onmiddellijke terugbetaling van alle reeds betaalde bedragen, waaronder de aanbetaling. Komt een partij een verplichting uit deze overeenkomst niet na, dan stelt de andere partij haar daarvan schriftelijk in kennis en krijgt zij een redelijke termijn om alsnog na te komen. Blijft nakoming ook daarna uit, dan mag de andere partij de overeenkomst ontbinden. Partijen spannen zich in geschillen eerst in goed onderling overleg op te lossen.</p>
     </div>
 
     <% if (o.bijzonderheden) { %>

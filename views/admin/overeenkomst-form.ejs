@@ -9,14 +9,15 @@
     datum: vandaag,
     plaats: plaatsStandaard || '',
     status: 'concept',
-    klant: {}, machine: {}, regels: [],
+    klant: {}, machine: {}, machines: [], regels: [],
     prijsType: 'marge', aanbetaling: 0, aanbetalingVervalt: '',
     leverdatum: '', levering: '', importLand: '', bijzonderheden: '',
     bank: bank || {}
   };
   if (!overeenkomst && vanFactuur) {
     o.klant = vanFactuur.klant || {};
-    o.machine = vanFactuur.machine || {};
+    o.machines = documentMachines(vanFactuur);
+    o.machine = o.machines[0] || {};
     o.regels = vanFactuur.regels || [];
     o.prijsType = vanFactuur.prijsType || 'marge';
     o.aanbetaling = vanFactuur.aanbetaling || 0;
@@ -24,20 +25,37 @@
     o.levering = vanFactuur.levering || '';
     o.bank = vanFactuur.bank || bank || {};
   } else if (!overeenkomst && trekker) {
-    o.machine = {
+    o.machines = [{
       naam: (trekker.merk + ' ' + trekker.model).trim(),
       bouwjaar: trekker.bouwjaar || '', uren: trekker.uren || '',
-      pk: trekker.pk || '', transmissie: trekker.transmissie || ''
-    };
+      pk: trekker.pk || '', transmissie: trekker.transmissie || '',
+      serienummer: '', kenteken: ''
+    }];
+    o.machine = o.machines[0];
     o.prijsType = trekker.prijsType === 'btw' ? 'btw' : 'marge';
     o.regels = [{ omschrijving: 'Koopsom ' + trekker.merk + ' ' + trekker.model + ' (rijklaar geleverd)', bedrag: trekker.prijs || 0 }];
   }
+  var machines = documentMachines(o);
+  if (!machines.length) machines = [{ naam:'', bouwjaar:'', uren:'', pk:'', transmissie:'', serienummer:'', kenteken:'' }];
   var ob = o.bank || bank || {};
   function invoerBedrag(n){
     n = Number(n || 0);
     if (!n) return '';
     return (Math.round(n * 100) / 100).toFixed(2).replace('.', ',');
   }
+  var trekkerKeuze = (trekkers || []).map(function(t){
+    return {
+      id: t.id,
+      naam: (t.merk + ' ' + t.model).trim(),
+      bouwjaar: t.bouwjaar || '',
+      uren: t.uren || '',
+      pk: t.pk || '',
+      transmissie: t.transmissie || '',
+      prijs: t.prijs || 0,
+      prijsType: t.prijsType === 'btw' ? 'btw' : 'marge',
+      label: t.merk + ' ' + t.model + ' (' + (t.bouwjaar || '—') + ') — ' + euro(t.prijs)
+    };
+  });
 %>
 <div class="topbar">
   <div><h1><%= overeenkomst ? 'Overeenkomst bewerken' : 'Nieuwe koopovereenkomst' %></h1>
@@ -52,21 +70,6 @@
 
 <% if (typeof opgeslagen !== 'undefined' && opgeslagen) { %>
   <div class="melding ok">Overeenkomst opgeslagen. Klik rechtsboven op <b>"Bekijk / opslaan als PDF"</b> voor het opgemaakte document.</div>
-<% } %>
-
-<% if (!overeenkomst) { %>
-<div class="panel" style="padding:18px 22px;margin-bottom:20px">
-  <form method="get" action="/uadmin/overeenkomsten/nieuw" style="display:flex;gap:12px;align-items:center;flex-wrap:wrap">
-    <b style="font-size:.9rem">Snel starten vanuit een trekker:</b>
-    <select name="trekker" style="border:1px solid var(--line);border-radius:8px;padding:9px 12px;font-family:inherit;font-size:.9rem;background:#fff">
-      <option value="">— kies een trekker uit het aanbod —</option>
-      <% trekkers.forEach(function(t){ %>
-        <option value="<%= t.id %>" <%= trekker && trekker.id===t.id ? 'selected' : '' %>><%= t.merk %> <%= t.model %> (<%= t.bouwjaar %>) — <%= euro(t.prijs) %></option>
-      <% }) %>
-    </select>
-    <button class="btn btn-out btn-sm" type="submit">Gegevens overnemen</button>
-  </form>
-</div>
 <% } %>
 
 <form method="post" action="/uadmin/overeenkomsten<%= overeenkomst ? '/'+overeenkomst.id : '' %>">
@@ -102,21 +105,45 @@
 </div>
 
 <div class="panel" style="padding:28px;margin-bottom:20px">
-  <h3 style="font-family:var(--display);font-weight:600;margin-bottom:18px">Machine</h3>
-  <div class="formgrid">
-    <div class="field"><label>Merk en model</label><input name="machine_naam" value="<%= o.machine.naam || '' %>" placeholder="Bijv. Fendt 716 Vario" required></div>
-    <div class="field"><label>Bouwjaar</label><input name="machine_bouwjaar" value="<%= o.machine.bouwjaar || '' %>" placeholder="2004"></div>
-    <div class="field"><label>Draaiuren</label><input name="machine_uren" value="<%= o.machine.uren || '' %>" placeholder="8450"></div>
-    <div class="field"><label>Vermogen (pk)</label><input name="machine_pk" value="<%= o.machine.pk || '' %>" placeholder="160"></div>
-    <div class="field"><label>Transmissie</label><input name="machine_transmissie" value="<%= o.machine.transmissie || '' %>" placeholder="Vario / Powershift …"></div>
-    <div class="field"><label>Serie-/chassisnummer — optioneel</label><input name="machine_serienummer" value="<%= o.machine.serienummer || '' %>"><div class="hint">Sterk aan te raden op een koopovereenkomst: dit legt vast om wélke machine het gaat.</div></div>
-    <div class="field"><label>Kenteken — optioneel</label><input name="machine_kenteken" value="<%= o.machine.kenteken || '' %>"></div>
+  <div style="margin-bottom:10px">
+    <h3 style="font-family:var(--display);font-weight:600;margin:0 0 6px">Machines</h3>
+    <div class="hint">Je kunt één of meerdere trekkers op dezelfde koopovereenkomst zetten. Kies uit het aanbod of vul handmatig in.</div>
   </div>
+  <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:18px;padding:14px 16px;background:#f7f5f0;border:1px solid var(--line);border-radius:12px">
+    <b style="font-size:.9rem">Trekker uit aanbod toevoegen:</b>
+    <select id="trekkerKiezer" style="border:1px solid var(--line);border-radius:8px;padding:9px 12px;font-family:inherit;font-size:.9rem;background:#fff;min-width:260px">
+      <option value="">— kies een trekker —</option>
+      <% trekkerKeuze.forEach(function(t){ %>
+        <option value="<%= t.id %>"><%= t.label %></option>
+      <% }) %>
+    </select>
+    <button class="btn btn-out btn-sm" type="button" id="trekkerErbij">+ Toevoegen aan overeenkomst</button>
+  </div>
+  <div id="machines">
+    <% machines.forEach(function(m, idx){ %>
+      <div class="machine-blok" style="border:1px solid var(--line);border-radius:12px;padding:18px;margin-bottom:12px;background:#fff">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
+          <b style="font-size:.92rem">Machine <span class="machine-nr"><%= idx + 1 %></span></b>
+          <button type="button" class="btn btn-danger btn-sm machine-weg" title="Machine verwijderen">×</button>
+        </div>
+        <div class="formgrid">
+          <div class="field"><label>Merk en model</label><input name="machine_naam" value="<%= m.naam || '' %>" placeholder="Bijv. Fendt 716 Vario"></div>
+          <div class="field"><label>Bouwjaar</label><input name="machine_bouwjaar" value="<%= m.bouwjaar || '' %>" placeholder="2004"></div>
+          <div class="field"><label>Draaiuren</label><input name="machine_uren" value="<%= m.uren || '' %>" placeholder="8450"></div>
+          <div class="field"><label>Vermogen (pk)</label><input name="machine_pk" value="<%= m.pk || '' %>" placeholder="160"></div>
+          <div class="field"><label>Transmissie</label><input name="machine_transmissie" value="<%= m.transmissie || '' %>" placeholder="Vario / Powershift …"></div>
+          <div class="field"><label>Serie-/chassisnummer — optioneel</label><input name="machine_serienummer" value="<%= m.serienummer || '' %>"><div class="hint">Sterk aan te raden: dit legt vast om wélke machine het gaat.</div></div>
+          <div class="field"><label>Kenteken — optioneel</label><input name="machine_kenteken" value="<%= m.kenteken || '' %>"></div>
+        </div>
+      </div>
+    <% }) %>
+  </div>
+  <button type="button" class="btn btn-out btn-sm" id="machineErbij">+ Lege machine toevoegen</button>
 </div>
 
 <div class="panel" style="padding:28px;margin-bottom:20px">
   <h3 style="font-family:var(--display);font-weight:600;margin-bottom:6px">Koopsom</h3>
-  <div class="hint" style="margin-bottom:16px">Eén regel per onderdeel. Een inruil of korting vul je in als <b>negatief</b> bedrag, bijv. <code>-12500</code>.</div>
+  <div class="hint" style="margin-bottom:16px">Per trekker komt er automatisch een regel bij. Een inruil of korting vul je in als <b>negatief</b> bedrag, bijv. <code>-12500</code>.</div>
   <div id="regels">
     <% (o.regels.length ? o.regels : [{omschrijving:'',bedrag:''}]).forEach(function(r){ %>
       <div class="regel" style="display:flex;gap:12px;margin-bottom:10px">
@@ -131,7 +158,7 @@
   <div class="formgrid" style="margin-top:22px">
     <div class="field full">
       <label>Prijsregeling</label>
-      <select name="prijsType">
+      <select name="prijsType" id="prijsType">
         <option value="marge" <%= o.prijsType!=='btw'?'selected':'' %>>Margeregeling — bedragen zijn totaalprijzen, BTW niet apart vermeld (gebruikte machines)</option>
         <option value="btw" <%= o.prijsType==='btw'?'selected':'' %>>BTW-regeling — bedragen zijn excl. BTW; 21% BTW wordt apart vermeld</option>
       </select>
@@ -168,8 +195,119 @@
 </form>
 
 <script>
-  // Koopsomregels toevoegen/verwijderen
+  window.__AGRORIA_TREKKERS__ = <%- safeJsonLd(trekkerKeuze) %>;
+  window.__AGRORIA_REGEL_PREFIX__ = 'Koopsom';
+</script>
+<script>
   (function(){
+    function nummerMachines(){
+      var blokken = document.querySelectorAll('#machines .machine-blok');
+      blokken.forEach(function(blok, i){
+        var nr = blok.querySelector('.machine-nr');
+        if (nr) nr.textContent = String(i + 1);
+      });
+    }
+
+    function leegMachineBlok(){
+      var houder = document.getElementById('machines');
+      var eerste = houder.querySelector('.machine-blok');
+      var kopie = eerste.cloneNode(true);
+      kopie.querySelectorAll('input').forEach(function(i){ i.value = ''; });
+      return kopie;
+    }
+
+    function vulMachineBlok(blok, data){
+      var map = {
+        machine_naam: data.naam || '',
+        machine_bouwjaar: data.bouwjaar || '',
+        machine_uren: data.uren || '',
+        machine_pk: data.pk || '',
+        machine_transmissie: data.transmissie || '',
+        machine_serienummer: data.serienummer || '',
+        machine_kenteken: data.kenteken || ''
+      };
+      Object.keys(map).forEach(function(naam){
+        var veld = blok.querySelector('input[name="' + naam + '"]');
+        if (veld) veld.value = map[naam];
+      });
+    }
+
+    function voegRegelToe(omschrijving, bedrag){
+      var houder = document.getElementById('regels');
+      var eerste = houder.querySelector('.regel');
+      var kopie = eerste.cloneNode(true);
+      var velden = kopie.querySelectorAll('input');
+      velden[0].value = omschrijving || '';
+      velden[1].value = bedrag || '';
+      var bestaande = houder.querySelectorAll('.regel');
+      if (bestaande.length === 1) {
+        var b0 = bestaande[0].querySelectorAll('input');
+        if (!b0[0].value && !b0[1].value) {
+          b0[0].value = omschrijving || '';
+          b0[1].value = bedrag || '';
+          return;
+        }
+      }
+      houder.appendChild(kopie);
+    }
+
+    function bedragVoorInvoer(n){
+      n = Number(n || 0);
+      if (!n) return '';
+      return (Math.round(n * 100) / 100).toFixed(2).replace('.', ',');
+    }
+
+    var wasLeeg = (function(){
+      var naam = document.querySelector('#machines input[name="machine_naam"]');
+      return !naam || !naam.value.trim();
+    })();
+
+    document.getElementById('machineErbij').addEventListener('click', function(){
+      document.getElementById('machines').appendChild(leegMachineBlok());
+      nummerMachines();
+    });
+
+    document.getElementById('machines').addEventListener('click', function(e){
+      var knop = e.target.closest('.machine-weg');
+      if (!knop) return;
+      var houder = document.getElementById('machines');
+      var blokken = houder.querySelectorAll('.machine-blok');
+      if (blokken.length <= 1) {
+        blokken[0].querySelectorAll('input').forEach(function(i){ i.value = ''; });
+        return;
+      }
+      knop.closest('.machine-blok').remove();
+      nummerMachines();
+    });
+
+    document.getElementById('trekkerErbij').addEventListener('click', function(){
+      var keuze = document.getElementById('trekkerKiezer').value;
+      if (!keuze) return;
+      var t = (window.__AGRORIA_TREKKERS__ || []).find(function(x){ return x.id === keuze; });
+      if (!t) return;
+      var houder = document.getElementById('machines');
+      var blokken = houder.querySelectorAll('.machine-blok');
+      var doel = null;
+      if (blokken.length === 1) {
+        var naamVeld = blokken[0].querySelector('input[name="machine_naam"]');
+        if (naamVeld && !naamVeld.value.trim()) doel = blokken[0];
+      }
+      if (!doel) {
+        doel = leegMachineBlok();
+        houder.appendChild(doel);
+      }
+      vulMachineBlok(doel, t);
+      nummerMachines();
+      voegRegelToe(
+        (window.__AGRORIA_REGEL_PREFIX__ || 'Koopsom') + ' ' + t.naam + ' (rijklaar geleverd)',
+        bedragVoorInvoer(t.prijs)
+      );
+      var prijsType = document.getElementById('prijsType');
+      if (prijsType && wasLeeg) prijsType.value = t.prijsType || 'marge';
+      wasLeeg = false;
+      document.getElementById('trekkerKiezer').value = '';
+    });
+
     var houder = document.getElementById('regels');
     document.getElementById('regelErbij').addEventListener('click', function(){
       var eerste = houder.querySelector('.regel');

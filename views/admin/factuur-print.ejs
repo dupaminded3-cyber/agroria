@@ -4,18 +4,21 @@
   var f = factuur;
   var t = totalen;
   var klant = f.klant || {};
-  var machine = f.machine || {};
+  var machines = documentMachines(f);
   var fb = f.bank || {};
   var web = (typeof SITE_URL !== 'undefined' ? SITE_URL : '').replace(/^https?:\/\//,'');
   var heeftAanbetaling = t.aanbetaling > 0;
-  var machineSpecs = [
-    ['Bouwjaar', machine.bouwjaar],
-    ['Draaiuren', machine.uren ? getal(machine.uren) + ' u' : ''],
-    ['Vermogen', machine.pk ? machine.pk + ' pk' : ''],
-    ['Transmissie', machine.transmissie],
-    ['Serie-/chassisnr.', machine.serienummer],
-    ['Kenteken', machine.kenteken]
-  ].filter(function(r){ return r[1]; });
+  var meervoud = machines.length > 1;
+  function specsVoor(machine){
+    return [
+      ['Bouwjaar', machine.bouwjaar],
+      ['Draaiuren', machine.uren ? getal(machine.uren) + ' u' : ''],
+      ['Vermogen', machine.pk ? machine.pk + ' pk' : ''],
+      ['Transmissie', machine.transmissie],
+      ['Serie-/chassisnr.', machine.serienummer],
+      ['Kenteken', machine.kenteken]
+    ].filter(function(r){ return r[1]; });
+  }
 %><!DOCTYPE html>
 <html lang="nl">
 <head>
@@ -82,6 +85,7 @@
 
   /* ---- Machine ---- */
   .machine{margin-top:7mm;border:1px solid var(--line);border-radius:12px;overflow:hidden;page-break-inside:avoid}
+  .machine + .machine{margin-top:4mm}
   .machine .mkop{background:linear-gradient(120deg,var(--forest),var(--forest2));color:#fff;padding:12px 18px;display:flex;justify-content:space-between;align-items:center}
   .machine .mkop .ml{font-size:.6rem;letter-spacing:.28em;text-transform:uppercase;color:var(--gold-soft);font-weight:700}
   .machine .mkop .mn{font-family:var(--display);font-weight:600;font-size:1.2rem;margin-top:2px}
@@ -227,16 +231,16 @@
   <!-- Koppeling met de koopovereenkomst -->
   <% if (f.overeenkomst && f.overeenkomst.nummer) { %>
   <div class="koppeling">
-    Deze factuur vloeit voort uit en is onlosmakelijk verbonden met <b>koopovereenkomst <%= f.overeenkomst.nummer %></b><% if (f.overeenkomst.datum) { %> d.d. <b><%= datumNL(f.overeenkomst.datum) %></b><% } %> tussen Agroria Landbouwvoertuigen en <%= klant.bedrijf || klant.naam %><% if (machine.naam) { %>, betreffende de <%= machine.naam %><% } %>. De bepalingen, garanties en voorwaarden van die koopovereenkomst — waaronder de Agroria-garantie — zijn onverkort op deze factuur van toepassing.
+    Deze factuur vloeit voort uit en is onlosmakelijk verbonden met <b>koopovereenkomst <%= f.overeenkomst.nummer %></b><% if (f.overeenkomst.datum) { %> d.d. <b><%= datumNL(f.overeenkomst.datum) %></b><% } %> tussen Agroria Landbouwvoertuigen en <%= klant.bedrijf || klant.naam %><% if (machines.length) { %>, betreffende <%= meervoud ? 'de' : 'de' %> <%= machineNamen(f) %><% } %>. De bepalingen, garanties en voorwaarden van die koopovereenkomst — waaronder de Agroria-garantie — zijn onverkort op deze factuur van toepassing.
   </div>
   <% } %>
 
-  <!-- Machine -->
-  <% if (machine.naam) { %>
+  <!-- Machine(s) -->
+  <% machines.forEach(function(machine, idx){ var machineSpecs = specsVoor(machine); %>
   <div class="machine">
     <div class="mkop">
       <div>
-        <div class="ml">Geleverde machine</div>
+        <div class="ml"><%= meervoud ? ('Geleverde machine ' + (idx + 1) + ' van ' + machines.length) : 'Geleverde machine' %></div>
         <div class="mn"><%= machine.naam %></div>
       </div>
     </div>
@@ -248,7 +252,7 @@
     </div>
     <% } %>
   </div>
-  <% } %>
+  <% }) %>
 
   <!-- Specificatie -->
   <div class="sectiekop">Specificatie</div>
