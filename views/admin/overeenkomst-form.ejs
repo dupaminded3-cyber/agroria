@@ -11,6 +11,7 @@
     status: 'concept',
     klant: {}, machine: {}, machines: [], regels: [],
     prijsType: 'marge', aanbetaling: 0, aanbetalingVervalt: '',
+    betalingMoment: 'bij_levering', betalingUiterlijk: '',
     leverdatum: '', levering: '', importLand: '', bijzonderheden: '',
     bank: bank || {}
   };
@@ -163,7 +164,20 @@
         <option value="btw" <%= o.prijsType==='btw'?'selected':'' %>>BTW-regeling — bedragen zijn excl. BTW; 21% BTW wordt apart vermeld</option>
       </select>
     </div>
-    <div class="field"><label>Aanbetaling — optioneel</label><input name="aanbetaling" value="<%= invoerBedrag(o.aanbetaling) %>" placeholder="Bijv. 5000"><div class="hint">Met aanbetaling komt er een betaalschema in de overeenkomst: aanbetaling + restant bij levering.</div></div>
+    <div class="field full">
+      <label>Betaalmoment</label>
+      <select name="betaling_moment" id="betalingMoment">
+        <option value="bij_levering" <%= o.betalingMoment!=='voor_levering'?'selected':'' %>>Betaling bij levering — koopsom (of restant) uiterlijk bij aflevering</option>
+        <option value="voor_levering" <%= o.betalingMoment==='voor_levering'?'selected':'' %>>Betaling vóór levering — koopsom (of restant) moet binnen zijn vóór aflevering</option>
+      </select>
+      <div class="hint">Dit bepaalt de tekst in artikel “Koopsom en betaling”. Met een aanbetaling geldt dit moment voor het <b>restant</b>.</div>
+    </div>
+    <div class="field" id="betalingUiterlijkVeld" style="<%= o.betalingMoment==='voor_levering'?'':'display:none' %>">
+      <label>Uiterste betaaldatum — optioneel</label>
+      <input type="date" name="betaling_uiterlijk" value="<%= o.betalingUiterlijk || '' %>">
+      <div class="hint">Alleen bij betaling vóór levering: komt als “uiterlijk …” in de overeenkomst.</div>
+    </div>
+    <div class="field"><label>Aanbetaling — optioneel</label><input name="aanbetaling" value="<%= invoerBedrag(o.aanbetaling) %>" placeholder="Bijv. 5000"><div class="hint">Vul je een aanbetaling in, dan komt er een betaalschema: aanbetaling + restant. Het restant volgt het gekozen betaalmoment hierboven.</div></div>
     <div class="field"><label>Aanbetaling uiterlijk</label><input type="date" name="aanbetaling_vervalt" value="<%= o.aanbetalingVervalt %>"></div>
     <div class="field"><label>IBAN</label><input name="bank_iban" value="<%= ob.iban || '' %>" placeholder="NL00 BANK 0123 4567 89"></div>
     <div class="field"><label>BIC — optioneel</label><input name="bank_bic" value="<%= ob.bic || '' %>" placeholder="INGBNL2A"></div>
@@ -325,6 +339,18 @@
       }
       knop.closest('.regel').remove();
     });
+  })();
+</script>
+<script>
+  (function(){
+    var keuze = document.getElementById('betalingMoment');
+    var veld = document.getElementById('betalingUiterlijkVeld');
+    if (!keuze || !veld) return;
+    function sync(){
+      veld.style.display = keuze.value === 'voor_levering' ? '' : 'none';
+    }
+    keuze.addEventListener('change', sync);
+    sync();
   })();
 </script>
 <%- include('_foot') %>

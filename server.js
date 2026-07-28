@@ -1135,6 +1135,9 @@ app.post('/uadmin/overeenkomsten/:id?', requireAuth, (req, res) => {
     prijsType: (b.prijsType === 'btw') ? 'btw' : 'marge',
     aanbetaling: parseBedrag(b.aanbetaling),
     aanbetalingVervalt: b.aanbetaling_vervalt || '',
+    // bij_levering (standaard) of voor_levering — bepaalt de betaaltekst in art. 2.
+    betalingMoment: (b.betaling_moment === 'voor_levering') ? 'voor_levering' : 'bij_levering',
+    betalingUiterlijk: b.betaling_uiterlijk || '',
     leverdatum: b.leverdatum || '',
     levering: (b.levering || '').trim(),
     // Import uit het buitenland (bijv. Duitsland): voegt het RDW-/kenteken-

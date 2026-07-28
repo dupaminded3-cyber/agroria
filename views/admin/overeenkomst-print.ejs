@@ -8,6 +8,8 @@
   var ob = o.bank || {};
   var web = (typeof SITE_URL !== 'undefined' ? SITE_URL : '').replace(/^https?:\/\//,'');
   var heeftAanbetaling = t.aanbetaling > 0;
+  var betalingVoorLevering = o.betalingMoment === 'voor_levering';
+  var betalingUiterlijkTekst = o.betalingUiterlijk ? (' uiterlijk ' + datumNL(o.betalingUiterlijk)) : '';
   var koperNaam = klant.bedrijf ? (klant.bedrijf + (klant.naam ? ', vertegenwoordigd door ' + klant.naam : '')) : (klant.naam || 'Koper');
   var meervoud = machines.length > 1;
   var machineWoord = meervoud ? 'machines' : 'machine';
@@ -281,8 +283,14 @@
         <p>Betaling vindt plaats in twee termijnen<% if (ob.iban) { %> op rekening <b><%= ob.iban %></b><% if (ob.tnv) { %> ten name van <%= ob.tnv %><% } %><% } %>, onder vermelding van het overeenkomstnummer:</p>
         <ol>
           <li><b>Aanbetaling</b> van <b><%= euroBedrag(t.aanbetaling) %></b><% if (o.aanbetalingVervalt) { %>, te voldoen uiterlijk <%= datumNL(o.aanbetalingVervalt) %><% } %>. Na ontvangst <%= meervoud ? 'worden de machines' : 'wordt de machine' %> voor koper gereserveerd en wordt de levering in gang gezet.</li>
-          <li><b>Restant</b> van <b><%= euroBedrag(t.restant) %></b>, te voldoen uiterlijk bij aflevering.</li>
+          <% if (betalingVoorLevering) { %>
+            <li><b>Restant</b> van <b><%= euroBedrag(t.restant) %></b>, te voldoen <b>vóór aflevering</b><%= betalingUiterlijkTekst %>. Levering vindt plaats nadat het restant is ontvangen.</li>
+          <% } else { %>
+            <li><b>Restant</b> van <b><%= euroBedrag(t.restant) %></b>, te voldoen uiterlijk bij aflevering.</li>
+          <% } %>
         </ol>
+      <% } else if (betalingVoorLevering) { %>
+        <p>De koopsom wordt<% if (ob.iban) { %> voldaan op rekening <b><%= ob.iban %></b><% if (ob.tnv) { %> ten name van <%= ob.tnv %><% } %>,<% } %> <b>vóór aflevering</b> volledig voldaan<%= betalingUiterlijkTekst %>, onder vermelding van het overeenkomstnummer. Levering vindt plaats nadat de betaling is ontvangen.</p>
       <% } else { %>
         <p>De koopsom wordt<% if (ob.iban) { %> voldaan op rekening <b><%= ob.iban %></b><% if (ob.tnv) { %> ten name van <%= ob.tnv %><% } %>,<% } %> uiterlijk bij aflevering volledig voldaan, onder vermelding van het overeenkomstnummer.</p>
       <% } %>
