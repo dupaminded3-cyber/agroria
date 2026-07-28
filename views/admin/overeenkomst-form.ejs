@@ -162,12 +162,23 @@
         <option value="marge" <%= o.prijsType!=='btw'?'selected':'' %>>Margeregeling — bedragen zijn totaalprijzen, BTW niet apart vermeld (gebruikte machines)</option>
         <option value="btw" <%= o.prijsType==='btw'?'selected':'' %>>BTW-regeling — bedragen zijn excl. BTW; 21% BTW wordt apart vermeld</option>
       </select>
+      <div class="hint">Wil je <b>BTW 21%</b> apart op de overeenkomst zien? Kies dan <b>BTW-regeling</b>. Bij margeregeling zit de BTW in de prijs en wordt die bewust niet apart getoond.</div>
     </div>
-    <div class="field"><label>Aanbetaling — optioneel</label><input name="aanbetaling" value="<%= invoerBedrag(o.aanbetaling) %>" placeholder="Bijv. 5000"><div class="hint">Met aanbetaling komt er een betaalschema in de overeenkomst: aanbetaling + restant bij levering.</div></div>
+    <div class="field"><label>Aanbetaling — optioneel</label><input name="aanbetaling" id="aanbetaling" value="<%= invoerBedrag(o.aanbetaling) %>" placeholder="Bijv. 5000"><div class="hint">Met aanbetaling komt er een betaalschema in de overeenkomst: aanbetaling + restant bij levering.</div></div>
     <div class="field"><label>Aanbetaling uiterlijk</label><input type="date" name="aanbetaling_vervalt" value="<%= o.aanbetalingVervalt %>"></div>
     <div class="field"><label>IBAN</label><input name="bank_iban" value="<%= ob.iban || '' %>" placeholder="NL00 BANK 0123 4567 89"></div>
     <div class="field"><label>BIC — optioneel</label><input name="bank_bic" value="<%= ob.bic || '' %>" placeholder="INGBNL2A"></div>
     <div class="field"><label>Ten name van</label><input name="bank_tnv" value="<%= ob.tnv || '' %>" placeholder="Agroria Landbouwvoertuigen"></div>
+  </div>
+
+  <div id="totalenPreview" style="margin-top:22px;max-width:420px;margin-left:auto;border:1px solid var(--line);border-radius:12px;padding:16px 18px;background:#f7f5f0">
+    <div style="font-size:.72rem;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);font-weight:700;margin-bottom:10px">Overzicht koopsom</div>
+    <div style="display:flex;justify-content:space-between;gap:12px;padding:4px 0;font-size:.94rem"><span id="tpSubLabel">Subtotaal</span><b id="tpSub">€ 0,00</b></div>
+    <div id="tpBtwRij" style="display:none;justify-content:space-between;gap:12px;padding:4px 0;font-size:.94rem"><span>BTW 21%</span><b id="tpBtw">€ 0,00</b></div>
+    <div id="tpMargeNoot" style="font-size:.82rem;color:var(--muted);padding:6px 0 2px;line-height:1.45">Margeregeling: BTW zit in de prijs en wordt niet apart vermeld.</div>
+    <div style="display:flex;justify-content:space-between;gap:12px;padding:10px 0 4px;margin-top:6px;border-top:1px solid var(--line);font-size:1rem"><span id="tpTotLabel">Totale koopsom</span><b id="tpTot">€ 0,00</b></div>
+    <div id="tpAanRij" style="display:none;justify-content:space-between;gap:12px;padding:4px 0;font-size:.94rem"><span>Aanbetaling</span><b id="tpAan">€ 0,00</b></div>
+    <div id="tpRestRij" style="display:none;justify-content:space-between;gap:12px;padding:4px 0;font-size:.94rem"><span>Restant bij levering</span><b id="tpRest">€ 0,00</b></div>
   </div>
 </div>
 
@@ -306,6 +317,7 @@
       if (prijsType && wasLeeg) prijsType.value = t.prijsType || 'marge';
       wasLeeg = false;
       document.getElementById('trekkerKiezer').value = '';
+      if (window.__agroriaUpdateTotalen) window.__agroriaUpdateTotalen();
     });
 
     var houder = document.getElementById('regels');
@@ -314,6 +326,7 @@
       var kopie = eerste.cloneNode(true);
       kopie.querySelectorAll('input').forEach(function(i){ i.value=''; });
       houder.appendChild(kopie);
+      if (window.__agroriaUpdateTotalen) window.__agroriaUpdateTotalen();
     });
     houder.addEventListener('click', function(e){
       var knop = e.target.closest('.regel-weg');
@@ -321,10 +334,60 @@
       var regels = houder.querySelectorAll('.regel');
       if (regels.length <= 1) {
         regels[0].querySelectorAll('input').forEach(function(i){ i.value=''; });
+        if (window.__agroriaUpdateTotalen) window.__agroriaUpdateTotalen();
         return;
       }
       knop.closest('.regel').remove();
+      if (window.__agroriaUpdateTotalen) window.__agroriaUpdateTotalen();
     });
+  })();
+</script>
+<script>
+  (function(){
+    function parseBedrag(s){
+      var t = String(s || '').trim().replace(/[€\s]/g, '');
+      if (!t) return 0;
+      if (t.indexOf(',') !== -1) t = t.replace(/\./g, '').replace(',', '.');
+      else if (/^-?\d{1,3}(\.\d{3})+$/.test(t)) t = t.replace(/\./g, '');
+      var n = parseFloat(t);
+      return isNaN(n) ? 0 : n;
+    }
+    function euro(n){
+      return '€ ' + Number(n || 0).toLocaleString('nl-NL', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    }
+    function updateTotalen(){
+      var subtotaal = 0;
+      document.querySelectorAll('#regels input[name="regel_bedrag"]').forEach(function(i){
+        subtotaal += parseBedrag(i.value);
+      });
+      subtotaal = Math.round(subtotaal * 100) / 100;
+      var isBtw = document.getElementById('prijsType') && document.getElementById('prijsType').value === 'btw';
+      var btw = isBtw ? Math.round(subtotaal * 0.21 * 100) / 100 : 0;
+      var totaal = isBtw ? Math.round((subtotaal + btw) * 100) / 100 : subtotaal;
+      var aan = parseBedrag((document.getElementById('aanbetaling') || {}).value);
+      var rest = Math.round((totaal - aan) * 100) / 100;
+
+      document.getElementById('tpSubLabel').textContent = isBtw ? 'Subtotaal (excl. BTW)' : 'Subtotaal';
+      document.getElementById('tpSub').textContent = euro(subtotaal);
+      document.getElementById('tpBtw').textContent = euro(btw);
+      document.getElementById('tpTotLabel').textContent = isBtw ? 'Totale koopsom (incl. BTW)' : 'Totale koopsom';
+      document.getElementById('tpTot').textContent = euro(totaal);
+      document.getElementById('tpBtwRij').style.display = isBtw ? 'flex' : 'none';
+      document.getElementById('tpMargeNoot').style.display = isBtw ? 'none' : 'block';
+      document.getElementById('tpAanRij').style.display = aan > 0 ? 'flex' : 'none';
+      document.getElementById('tpRestRij').style.display = aan > 0 ? 'flex' : 'none';
+      document.getElementById('tpAan').textContent = euro(aan);
+      document.getElementById('tpRest').textContent = euro(rest);
+    }
+    window.__agroriaUpdateTotalen = updateTotalen;
+    var form = document.querySelector('form[action*="overeenkomsten"]') || document;
+    form.addEventListener('input', function(e){
+      if (!e.target) return;
+      if (e.target.name === 'regel_bedrag' || e.target.id === 'aanbetaling') updateTotalen();
+    });
+    var prijsType = document.getElementById('prijsType');
+    if (prijsType) prijsType.addEventListener('change', updateTotalen);
+    updateTotalen();
   })();
 </script>
 <%- include('_foot') %>
