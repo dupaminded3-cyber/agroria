@@ -148,7 +148,7 @@
         <td><b><%= o.nummer %></b></td>
         <td><%= datumNL(o.datum) %></td>
         <td><%= o.klant && (o.klant.bedrijf || o.klant.naam) || '—' %></td>
-        <td><%= o.machine && o.machine.naam || '—' %></td>
+        <td><%= machineNamen(o) %></td>
         <td><b><%= euroBedrag(t.totaal) %></b></td>
         <td>
           <% if (o.status==='getekend'){ %><span class="pill beschikbaar">getekend</span>
