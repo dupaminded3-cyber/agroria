@@ -33,7 +33,7 @@
       serienummer: '', kenteken: ''
     }];
     o.machine = o.machines[0];
-    o.prijsType = trekker.prijsType === 'btw' ? 'btw' : 'marge';
+    o.prijsType = (trekker.prijsType === 'btw' || trekker.prijsType === 'netto') ? trekker.prijsType : 'marge';
     o.regels = [{ omschrijving: 'Koopsom ' + trekker.merk + ' ' + trekker.model + ' (rijklaar geleverd)', bedrag: trekker.prijs || 0 }];
   }
   var machines = documentMachines(o);
@@ -53,7 +53,7 @@
       pk: t.pk || '',
       transmissie: t.transmissie || '',
       prijs: t.prijs || 0,
-      prijsType: t.prijsType === 'btw' ? 'btw' : 'marge',
+      prijsType: (t.prijsType === 'btw' || t.prijsType === 'netto') ? t.prijsType : 'marge',
       label: t.merk + ' ' + t.model + ' (' + (t.bouwjaar || '—') + ') — ' + euro(t.prijs)
     };
   });
@@ -160,9 +160,13 @@
     <div class="field full">
       <label>Prijsregeling</label>
       <select name="prijsType" id="prijsType">
-        <option value="marge" <%= o.prijsType!=='btw'?'selected':'' %>>Margeregeling — bedragen zijn totaalprijzen, BTW niet apart vermeld (gebruikte machines)</option>
+        <option value="marge" <%= (!o.prijsType || o.prijsType==='marge')?'selected':'' %>>Margeregeling — bedragen zijn totaalprijzen, BTW niet apart vermeld (gebruikte machines)</option>
         <option value="btw" <%= o.prijsType==='btw'?'selected':'' %>>BTW-regeling — bedragen zijn excl. BTW; 21% BTW wordt apart vermeld</option>
+        <option value="netto" <%= o.prijsType==='netto'?'selected':'' %>>Netto — geen Nederlandse BTW (bijv. Belgische/EU-klanten)</option>
       </select>
+      <div class="hint">
+        <b>BTW-regeling</b>: 21% NL-BTW apart. <b>Margeregeling</b>: BTW zit in de prijs. <b>Netto</b>: geen Nederlandse BTW — geschikt als de koper in België/EU geen NL-belasting betaalt (vul bij voorkeur het BTW-nummer van de koper in).
+      </div>
     </div>
     <div class="field full">
       <label>Betaalmoment</label>

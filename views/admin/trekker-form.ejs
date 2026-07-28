@@ -25,10 +25,12 @@
           <option value="" <%= (!trekker || !trekker.prijsType) ? 'selected' : '' %>>Nog niet ingesteld — toon de prijs zoals nu, zonder BTW/marge-vermelding</option>
           <option value="btw" <%= trekker && trekker.prijsType==='btw' ? 'selected' : '' %>>BTW-regeling — de prijs hierboven is excl. BTW</option>
           <option value="marge" <%= trekker && trekker.prijsType==='marge' ? 'selected' : '' %>>Margeregeling — één totaalprijs, geen BTW (bijv. ingekocht van een particulier)</option>
+          <option value="netto" <%= trekker && trekker.prijsType==='netto' ? 'selected' : '' %>>Netto — geen Nederlandse BTW (bijv. voor Belgische/EU-kopers)</option>
         </select>
         <div class="hint">
           Kies je <b>BTW-regeling</b>, dan geldt het bedrag bij "Prijs (€)" als <b>excl. BTW</b>; het bedrag incl. BTW (21%) wordt automatisch berekend en op de website getoond.
           Kies je <b>Margeregeling</b>, dan toont de website één totaalprijs zonder BTW-vermelding — verplicht bij inkoop van particulieren.
+          Kies je <b>Netto</b>, dan toont de website de prijs als netto zonder Nederlandse BTW — handig voor afnemers in België/EU.
         </div>
       </div>
       <div class="field"><label>Categorie</label>

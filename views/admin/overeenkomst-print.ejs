@@ -259,8 +259,11 @@
     <% if (o.prijsType === 'btw') { %>
       <div class="rij"><span>Subtotaal (excl. BTW)</span><span><%= euroBedrag(t.subtotaal) %></span></div>
       <div class="rij"><span>BTW 21%</span><span><%= euroBedrag(t.btw) %></span></div>
+    <% } else if (o.prijsType === 'netto') { %>
+      <div class="rij"><span>Subtotaal (netto)</span><span><%= euroBedrag(t.subtotaal) %></span></div>
+      <div class="rij"><span>Nederlandse BTW</span><span>€ 0,00</span></div>
     <% } %>
-    <div class="eind"><b>Totale koopsom<%= o.prijsType === 'btw' ? ' (incl. BTW)' : '' %></b><span><%= euroBedrag(t.totaal) %></span></div>
+    <div class="eind"><b>Totale koopsom<%= o.prijsType === 'btw' ? ' (incl. BTW)' : (o.prijsType === 'netto' ? ' (netto)' : '') %></b><span><%= euroBedrag(t.totaal) %></span></div>
     <% if (heeftAanbetaling) { %>
       <div class="rij" style="padding-top:9px"><span>Waarvan aanbetaling<% if (o.aanbetalingVervalt) { %> (uiterlijk <%= datumNL(o.aanbetalingVervalt) %>)<% } %></span><span><%= euroBedrag(t.aanbetaling) %></span></div>
       <div class="rij"><span>Restant bij levering</span><span><%= euroBedrag(t.restant) %></span></div>
@@ -277,8 +280,8 @@
 
     <div class="artikel">
       <h3><span class="anr">Artikel <%= ++nr %></span>Koopsom en betaling</h3>
-      <p>De totale koopsom bedraagt <b><%= euroBedrag(t.totaal) %></b><%= o.prijsType === 'btw' ? ' (inclusief 21% BTW)' : '' %>, zoals gespecificeerd in het overzicht hierboven.
-      <% if (o.prijsType !== 'btw') { %>Op deze verkoop is de margeregeling voor gebruikte goederen (art. 28b Wet OB) van toepassing: BTW is in de prijs begrepen, wordt niet afzonderlijk vermeld en is niet als voorbelasting aftrekbaar.<% } %></p>
+      <p>De totale koopsom bedraagt <b><%= euroBedrag(t.totaal) %></b><% if (o.prijsType === 'btw') { %> (inclusief 21% BTW)<% } else if (o.prijsType === 'netto') { %> (netto, geen Nederlandse BTW)<% } %>, zoals gespecificeerd in het overzicht hierboven.
+      <% if (o.prijsType === 'netto') { %>Op deze verkoop wordt geen Nederlandse omzetbelasting in rekening gebracht; de vermelde bedragen zijn netto. Eventuele BTW in het land van koper is voor rekening van koper.<% } else if (o.prijsType !== 'btw') { %>Op deze verkoop is de margeregeling voor gebruikte goederen (art. 28b Wet OB) van toepassing: BTW is in de prijs begrepen, wordt niet afzonderlijk vermeld en is niet als voorbelasting aftrekbaar.<% } %></p>
       <% if (heeftAanbetaling) { %>
         <p>Betaling vindt plaats in twee termijnen<% if (ob.iban) { %> op rekening <b><%= ob.iban %></b><% if (ob.tnv) { %> ten name van <%= ob.tnv %><% } %><% } %>, onder vermelding van het overeenkomstnummer:</p>
         <ol>

@@ -17,7 +17,7 @@
         <td><b><%= t.merk %> <%= t.model %></b><% if(t.uitgelicht){ %> <span class="pill nieuw">uitgelicht</span><% } %></td>
         <td><%= t.bouwjaar %></td>
         <td><%= getal(t.uren) %></td>
-        <td><%= euro(t.prijs) %><% if (t.prijsType==='btw') { %> <span class="pill" style="background:#e8eee3;color:#25402a">excl. BTW</span><% } else if (t.prijsType==='marge') { %> <span class="pill" style="background:#f1eee5;color:#6c7363">marge</span><% } %></td>
+        <td><%= euro(t.prijs) %><% if (t.prijsType==='btw') { %> <span class="pill" style="background:#e8eee3;color:#25402a">excl. BTW</span><% } else if (t.prijsType==='marge') { %> <span class="pill" style="background:#f1eee5;color:#6c7363">marge</span><% } else if (t.prijsType==='netto') { %> <span class="pill" style="background:#e7eef5;color:#2f4a66">netto</span><% } %></td>
         <td><span class="pill <%= t.status %>"><%= t.status %></span></td>
         <td>
           <% if (!t.fotos || !t.fotos.length) { %><span class="pill" style="background:#f1eee5;color:#6c7363">geen foto's</span>

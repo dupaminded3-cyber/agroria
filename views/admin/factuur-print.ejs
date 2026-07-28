@@ -271,16 +271,21 @@
     <% if (f.prijsType === 'btw') { %>
       <div class="rij"><span>Subtotaal (excl. BTW)</span><span><%= euroBedrag(t.subtotaal) %></span></div>
       <div class="rij"><span>BTW 21%</span><span><%= euroBedrag(t.btw) %></span></div>
+    <% } else if (f.prijsType === 'netto') { %>
+      <div class="rij"><span>Subtotaal (netto)</span><span><%= euroBedrag(t.subtotaal) %></span></div>
+      <div class="rij"><span>Nederlandse BTW</span><span>€ 0,00</span></div>
     <% } %>
     <% if (heeftAanbetaling) { %>
-      <div class="rij"><span>Totaal<%= f.prijsType === 'btw' ? ' (incl. BTW)' : '' %></span><span><%= euroBedrag(t.totaal) %></span></div>
+      <div class="rij"><span>Totaal<%= f.prijsType === 'btw' ? ' (incl. BTW)' : (f.prijsType === 'netto' ? ' (netto)' : '') %></span><span><%= euroBedrag(t.totaal) %></span></div>
       <div class="rij"><span>Aanbetaling</span><span>− <%= euroBedrag(t.aanbetaling) %></span></div>
       <div class="eind"><b>Restant bij levering</b><span><%= euroBedrag(t.restant) %></span></div>
     <% } else { %>
-      <div class="eind"><b>Totaal te voldoen</b><span><%= euroBedrag(t.totaal) %></span></div>
+      <div class="eind"><b>Totaal te voldoen<%= f.prijsType === 'netto' ? ' (netto)' : '' %></b><span><%= euroBedrag(t.totaal) %></span></div>
     <% } %>
   </div>
-  <% if (f.prijsType !== 'btw') { %>
+  <% if (f.prijsType === 'netto') { %>
+    <div class="marge-noot">Netto-prijs — geen Nederlandse BTW: de vermelde bedragen zijn netto. Op deze levering wordt geen Nederlandse omzetbelasting in rekening gebracht (bijv. levering aan een afnemer in België/EU). Eventuele BTW in het land van de koper is voor rekening van de koper. Vermeld het BTW-nummer van de koper op de factuur indien van toepassing.</div>
+  <% } else if (f.prijsType !== 'btw') { %>
     <div class="marge-noot">Margeregeling gebruikte goederen (art. 28b Wet OB): BTW is in de prijs begrepen en wordt niet afzonderlijk vermeld, en is niet aftrekbaar als voorbelasting.</div>
   <% } %>
 

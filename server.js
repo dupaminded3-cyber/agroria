@@ -564,7 +564,8 @@ app.post('/uadmin/trekkers/:id?', requireAuth, upload.array('fotos', MAX_FOTOS_P
     prijs: parseInt(b.prijs) || 0,
     oudePrijs: parseInt(b.oudePrijs) || 0,
     // '' = nog niet ingesteld -> prijs blijft getoond zoals voorheen (geen BTW/marge-label)
-    prijsType: (b.prijsType === 'btw' || b.prijsType === 'marge') ? b.prijsType : '',
+    // netto = geen Nederlandse BTW (bijv. Belgische/EU-afnemers)
+    prijsType: (b.prijsType === 'btw' || b.prijsType === 'marge' || b.prijsType === 'netto') ? b.prijsType : '',
     voorlader: b.voorlader === 'on' || b.voorlader === 'true',
     categorie: b.categorie || 'Trekker',
     status: b.status || 'beschikbaar',
@@ -964,7 +965,8 @@ app.post('/uadmin/facturen/:id?', requireAuth, (req, res) => {
       naam: '', bouwjaar: '', uren: '', pk: '', transmissie: '', serienummer: '', kenteken: ''
     },
     regels,
-    prijsType: (b.prijsType === 'btw') ? 'btw' : 'marge',
+    // btw | marge | netto (geen NL-BTW, bijv. Belgische/EU-klanten)
+    prijsType: (b.prijsType === 'btw' || b.prijsType === 'netto') ? b.prijsType : 'marge',
     aanbetaling: parseBedrag(b.aanbetaling),
     aanbetalingVervalt: b.aanbetaling_vervalt || '',
     levering: (b.levering || '').trim(),
@@ -1132,7 +1134,8 @@ app.post('/uadmin/overeenkomsten/:id?', requireAuth, (req, res) => {
       naam: '', bouwjaar: '', uren: '', pk: '', transmissie: '', serienummer: '', kenteken: ''
     },
     regels,
-    prijsType: (b.prijsType === 'btw') ? 'btw' : 'marge',
+    // btw | marge | netto (geen NL-BTW, bijv. Belgische/EU-klanten)
+    prijsType: (b.prijsType === 'btw' || b.prijsType === 'netto') ? b.prijsType : 'marge',
     aanbetaling: parseBedrag(b.aanbetaling),
     aanbetalingVervalt: b.aanbetaling_vervalt || '',
     // bij_levering (standaard) of voor_levering — bepaalt de betaaltekst in art. 2.

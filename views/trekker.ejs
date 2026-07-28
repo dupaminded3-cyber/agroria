@@ -47,7 +47,8 @@
         <% } else { %>
           <div class="prices"><span class="now"><%= euro(trekker.prijs) %></span><% if (trekker.oudePrijs && trekker.oudePrijs > trekker.prijs) { %><span class="was"><%= euro(trekker.oudePrijs) %></span><% } %></div>
           <% if (pi.type === 'btw') { %><div class="prijs-sub">Prijs excl. BTW · <%= euro(pi.inclBtw) %> incl. BTW (<%= pi.percentage %>%)</div>
-          <% } else if (pi.type === 'marge') { %><div class="prijs-sub marge">Margeregeling — geen BTW te verrekenen</div><% } %>
+          <% } else if (pi.type === 'marge') { %><div class="prijs-sub marge">Margeregeling — geen BTW te verrekenen</div>
+          <% } else if (pi.type === 'netto') { %><div class="prijs-sub">Netto — geen Nederlandse BTW</div><% } %>
         <% } %>
         <table class="spectable">
           <tr><td>Bouwjaar</td><td><%= trekker.bouwjaar %></td></tr>
