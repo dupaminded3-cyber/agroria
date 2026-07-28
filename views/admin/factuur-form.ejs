@@ -36,7 +36,7 @@
       serienummer: '', kenteken: ''
     }];
     f.machine = f.machines[0];
-    f.prijsType = trekker.prijsType === 'btw' ? 'btw' : 'marge';
+    f.prijsType = (trekker.prijsType === 'btw' || trekker.prijsType === 'netto') ? trekker.prijsType : 'marge';
     f.regels = [{ omschrijving: 'Verkoopprijs ' + trekker.merk + ' ' + trekker.model + ' (rijklaar geleverd)', bedrag: trekker.prijs || 0 }];
   }
   var machines = documentMachines(f);
@@ -57,7 +57,7 @@
       pk: t.pk || '',
       transmissie: t.transmissie || '',
       prijs: t.prijs || 0,
-      prijsType: t.prijsType === 'btw' ? 'btw' : 'marge',
+      prijsType: (t.prijsType === 'btw' || t.prijsType === 'netto') ? t.prijsType : 'marge',
       label: t.merk + ' ' + t.model + ' (' + (t.bouwjaar || '—') + ') — ' + euro(t.prijs)
     };
   });
@@ -166,9 +166,13 @@
     <div class="field full">
       <label>Prijsregeling</label>
       <select name="prijsType" id="prijsType">
-        <option value="marge" <%= f.prijsType!=='btw'?'selected':'' %>>Margeregeling — bedragen zijn totaalprijzen, BTW niet apart vermeld (gebruikte machines)</option>
+        <option value="marge" <%= (!f.prijsType || f.prijsType==='marge')?'selected':'' %>>Margeregeling — bedragen zijn totaalprijzen, BTW niet apart vermeld (gebruikte machines)</option>
         <option value="btw" <%= f.prijsType==='btw'?'selected':'' %>>BTW-regeling — bedragen zijn excl. BTW; 21% BTW wordt apart op de factuur gezet</option>
+        <option value="netto" <%= f.prijsType==='netto'?'selected':'' %>>Netto — geen Nederlandse BTW (bijv. Belgische/EU-klanten)</option>
       </select>
+      <div class="hint">
+        <b>BTW-regeling</b>: 21% NL-BTW apart. <b>Margeregeling</b>: BTW zit in de prijs. <b>Netto</b>: geen Nederlandse BTW — geschikt als de koper in België/EU geen NL-belasting betaalt (vul bij voorkeur het BTW-nummer van de koper in).
+      </div>
     </div>
     <div class="field"><label>Aanbetaling — optioneel</label><input name="aanbetaling" value="<%= invoerBedrag(f.aanbetaling) %>" placeholder="Bijv. 5000"><div class="hint">Vul je hier een bedrag in, dan toont de factuur een betaalschema: aanbetaling + restant bij levering.</div></div>
     <div class="field"><label>Vervaldatum aanbetaling</label><input type="date" name="aanbetaling_vervalt" value="<%= f.aanbetalingVervalt %>"></div>

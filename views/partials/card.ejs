@@ -22,7 +22,8 @@
       </div>
       <% var _pi = prijsInfo(t); %>
       <% if (_pi.type === 'btw') { %><div class="prijs-sub">excl. BTW · <%= euro(_pi.inclBtw) %> incl.</div>
-      <% } else if (_pi.type === 'marge') { %><div class="prijs-sub marge">Marge, geen BTW</div><% } %>
+      <% } else if (_pi.type === 'marge') { %><div class="prijs-sub marge">Marge, geen BTW</div>
+      <% } else if (_pi.type === 'netto') { %><div class="prijs-sub">Netto — geen NL-BTW</div><% } %>
       <div class="cfoot"><a href="/trekker/<%= t.slug || t.id %>">Bekijk details →</a></div>
     <% } %>
   </div>
