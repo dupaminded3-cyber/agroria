@@ -307,12 +307,12 @@
       <% if (o.levering) { %><p><%= o.levering %></p><% } %>
     </div>
 
-    <% if (o.importLand) { %>
     <div class="artikel">
-      <h3><span class="anr">Artikel <%= ++nr %></span>Import en registratie</h3>
-      <p><%= meervoud ? 'De machines worden' : 'De machine wordt' %> door verkoper geïmporteerd uit <b><%= o.importLand %></b>. Verkoper verzorgt het volledige invoertraject en draagt de kosten daarvan: het transport naar Nederland, de RDW-beoordeling, de inschrijving in het Nederlandse kentekenregister en de afgifte van het Nederlandse kenteken, inclusief de bijbehorende buitenlandse voertuigdocumenten. <%= meervoud ? 'De machines worden' : 'De machine wordt' %> geleverd voorzien van Nederlandse kentekenregistratie. Door de doorlooptijd van de RDW-procedure geldt de afgesproken leverdatum als indicatief. Verkoper adviseert koper om vóór de leverdatum een (minimaal WA-)verzekering op <%= meervoud ? 'de kentekens' : 'het kenteken' %> af te sluiten, zodat <%= meervoud ? 'de machines' : 'de machine' %> direct na aflevering verzekerd de weg op <%= meervoud ? 'kunnen' : 'kan' %>.</p>
+      <h3><span class="anr">Artikel <%= ++nr %></span><%- registratie.titel %></h3>
+      <% (registratie.paragrafen || []).forEach(function (p) { %>
+      <p><%- p %></p>
+      <% }) %>
     </div>
-    <% } %>
 
     <div class="artikel">
       <h3><span class="anr">Artikel <%= ++nr %></span>Eigendomsvoorbehoud en risico</h3>

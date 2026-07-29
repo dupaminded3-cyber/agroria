@@ -12,6 +12,7 @@ const sharp = require('sharp');
 const db = require('./lib/db');
 const { omschrijvingHtml, omschrijvingText } = require('./lib/format');
 const { prijsInfo } = require('./lib/prijs');
+const { registratieArtikel, HERKOMST, BESTEMMING } = require('./lib/registratie');
 const { maakSlug, uniekeSlug } = require('./lib/slug');
 const mail = require('./lib/mail');
 const { bestellingBevestiging, inruilBevestiging, vraagBevestiging } = require('./lib/klantmail');
@@ -1143,9 +1144,13 @@ app.post('/uadmin/overeenkomsten/:id?', requireAuth, (req, res) => {
     betalingUiterlijk: b.betaling_uiterlijk || '',
     leverdatum: b.leverdatum || '',
     levering: (b.levering || '').trim(),
-    // Import uit het buitenland (bijv. Duitsland): voegt het RDW-/kenteken-
-    // artikel over het invoertraject toe aan de overeenkomst.
-    importLand: (b.import_land || '').trim(),
+    // Herkomst ('' = al in NL) + bestemmingsland voor registratieartikel.
+    importLand: HERKOMST.includes((b.import_land || '').trim())
+      ? (b.import_land || '').trim()
+      : '',
+    bestemmingLand: BESTEMMING.includes((b.bestemming_land || '').trim())
+      ? (b.bestemming_land || '').trim()
+      : 'Nederland',
     bijzonderheden: (b.bijzonderheden || '').trim()
   };
 
@@ -1187,7 +1192,10 @@ app.get('/uadmin/overeenkomsten/:id/print', requireAuth, (req, res) => {
     overeenkomst,
     totalen: factuurTotalen(overeenkomst),
     handtekening: (data.settings || {}).handtekening || '',
-    ondertekenaar: (data.settings || {}).ondertekenaar || ''
+    ondertekenaar: (data.settings || {}).ondertekenaar || '',
+    registratie: registratieArtikel(overeenkomst, {
+      meervoud: (overeenkomst.machines || []).length > 1
+    })
   });
 });
 
