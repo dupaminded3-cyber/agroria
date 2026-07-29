@@ -193,13 +193,21 @@
   <h3 style="font-family:var(--display);font-weight:600;margin-bottom:18px">Levering en bijzonderheden</h3>
   <div class="formgrid">
     <div class="field"><label>Beoogde leverdatum — optioneel</label><input type="date" name="leverdatum" value="<%= o.leverdatum %>"><div class="hint">Komt als indicatieve leverdatum in het leveringsartikel te staan.</div></div>
-    <div class="field"><label>Import uit het buitenland — optioneel</label>
+    <div class="field"><label>Herkomst machine</label>
       <select name="import_land">
-        <option value="" <%= !o.importLand ? 'selected':'' %>>Nee — machine staat al in Nederland</option>
-        <option value="Duitsland" <%= o.importLand==='Duitsland' ? 'selected':'' %>>Ja, import uit Duitsland</option>
-        <option value="België" <%= o.importLand==='België' ? 'selected':'' %>>Ja, import uit België</option>
+        <option value="" <%= !o.importLand ? 'selected':'' %>>Al in Nederland (geen grensoverschrijdende import)</option>
+        <option value="Duitsland" <%= o.importLand==='Duitsland' ? 'selected':'' %>>Duitsland</option>
+        <option value="België" <%= o.importLand==='België' ? 'selected':'' %>>België</option>
       </select>
-      <div class="hint">Bij import komt er automatisch een artikel bij over het invoertraject: RDW-beoordeling, inschrijving in het kentekenregister en het Nederlandse kenteken — allemaal verzorgd door Agroria.</div>
+    </div>
+    <div class="field"><label>Bestemming / registratieland</label>
+      <% const bestemming = o.bestemmingLand || 'Nederland'; %>
+      <select name="bestemming_land">
+        <option value="Nederland" <%= bestemming==='Nederland' ? 'selected':'' %>>Nederland (RDW)</option>
+        <option value="België" <%= bestemming==='België' ? 'selected':'' %>>België (DIV)</option>
+        <option value="Duitsland" <%= bestemming==='Duitsland' ? 'selected':'' %>>Duitsland (Zulassung)</option>
+      </select>
+      <div class="hint">Agroria verzorgt altijd het volledige traject (uitvoer/invoer + registratie in het bestemmingsland). Leverdatum is indicatief zodra RDW, DIV of Zulassungsstelle moet meewerken. De juiste tekst verschijnt automatisch in de overeenkomst.</div>
     </div>
     <div class="field full"><label>Extra leveringsafspraak — optioneel</label><textarea name="levering" rows="2" placeholder="Bijv.: Levering inclusief frontgewicht en tweede set gewichten, zoals bezichtigd."><%= o.levering %></textarea></div>
     <div class="field full"><label>Bijzondere afspraken — optioneel</label><textarea name="bijzonderheden" rows="3" placeholder="Bijv.: Vóór levering wordt een volledige onderhoudsbeurt uitgevoerd, inclusief nieuwe filters en olie."><%= o.bijzonderheden %></textarea><div class="hint">Komt als apart artikel "Bijzondere afspraken" in de overeenkomst.</div></div>
