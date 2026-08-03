@@ -101,6 +101,7 @@ Voor het online gaat, zet deze omgevingsvariabelen (environment variables):
 - `ADMIN_PASSWORD` — het beheerderswachtwoord bij de allereerste start;
 - `SITE_URL` — het volledige webadres van je site, bijvoorbeeld
   `https://www.agroria.nl` (gebruikt voor SEO, de sitemap en social previews).
+  Zet dit in Render altijd op je echte domein, niet op `*.onrender.com`.
 
 Verder:
 - verander het wachtwoord van "root" na de eerste keer inloggen;
@@ -126,7 +127,7 @@ Zo zet je het aan in het Render-dashboard (op je bestaande service):
 4. Ga naar **Environment** en voeg deze variabele toe:
    - `DATA_DIR` = `/var/data`
    - (en, indien nog niet aanwezig: `NODE_ENV` = `production`,
-     `SITE_URL` = `https://agroria.onrender.com`)
+     `SITE_URL` = `https://www.agroria.nl`)
 5. Klik **Save** — Render herstart de site. Vanaf nu blijven je foto's en
    trekkers bewaard, ook na updates.
 
