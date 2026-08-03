@@ -1,0 +1,78 @@
+<%- include('partials/head', {
+  titel: seo.titel,
+  beschrijving: seo.beschrijving
+}) %>
+<%- include('partials/header') %>
+
+<section class="pagehead <%= paginaHeroFoto ? 'heeft-foto' : '' %>" <% if (paginaHeroFoto) { %>style="background-image:url('<%= paginaHeroFoto %>')"<% } %>>
+  <div class="wrap">
+    <span class="eyebrow light">Tweedehands <%= merk %> trekkers</span>
+    <h1><%= seo.h1 %></h1>
+    <p><%= seo.intro %></p>
+  </div>
+</section>
+
+<section class="sec" id="aanbod-grid">
+  <div class="wrap">
+    <p style="color:var(--muted);margin-bottom:22px">
+      <a href="/aanbod" style="color:var(--green)">← Alle trekkers</a>
+      · <a href="/tweedehands-trekkers" style="color:var(--green)">Tweedehands trekkers</a>
+      · <strong><%= totaal %></strong> <%= merk %> trekker<%= totaal===1?'':'s' %>
+    </p>
+    <% if (totaal === 0) { %>
+      <p style="color:var(--muted)">Momenteel geen <%= merk %> trekkers in voorraad.
+        <a href="/aanbod" style="color:var(--green)">Bekijk het hele aanbod</a>
+        of <a href="/contact" style="color:var(--green)">vraag ons naar een zoekopdracht</a>.</p>
+    <% } else { %>
+      <div class="grid3"><% lijst.forEach(function(t){ %><%- include('partials/card', { t: t }) %><% }) %></div>
+    <% } %>
+  </div>
+</section>
+
+<section class="sec band-moss">
+  <div class="wrap" style="max-width:760px">
+    <span class="eyebrow">Waarom Agroria</span>
+    <h2 style="margin-top:8px"><%= merk %> kopen met zekerheid</h2>
+    <p style="color:var(--muted);margin-top:14px;line-height:1.7">
+      Elke <%= merk %> in ons aanbod is technisch gecontroleerd. U krijgt 12 maanden
+      volledige garantie, inzicht in de historie en gratis transport in Nederland,
+      Duitsland en België. Liever eerst bellen of langskomen? Wij denken graag mee.
+    </p>
+    <div style="margin-top:22px;display:flex;gap:12px;flex-wrap:wrap">
+      <a class="btn btn-fill" href="/contact">Vraag stellen</a>
+      <a class="btn btn-out" href="/garantie">Bekijk onze garantie</a>
+    </div>
+  </div>
+</section>
+
+<script type="application/ld+json">
+<%- safeJsonLd({
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "Home", "item": SITE_URL + "/" },
+    { "@type": "ListItem", "position": 2, "name": "Aanbod", "item": SITE_URL + "/aanbod" },
+    { "@type": "ListItem", "position": 3, "name": merk + " trekkers", "item": SITE_URL + "/trekkers/" + merkSlug }
+  ]
+}) %>
+</script>
+<% if (lijst && lijst.length) { %>
+<script type="application/ld+json">
+<%- safeJsonLd({
+  "@context": "https://schema.org",
+  "@type": "ItemList",
+  "name": merk + " trekkers bij Agroria",
+  "numberOfItems": totaal,
+  "itemListElement": lijst.slice(0, 20).map(function(t, i) {
+    return {
+      "@type": "ListItem",
+      "position": i + 1,
+      "url": SITE_URL + "/trekker/" + (t.slug || t.id),
+      "name": t.merk + " " + t.model
+    };
+  })
+}) %>
+</script>
+<% } %>
+
+<%- include('partials/footer') %>
