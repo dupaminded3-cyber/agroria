@@ -1,12 +1,20 @@
 <%- include('partials/head', {
-  titel: trekker.merk + ' ' + trekker.model,
-  beschrijving: (trekker.merk + ' ' + trekker.model + ' — bouwjaar ' + trekker.bouwjaar + ', ' + getal(trekker.uren) + ' werkuren, ' + trekker.pk + ' pk. ' + euro(trekker.prijs) + '. 12 maanden garantie en gecontroleerde historie bij Agroria.'),
+  titel: trekker.merk + ' ' + trekker.model + ' te koop' + (trekker.status === 'verkocht' ? ' (verkocht)' : ''),
+  beschrijving: ('Tweedehands ' + trekker.merk + ' ' + trekker.model + ' te koop' +
+    (trekker.bouwjaar ? ' — bouwjaar ' + trekker.bouwjaar : '') +
+    (trekker.uren ? ', ' + getal(trekker.uren) + ' werkuren' : '') +
+    (trekker.pk ? ', ' + trekker.pk + ' pk' : '') +
+    '. ' + euro(trekker.prijs) + '. Met 12 maanden garantie bij Agroria. Levering NL, DE & BE.'),
   ogImage: firstFoto(trekker) || ''
 }) %>
 <%- include('partials/header') %>
 <section class="sec" style="padding-bottom:40px">
   <div class="wrap">
-    <a href="/aanbod" style="color:var(--muted);font-size:.9rem">← Terug naar aanbod</a>
+    <p style="color:var(--muted);font-size:.9rem;margin-bottom:8px">
+      <a href="/aanbod" style="color:var(--muted)">Aanbod</a>
+      · <a href="/trekkers/<%= maakSlug(trekker.merk) %>" style="color:var(--muted)"><%= trekker.merk %></a>
+      · <%= trekker.model %>
+    </p>
     <div class="detail">
       <div class="gallery">
         <div class="main <%= trekker.status === 'verkocht' ? 'main-verkocht' : '' %>">
@@ -163,18 +171,41 @@
 <script type="application/ld+json">
 <%- safeJsonLd({
   "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "Home", "item": SITE_URL + "/" },
+    { "@type": "ListItem", "position": 2, "name": "Aanbod", "item": SITE_URL + "/aanbod" },
+    { "@type": "ListItem", "position": 3, "name": trekker.merk, "item": SITE_URL + "/trekkers/" + maakSlug(trekker.merk) },
+    { "@type": "ListItem", "position": 4, "name": trekker.merk + " " + trekker.model, "item": SITE_URL + "/trekker/" + (trekker.slug || trekker.id) }
+  ]
+}) %>
+</script>
+<script type="application/ld+json">
+<%- safeJsonLd({
+  "@context": "https://schema.org",
   "@type": "Product",
   "name": trekker.merk + ' ' + trekker.model,
+  "sku": trekker.slug || trekker.id,
   "description": omschrijvingText(trekker.omschrijving) || (trekker.merk + ' ' + trekker.model),
   "brand": { "@type": "Brand", "name": trekker.merk },
   "category": trekker.categorie || 'Trekker',
+  "itemCondition": "https://schema.org/UsedCondition",
   "image": (trekker.fotos && trekker.fotos.length) ? trekker.fotos.map(function(f){ return SITE_URL + '/uploads/' + f; }) : undefined,
+  "additionalProperty": [
+    trekker.bouwjaar ? { "@type": "PropertyValue", "name": "Bouwjaar", "value": String(trekker.bouwjaar) } : null,
+    trekker.uren ? { "@type": "PropertyValue", "name": "Werkuren", "value": String(trekker.uren) } : null,
+    trekker.pk ? { "@type": "PropertyValue", "name": "Vermogen", "value": String(trekker.pk) + " pk" } : null,
+    trekker.transmissie ? { "@type": "PropertyValue", "name": "Transmissie", "value": trekker.transmissie } : null
+  ].filter(Boolean),
   "offers": {
     "@type": "Offer",
     "price": pi.type === 'btw' ? pi.inclBtw : trekker.prijs,
     "priceCurrency": "EUR",
     "availability": trekker.status === 'verkocht' ? "https://schema.org/SoldOut" : "https://schema.org/InStock",
-    "url": SITE_URL + '/trekker/' + (trekker.slug || trekker.id)
+    "url": SITE_URL + "/trekker/" + (trekker.slug || trekker.id),
+    "seller": { "@type": "Organization", "name": "Agroria Landbouwvoertuigen", "url": SITE_URL },
+    "itemCondition": "https://schema.org/UsedCondition",
+    "areaServed": ["NL", "DE", "BE"]
   }
 }) %>
 </script>

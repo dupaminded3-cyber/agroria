@@ -14,18 +14,27 @@
 <%
   var _titel = (typeof titel !== 'undefined' && titel) ? titel : '';
   var _siteNaam = 'Agroria Landbouwvoertuigen';
-  var _volledigeTitel = _titel ? (_titel + ' — ' + _siteNaam) : (_siteNaam + ' — betrouwbare trekkers met garantie');
+  var _volledigeTitel = _titel
+    ? (_titel + ' — ' + _siteNaam)
+    : (_siteNaam + ' — tweedehands trekkers kopen met garantie');
   var _beschrijving = (typeof beschrijving !== 'undefined' && beschrijving)
     ? beschrijving
-    : 'Agroria Landbouwvoertuigen: dé specialist in betrouwbare, zorgvuldig geselecteerde trekkers. 12 maanden garantie, gecontroleerde historie en gratis transport in NL, DE & BE.';
+    : 'Tweedehands trekkers kopen bij Agroria: John Deere, Fendt, Case IH, New Holland en meer. 12 maanden garantie, gecontroleerde historie en gratis transport in NL, DE & BE.';
   var _canonical = (typeof canonical !== 'undefined') ? canonical : '';
+  var _robots = (typeof robots !== 'undefined' && robots) ? robots : 'index, follow';
   var _ogImage = (typeof ogImage !== 'undefined' && ogImage) ? ogImage : (logo || '');
   if (_ogImage && _ogImage.indexOf('http') !== 0 && typeof SITE_URL !== 'undefined') _ogImage = SITE_URL + _ogImage;
+  var _siteUrl = (typeof SITE_URL !== 'undefined' ? SITE_URL : '');
+  var _adres = (typeof parseAdres === 'function' && contact && contact.adres)
+    ? parseAdres(contact.adres)
+    : ((contact && contact.adres)
+      ? { "@type": "PostalAddress", "streetAddress": contact.adres, "addressCountry": "NL" }
+      : undefined);
 %>
 <title><%= _volledigeTitel %></title>
 <meta name="description" content="<%= _beschrijving %>">
 <% if (_canonical) { %><link rel="canonical" href="<%= _canonical %>"><% } %>
-<meta name="robots" content="index, follow">
+<meta name="robots" content="<%= _robots %>">
 <meta name="theme-color" content="#25402A">
 <meta name="format-detection" content="telephone=no">
 
@@ -56,16 +65,39 @@
 <script type="application/ld+json">
 <%- safeJsonLd({
   "@context": "https://schema.org",
-  "@type": "AutoDealer",
+  "@type": ["LocalBusiness", "AutoDealer"],
+  "@id": _siteUrl + "/#bedrijf",
   "name": _siteNaam,
-  "description": _beschrijving,
-  "url": (typeof SITE_URL !== 'undefined' ? SITE_URL : ''),
+  "description": "Specialist in tweedehands trekkers en landbouwvoertuigen met garantie. Levering in Nederland, Duitsland en België.",
+  "url": _siteUrl,
   "image": _ogImage || undefined,
   "logo": _ogImage || undefined,
   "email": (contact && contact.email) || undefined,
   "telephone": (contact && contact.telefoon) || undefined,
-  "address": (contact && contact.adres) ? { "@type": "PostalAddress", "streetAddress": contact.adres, "addressCountry": "NL" } : undefined,
-  "areaServed": ["NL", "DE", "BE"]
+  "address": _adres,
+  "areaServed": [
+    { "@type": "Country", "name": "Nederland" },
+    { "@type": "Country", "name": "Duitsland" },
+    { "@type": "Country", "name": "België" }
+  ],
+  "priceRange": "€€€",
+  "knowsAbout": ["tweedehands trekkers", "John Deere", "Fendt", "Case IH", "New Holland", "landbouwvoertuigen"]
+}) %>
+</script>
+<script type="application/ld+json">
+<%- safeJsonLd({
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  "@id": _siteUrl + "/#website",
+  "name": _siteNaam,
+  "url": _siteUrl,
+  "inLanguage": "nl-NL",
+  "publisher": { "@id": _siteUrl + "/#bedrijf" },
+  "potentialAction": {
+    "@type": "SearchAction",
+    "target": _siteUrl + "/aanbod?q={search_term_string}",
+    "query-input": "required name=search_term_string"
+  }
 }) %>
 </script>
 </head>

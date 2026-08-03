@@ -1,0 +1,84 @@
+<%- include('partials/head', {
+  titel: 'Tweedehands trekkers kopen met garantie',
+  beschrijving: 'Tweedehands trekkers kopen bij Agroria: John Deere, Fendt, Case IH, New Holland en meer. Gecontroleerde historie, 12 maanden garantie en gratis transport in NL, DE & BE.'
+}) %>
+<%- include('partials/header') %>
+
+<section class="pagehead <%= paginaHeroFoto ? 'heeft-foto' : '' %>" <% if (paginaHeroFoto) { %>style="background-image:url('<%= paginaHeroFoto %>')"<% } %>>
+  <div class="wrap">
+    <span class="eyebrow light">Tweedehands trekkers</span>
+    <h1>Tweedehands trekkers kopen<br>met échte zekerheid</h1>
+    <p>Bij Agroria koopt u geen gok, maar een zorgvuldig geselecteerde trekker. Elke machine is gecontroleerd op historie en techniek, geleverd met 12 maanden garantie en gratis transport in Nederland, Duitsland en België.</p>
+    <div class="hero-cta" style="margin-top:22px">
+      <a class="btn btn-gold" href="/aanbod">Bekijk het complete aanbod</a>
+      <a class="btn btn-out" href="/contact" style="color:var(--paper)">Vraag advies</a>
+    </div>
+  </div>
+</section>
+
+<section class="sec">
+  <div class="wrap">
+    <span class="eyebrow">Actueel aanbod</span>
+    <h2 style="margin-top:8px">Beschikbare tweedehands trekkers</h2>
+    <p style="color:var(--muted);margin:12px 0 28px;max-width:640px">Een selectie uit ons voorraad. Filter op merk of bekijk het volledige overzicht.</p>
+    <div class="grid3"><% lijst.forEach(function(t){ %><%- include('partials/card', { t: t }) %><% }) %></div>
+    <div style="margin-top:28px;text-align:center">
+      <a class="btn btn-fill" href="/aanbod">Alle <%= totaal %> trekkers bekijken</a>
+    </div>
+  </div>
+</section>
+
+<section class="sec band-moss">
+  <div class="wrap">
+    <span class="eyebrow">Populaire merken</span>
+    <h2 style="margin-top:8px;margin-bottom:18px">Zoek op merk</h2>
+    <div style="display:flex;flex-wrap:wrap;gap:10px">
+      <% merken.forEach(function(m){ %>
+        <a class="btn btn-out" href="/trekkers/<%= maakSlug(m) %>"><%= m %></a>
+      <% }) %>
+    </div>
+  </div>
+</section>
+
+<section class="sec">
+  <div class="wrap two-col" style="align-items:start;gap:40px">
+    <div>
+      <h2>Waarom tweedehands bij Agroria?</h2>
+      <p style="color:var(--muted);margin-top:12px;line-height:1.7">
+        Wij kopen alleen trekkers in die we zelf vertrouwen: duidelijke herkomst,
+        kloppende urenstand en een solide technische basis. Zo voorkomt u
+        verrassingen na aankoop — en kunt u meteen aan de slag.
+      </p>
+    </div>
+    <div>
+      <h2>Levering in NL, DE &amp; BE</h2>
+      <p style="color:var(--muted);margin-top:12px;line-height:1.7">
+        Transport regelen wij voor u, inclusief import- en registratietraject
+        waar nodig. Vragen over een specifiek model? Stuur een bericht — wij
+        reageren persoonlijk, vaak nog dezelfde dag.
+      </p>
+    </div>
+  </div>
+</section>
+
+<script type="application/ld+json">
+<%- safeJsonLd({
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "Home", "item": SITE_URL + "/" },
+    { "@type": "ListItem", "position": 2, "name": "Tweedehands trekkers", "item": SITE_URL + "/tweedehands-trekkers" }
+  ]
+}) %>
+</script>
+<script type="application/ld+json">
+<%- safeJsonLd({
+  "@context": "https://schema.org",
+  "@type": "CollectionPage",
+  "name": "Tweedehands trekkers kopen",
+  "description": "Tweedehands trekkers met garantie bij Agroria Landbouwvoertuigen.",
+  "url": SITE_URL + "/tweedehands-trekkers"
+}) %>
+</script>
+
+<%- include('partials/footer') %>

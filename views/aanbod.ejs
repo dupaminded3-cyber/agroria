@@ -1,11 +1,20 @@
-<%- include('partials/head', { titel: 'Ons aanbod' }) %>
+<%- include('partials/head', {
+  titel: 'Tweedehands trekkers te koop — actueel aanbod',
+  beschrijving: 'Bekijk het actuele aanbod tweedehands trekkers bij Agroria: John Deere, Fendt, Case IH, New Holland en meer. Met garantie en gratis transport in NL, DE & BE.'
+}) %>
 <%- include('partials/header') %>
 
 <section class="pagehead <%= paginaHeroFoto ? 'heeft-foto' : '' %>" <% if (paginaHeroFoto) { %>style="background-image:url('<%= paginaHeroFoto %>')"<% } %>>
   <div class="wrap">
     <span class="eyebrow light">Ons aanbod</span>
-    <h1>Ontdek ons<br>uitzonderlijk aanbod</h1>
-    <p>Welkom bij Agroria Landbouwvoertuigen — dé plek voor uitzonderlijke trekkers en landbouwvoertuigen. Wij garanderen scherpe prijzen en levering door heel Europa. Neem contact op of bestel direct online. Uw nieuwe machine wacht op u!</p>
+    <h1>Tweedehands trekkers<br>te koop</h1>
+    <p>Welkom bij Agroria Landbouwvoertuigen — zorgvuldig geselecteerde trekkers met gecontroleerde historie, 12 maanden garantie en gratis transport in Nederland, Duitsland en België. Filter op merk of bestel direct online.</p>
+    <p style="margin-top:14px;display:flex;flex-wrap:wrap;gap:8px">
+      <a href="/tweedehands-trekkers" style="color:var(--gold-soft)">Tweedehands trekkers</a>
+      <% (merken || []).slice(0, 6).forEach(function(m){ %>
+        <a href="/trekkers/<%= maakSlug(m) %>" style="color:var(--gold-soft)"><%= m %></a>
+      <% }) %>
+    </p>
   </div>
 </section>
 
@@ -109,4 +118,22 @@
     </div>
   </div>
 </section>
+<% if (lijst && lijst.length) { %>
+<script type="application/ld+json">
+<%- safeJsonLd({
+  "@context": "https://schema.org",
+  "@type": "ItemList",
+  "name": "Tweedehands trekkers bij Agroria",
+  "numberOfItems": totaal,
+  "itemListElement": lijst.map(function(t, i) {
+    return {
+      "@type": "ListItem",
+      "position": ((pagina - 1) * 9) + i + 1,
+      "url": SITE_URL + "/trekker/" + (t.slug || t.id),
+      "name": t.merk + " " + t.model
+    };
+  })
+}) %>
+</script>
+<% } %>
 <%- include('partials/footer') %>

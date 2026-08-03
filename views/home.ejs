@@ -1,4 +1,9 @@
-<%- include('partials/head', { titel: '', ogImage: page.heroFoto || '' }) %>
+<% page = page || {}; %>
+<%- include('partials/head', {
+  titel: '',
+  beschrijving: 'Tweedehands trekkers kopen bij Agroria Landbouwvoertuigen. John Deere, Fendt, Case IH, New Holland en meer — met 12 maanden garantie en gratis transport in NL, DE & BE.',
+  ogImage: page.heroFoto || ''
+}) %>
 <%- include('partials/header') %>
 
 <!-- HERO -->
@@ -11,10 +16,10 @@
   <div class="scrim"></div>
   <div class="wrap">
     <span class="eyebrow light">Agroria Landbouwvoertuigen · betrouwbaar sinds jaar en dag</span>
-    <h1><%= page.heroTitel %></h1>
-    <p class="lead"><%= page.heroTekst %></p>
+    <h1><%= page.heroTitel || 'Tweedehands trekkers met garantie' %></h1>
+    <p class="lead"><%= page.heroTekst || 'Zorgvuldig geselecteerde trekkers met gecontroleerde historie, 12 maanden garantie en gratis transport in NL, DE & BE.' %></p>
     <div class="hero-cta">
-      <a class="btn btn-gold" href="/aanbod">Bekijk onze selectie</a>
+      <a class="btn btn-gold" href="/tweedehands-trekkers">Bekijk onze selectie</a>
       <a class="btn btn-out" href="/contact" style="color:var(--paper)">Stel uw vraag</a>
     </div>
     <div class="trust-row">

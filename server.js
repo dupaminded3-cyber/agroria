@@ -14,6 +14,9 @@ const { omschrijvingHtml, omschrijvingText } = require('./lib/format');
 const { prijsInfo } = require('./lib/prijs');
 const { registratieArtikel, HERKOMST, BESTEMMING } = require('./lib/registratie');
 const { maakSlug, uniekeSlug } = require('./lib/slug');
+const {
+  SEO_MERKEN, xmlEscape, merkSlug, vindMerk, parseAdres, merkSeo
+} = require('./lib/seo');
 const mail = require('./lib/mail');
 const { bestellingBevestiging, inruilBevestiging, vraagBevestiging } = require('./lib/klantmail');
 const stats = require('./lib/stats');
@@ -144,6 +147,9 @@ app.locals.prijsInfo = prijsInfo;
 // Veilig JSON in een <script>-blok zetten: escape "<" zodat een waarde als
 // "</script><script>...</script>" het blok niet kan doorbreken.
 app.locals.safeJsonLd = (obj) => JSON.stringify(obj).replace(/</g, '\\u003c');
+app.locals.parseAdres = parseAdres;
+app.locals.maakSlug = maakSlug;
+app.locals.merkSlug = merkSlug;
 
 // Facturen/koopovereenkomsten: één of meer machines. Oude documenten hebben
 // alleen `machine`; nieuwere ook `machines[]`. Altijd een nette lijst teruggeven.
@@ -188,6 +194,10 @@ app.use((req, res, next) => {
   res.locals.path = req.path;
   res.locals.SITE_URL = SITE_URL;
   res.locals.canonical = SITE_URL + req.path;
+  // Zoek-/filter-URL's op /aanbod niet indexeren (canonical blijft /aanbod).
+  if (req.path === '/aanbod' && (req.query.q || req.query.merk || req.query.sort || req.query.pagina)) {
+    res.locals.robots = 'noindex, follow';
+  }
   // WhatsApp-nummer: apart veld, anders het telefoonnummer als terugval.
   const ruw = res.locals.contact.whatsapp || res.locals.contact.telefoon || '';
   res.locals.whatsapp = ruw.replace(/[^\d+]/g, '');
@@ -205,7 +215,7 @@ app.get('/', (req, res) => {
   const uitgelicht = data.tractors
     .filter(t => t.uitgelicht && zichtbaar(t))
     .slice(0, 4);
-  res.render('home', { page: data.pages.home, uitgelicht });
+  res.render('home', { page: (data.pages && data.pages.home) || {}, uitgelicht });
 });
 
 app.get('/aanbod', (req, res) => {
@@ -235,6 +245,41 @@ app.get('/aanbod', (req, res) => {
   res.render('aanbod', {
     lijst: paginaLijst, totaal, pagina, paginas,
     merken, filter: { merk, q, sort }, page: (data.pages.aanbod || {})
+  });
+});
+
+// SEO-landingspagina: tweedehands trekkers kopen
+app.get('/tweedehands-trekkers', (req, res) => {
+  const data = db.read();
+  const alle = data.tractors
+    .filter(t => zichtbaar(t) && t.status !== 'verkocht')
+    .sort((a, b) => (b.bouwjaar || 0) - (a.bouwjaar || 0));
+  const merkenInVoorraad = [...new Set(data.tractors.filter(zichtbaar).map(t => t.merk))].sort();
+  const merken = [...new Set([...SEO_MERKEN, ...merkenInVoorraad])];
+  res.render('tweedehands-trekkers', {
+    lijst: alle.slice(0, 9),
+    totaal: alle.length,
+    merken
+  });
+});
+app.get('/trekkers-kopen', (req, res) => res.redirect(301, '/tweedehands-trekkers'));
+
+// SEO-merkpagina's: /trekkers/john-deere, /trekkers/fendt, ...
+app.get('/trekkers/:merkSlug', (req, res) => {
+  const data = db.read();
+  const merkenInVoorraad = [...new Set(data.tractors.filter(zichtbaar).map(t => t.merk))];
+  const alleMerken = [...new Set([...SEO_MERKEN, ...merkenInVoorraad])];
+  const merk = vindMerk(req.params.merkSlug, alleMerken);
+  if (!merk) return res.status(404).render('404', { robots: 'noindex, follow' });
+  const lijst = data.tractors
+    .filter(t => zichtbaar(t) && t.merk === merk)
+    .sort((a, b) => (a.status === 'verkocht' ? 1 : 0) - (b.status === 'verkocht' ? 1 : 0));
+  res.render('merk', {
+    merk,
+    merkSlug: merkSlug(merk),
+    seo: merkSeo(merk),
+    lijst,
+    totaal: lijst.length
   });
 });
 
@@ -289,20 +334,57 @@ app.get('/contact', (req, res) => {
 // --- SEO: robots.txt & sitemap.xml ---
 app.get('/robots.txt', (req, res) => {
   res.type('text/plain').send(
-    `User-agent: *\nDisallow: /uadmin\n\nSitemap: ${SITE_URL}/sitemap.xml\n`
+    `User-agent: *\n` +
+    `Allow: /\n` +
+    `Disallow: /uadmin\n` +
+    `Disallow: /bestellen\n` +
+    `Disallow: /besteld\n` +
+    `Disallow: /bedankt\n` +
+    `\nSitemap: ${SITE_URL}/sitemap.xml\n`
   );
 });
 
 app.get('/sitemap.xml', (req, res) => {
   const data = db.read();
-  const statisch = ['/', '/aanbod', '/over-ons', '/selectie', '/garantie', '/inruil', '/faq', '/contact'];
-  const urls = statisch.map(p => ({ loc: SITE_URL + p }));
+  const vandaag = new Date().toISOString().slice(0, 10);
+  const urls = [];
+  const pushUrl = (loc, lastmod, priority) => {
+    urls.push({
+      loc,
+      lastmod: (lastmod && String(lastmod).slice(0, 10)) || vandaag,
+      priority: priority || '0.7'
+    });
+  };
+
+  pushUrl(SITE_URL + '/', vandaag, '1.0');
+  pushUrl(SITE_URL + '/tweedehands-trekkers', vandaag, '0.95');
+  pushUrl(SITE_URL + '/aanbod', vandaag, '0.9');
+  ['/over-ons', '/selectie', '/garantie', '/inruil', '/faq', '/contact']
+    .forEach(p => pushUrl(SITE_URL + p, vandaag, '0.7'));
+
+  const merkenInVoorraad = [...new Set(
+    data.tractors.filter(t => t.status !== 'verwijderd' && t.status !== 'concept').map(t => t.merk)
+  )];
+  [...new Set([...SEO_MERKEN, ...merkenInVoorraad])]
+    .forEach(m => pushUrl(SITE_URL + '/trekkers/' + merkSlug(m), vandaag, '0.85'));
+
   data.tractors
     .filter(t => t.status !== 'verwijderd' && t.status !== 'concept')
-    .forEach(t => urls.push({ loc: SITE_URL + '/trekker/' + (t.slug || t.id) }));
+    .forEach(t => {
+      const last = t.updatedAt || t.createdAt || vandaag;
+      const prio = t.status === 'verkocht' ? '0.4' : '0.8';
+      pushUrl(SITE_URL + '/trekker/' + (t.slug || t.id), last, prio);
+    });
+
   const xml = `<?xml version="1.0" encoding="UTF-8"?>\n` +
     `<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n` +
-    urls.map(u => `  <url><loc>${u.loc}</loc></url>`).join('\n') +
+    urls.map(u =>
+      `  <url>` +
+      `<loc>${xmlEscape(u.loc)}</loc>` +
+      `<lastmod>${xmlEscape(u.lastmod)}</lastmod>` +
+      `<priority>${u.priority}</priority>` +
+      `</url>`
+    ).join('\n') +
     `\n</urlset>\n`;
   res.type('application/xml').send(xml);
 });
@@ -487,6 +569,7 @@ function requireAuth(req, res, next) {
 
 // Aantal nieuwe (ongelezen) aanvragen beschikbaar maken voor het menu
 app.use('/uadmin', (req, res, next) => {
+  res.set('X-Robots-Tag', 'noindex, nofollow');
   if (req.session.user) {
     res.locals.newCount = db.read().inquiries.filter(i => !i.gelezen).length;
   }

@@ -20,7 +20,7 @@ services:
       - key: DATA_DIR
         value: /var/data
       - key: SITE_URL
-        value: https://agroria.onrender.com
+        value: https://www.agroria.nl
       - key: SESSION_SECRET
         generateValue: true   # Render maakt automatisch een veilig geheim aan
       - key: ADMIN_PASSWORD
