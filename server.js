@@ -938,6 +938,13 @@ function inruilWaarde(doc) {
   return w > 0 ? w : 0;
 }
 
+// BTW-modus van de inruil: 'incl' (van de eindprijs af) of 'excl' (van subtotaal af).
+// Ontbrekend veld (oude documenten) = 'excl' — zo blijft de oude berekening gelijk.
+function inruilBtwModus(doc) {
+  const i = doc && doc.inruil;
+  return (i && i.btw === 'incl') ? 'incl' : 'excl';
+}
+
 // Lees het inruilblok uit het overeenkomstformulier.
 function parseInruil(body) {
   const b = body || {};
@@ -955,42 +962,89 @@ function parseInruil(body) {
     transmissie: String(b.inruil_transmissie || '').trim(),
     serienummer: String(b.inruil_serienummer || '').trim(),
     kenteken: String(b.inruil_kenteken || '').trim(),
-    waarde
+    waarde,
+    // Alleen relevant bij prijsType 'btw'; standaard incl. zodat de
+    // afgesproken inruilwaarde van de eindprijs afgaat.
+    btw: b.inruil_btw === 'excl' ? 'excl' : 'incl'
   };
 }
 
 // Omschrijving + negatief bedrag voor factuurregels vanuit inruil.
-function inruilAlsRegel(inruil) {
+// Bij BTW-regeling + inruil incl. BTW: zet het excl.-equivalent als regel,
+// zodat factuurtotalen op dezelfde eindprijs uitkomen.
+function inruilAlsRegel(inruil, prijsType) {
   if (!inruil || !inruil.actief || !inruil.naam || !(Number(inruil.waarde) > 0)) return null;
   const delen = [inruil.naam];
   if (inruil.bouwjaar) delen.push('bouwjaar ' + inruil.bouwjaar);
   if (inruil.uren) delen.push(inruil.uren + ' u');
   if (inruil.kenteken) delen.push('kenteken ' + inruil.kenteken);
   if (inruil.serienummer) delen.push('serienr. ' + inruil.serienummer);
+  let bedrag = Math.abs(Number(inruil.waarde));
+  let suffix = '';
+  if (prijsType === 'btw' && inruil.btw === 'incl') {
+    const excl = Math.round((bedrag / 1.21) * 100) / 100;
+    suffix = ' (excl. BTW; inruilwaarde ' + bedrag.toLocaleString('nl-NL', {
+      style: 'currency', currency: 'EUR'
+    }) + ' incl. BTW)';
+    bedrag = excl;
+  } else if (prijsType === 'btw') {
+    suffix = ' (excl. BTW)';
+  }
   return {
-    omschrijving: 'Inruil ' + delen.join(', '),
-    bedrag: -Math.abs(Number(inruil.waarde))
+    omschrijving: ('Inruil ' + delen.join(', ') + suffix).trim(),
+    bedrag: -bedrag
   };
 }
 
 // Rekent de totalen van een factuur/overeenkomst uit (subtotaal, evt. BTW, restant).
 // Een actieve inruil wordt hier in mindering gebracht op de koopsom.
+// Bij BTW-regeling + inruil "incl. BTW" gaat de inruil van de eindprijs af
+// (ná BTW), zodat de afgesproken inruilwaarde klopt met wat de klant betaalt.
 function factuurTotalen(f) {
   const regels = f.regels || [];
-  let subtotaal = regels.reduce((som, r) => som + Number(r.bedrag || 0), 0);
+  const regelsSom = regels.reduce((som, r) => som + Number(r.bedrag || 0), 0);
   const aftrek = inruilWaarde(f);
-  if (aftrek) subtotaal = Math.round((subtotaal - aftrek) * 100) / 100;
-  let btw = 0, totaal = subtotaal;
-  if (f.prijsType === 'btw') {
-    btw = Math.round(subtotaal * 0.21 * 100) / 100;
-    totaal = Math.round((subtotaal + btw) * 100) / 100;
-  }
+  const modus = inruilBtwModus(f);
   const aanbetaling = Number(f.aanbetaling || 0);
+
+  let subtotaal = Math.round(regelsSom * 100) / 100;
+  let btw = 0;
+  let totaal = subtotaal;
+  let inruilNaBtw = false;
+
+  if (f.prijsType === 'btw') {
+    if (aftrek && modus === 'incl') {
+      // Eerst BTW over de machine(s), daarna inruil van de eindprijs aftrekken.
+      btw = Math.round(subtotaal * 0.21 * 100) / 100;
+      const voorInruil = Math.round((subtotaal + btw) * 100) / 100;
+      totaal = Math.round((voorInruil - aftrek) * 100) / 100;
+      inruilNaBtw = true;
+    } else {
+      if (aftrek) subtotaal = Math.round((subtotaal - aftrek) * 100) / 100;
+      btw = Math.round(subtotaal * 0.21 * 100) / 100;
+      totaal = Math.round((subtotaal + btw) * 100) / 100;
+    }
+  } else if (aftrek) {
+    subtotaal = Math.round((subtotaal - aftrek) * 100) / 100;
+    totaal = subtotaal;
+  }
+
   const restant = Math.round((totaal - aanbetaling) * 100) / 100;
-  return { subtotaal, btw, totaal, aanbetaling, restant, inruil: aftrek };
+  return {
+    subtotaal,
+    btw,
+    totaal,
+    aanbetaling,
+    restant,
+    inruil: aftrek,
+    inruilBtw: modus,
+    inruilNaBtw
+  };
 }
 app.locals.factuurTotalen = factuurTotalen;
 app.locals.inruilWaarde = inruilWaarde;
+app.locals.inruilBtwModus = inruilBtwModus;
+app.locals.inruilAlsRegel = inruilAlsRegel;
 
 // Machines uit het factuur-/overeenkomstformulier lezen (meerdere blokken).
 // Lege blokken (zonder merk/model) worden overgeslagen. Voor oude templates

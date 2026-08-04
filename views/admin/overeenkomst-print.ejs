@@ -20,6 +20,8 @@
   var toonBedenktijd = heeftBezichtigdVlag && !bezichtigd;
   var inruil = o.inruil || {};
   var heeftInruil = !!(inruil.actief && inruil.naam && Number(inruil.waarde) > 0);
+  var inruilInclBtw = heeftInruil && o.prijsType === 'btw' && inruil.btw === 'incl';
+  var inruilExclBtw = heeftInruil && o.prijsType === 'btw' && !inruilInclBtw;
   var inruilSpecs = heeftInruil ? specsVoor(inruil) : [];
   function specsVoor(machine){
     return [
@@ -277,9 +279,9 @@
           <td class="<%= r.bedrag < 0 ? 'neg' : '' %>"><%= r.bedrag < 0 ? '− ' + euroBedrag(Math.abs(r.bedrag)) : euroBedrag(r.bedrag) %></td>
         </tr>
       <% }) %>
-      <% if (heeftInruil) { %>
+      <% if (heeftInruil && !inruilInclBtw) { %>
         <tr>
-          <td>Inruil <%= inruil.naam %></td>
+          <td>Inruil <%= inruil.naam %><%= inruilExclBtw ? ' (excl. BTW)' : '' %></td>
           <td class="neg">− <%= euroBedrag(Number(inruil.waarde)) %></td>
         </tr>
       <% } %>
@@ -289,6 +291,10 @@
     <% if (o.prijsType === 'btw') { %>
       <div class="rij"><span>Subtotaal (excl. BTW)</span><span><%= euroBedrag(t.subtotaal) %></span></div>
       <div class="rij"><span>BTW 21%</span><span><%= euroBedrag(t.btw) %></span></div>
+      <% if (inruilInclBtw) { %>
+        <div class="rij"><span>Totaal vóór inruil (incl. BTW)</span><span><%= euroBedrag(Math.round((t.subtotaal + t.btw) * 100) / 100) %></span></div>
+        <div class="rij"><span>Inruil <%= inruil.naam %> (incl. BTW)</span><span class="neg" style="color:#8a4a3a">− <%= euroBedrag(Number(inruil.waarde)) %></span></div>
+      <% } %>
     <% } else if (o.prijsType === 'netto') { %>
       <div class="rij"><span>Subtotaal (netto)</span><span><%= euroBedrag(t.subtotaal) %></span></div>
       <div class="rij"><span>Nederlandse BTW</span><span>€ 0,00</span></div>
@@ -318,7 +324,7 @@
 
     <div class="artikel">
       <h3><span class="anr">Artikel <%= ++nr %></span>Koopsom en betaling</h3>
-      <p>De totale koopsom bedraagt <b><%= euroBedrag(t.totaal) %></b><% if (o.prijsType === 'btw') { %> (inclusief 21% BTW)<% } else if (o.prijsType === 'netto') { %> (netto, geen Nederlandse BTW)<% } %>, zoals gespecificeerd in het overzicht hierboven<% if (heeftInruil) { %>, na aftrek van de inruilwaarde van <b><%= euroBedrag(Number(inruil.waarde)) %></b><% } %>.
+      <p>De totale koopsom bedraagt <b><%= euroBedrag(t.totaal) %></b><% if (o.prijsType === 'btw') { %> (inclusief 21% BTW)<% } else if (o.prijsType === 'netto') { %> (netto, geen Nederlandse BTW)<% } %>, zoals gespecificeerd in het overzicht hierboven<% if (heeftInruil) { %>, na aftrek van de inruilwaarde van <b><%= euroBedrag(Number(inruil.waarde)) %></b><% if (inruilInclBtw) { %> (inclusief BTW, in mindering op de eindprijs)<% } else if (inruilExclBtw) { %> (exclusief BTW)<% } %><% } %>.
       <% if (o.prijsType === 'netto') { %>Op deze verkoop wordt geen Nederlandse omzetbelasting in rekening gebracht; de vermelde bedragen zijn netto. Eventuele BTW in het land van koper is voor rekening van koper.<% } else if (o.prijsType !== 'btw') { %>Op deze verkoop is de margeregeling voor gebruikte goederen (art. 28b Wet OB) van toepassing: BTW is in de prijs begrepen, wordt niet afzonderlijk vermeld en is niet als voorbelasting aftrekbaar.<% } %></p>
       <% if (heeftAanbetaling) { %>
         <p>Betaling vindt plaats in twee termijnen<% if (ob.iban) { %> op rekening <b><%= ob.iban %></b><% if (ob.tnv) { %> ten name van <%= ob.tnv %><% } %><% } %>, onder vermelding van het overeenkomstnummer:</p>
@@ -348,7 +354,7 @@
     <% if (heeftInruil) { %>
     <div class="artikel">
       <h3><span class="anr">Artikel <%= ++nr %></span>Inruil</h3>
-      <p>Koper ruilt de hierboven omschreven inruilmachine (<b><%= inruil.naam %></b>) in bij verkoper. De overeengekomen inruilwaarde van <b><%= euroBedrag(Number(inruil.waarde)) %></b> wordt in mindering gebracht op de koopsom.</p>
+      <p>Koper ruilt de hierboven omschreven inruilmachine (<b><%= inruil.naam %></b>) in bij verkoper. De overeengekomen inruilwaarde van <b><%= euroBedrag(Number(inruil.waarde)) %></b><% if (inruilInclBtw) { %> (inclusief BTW)<% } else if (inruilExclBtw) { %> (exclusief BTW)<% } %> wordt in mindering gebracht op de koopsom<% if (inruilInclBtw) { %> — na berekening van de BTW over de gekochte <%= machineWoord %>, dus van de eindprijs<% } %>.</p>
       <p>Koper verklaart bevoegd te zijn tot overdracht van de inruilmachine en dat deze vrij is van beslag en van niet-gemelde financiële lasten. Het eigendom van de inruilmachine gaat over op verkoper bij de feitelijke aflevering van <%= meervoud ? 'de gekochte machines' : 'de gekochte machine' %>, of zoveel eerder als partijen de inruilmachine feitelijk overdragen. Tot dat moment blijft de inruilmachine voor risico van koper.</p>
     </div>
     <% } %>
