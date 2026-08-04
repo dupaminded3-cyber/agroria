@@ -12,7 +12,7 @@
     klant: {}, machine: {}, machines: [], regels: [],
     prijsType: 'marge', aanbetaling: 0, aanbetalingVervalt: '',
     betalingMoment: 'bij_levering', betalingUiterlijk: '',
-    leverdatum: '', levering: '', importLand: '', bijzonderheden: '',
+    leverdatum: '', levering: '', bezichtigd: false, importLand: '', bijzonderheden: '',
     bank: bank || {}
   };
   if (!overeenkomst && vanFactuur) {
@@ -193,6 +193,13 @@
   <h3 style="font-family:var(--display);font-weight:600;margin-bottom:18px">Levering en bijzonderheden</h3>
   <div class="formgrid">
     <div class="field"><label>Beoogde leverdatum — optioneel</label><input type="date" name="leverdatum" value="<%= o.leverdatum %>"><div class="hint">Komt als indicatieve leverdatum in het leveringsartikel te staan.</div></div>
+    <div class="field"><label>Vooraf bezichtigd?</label>
+      <select name="bezichtigd">
+        <option value="nee" <%= !o.bezichtigd ? 'selected':'' %>>Nee — aankoop op afstand (14 dagen bedenktijd)</option>
+        <option value="ja" <%= o.bezichtigd ? 'selected':'' %>>Ja — koper heeft vooraf bezichtigd (geen bedenktijd)</option>
+      </select>
+      <div class="hint">Standaard “Nee”: koper krijgt 14 dagen bedenktijd na levering (max. 20 werkuren, retourtransport voor Agroria). Alleen “Ja” als de koper de machine(s) écht vooraf heeft bezichtigd of beproefd.</div>
+    </div>
     <div class="field"><label>Herkomst machine</label>
       <select name="import_land">
         <option value="" <%= !o.importLand ? 'selected':'' %>>Al in Nederland (geen grensoverschrijdende import)</option>

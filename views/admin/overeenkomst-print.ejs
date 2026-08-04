@@ -13,6 +13,11 @@
   var koperNaam = klant.bedrijf ? (klant.bedrijf + (klant.naam ? ', vertegenwoordigd door ' + klant.naam : '')) : (klant.naam || 'Koper');
   var meervoud = machines.length > 1;
   var machineWoord = meervoud ? 'machines' : 'machine';
+  // Drie standen: true = bezichtigd; false = aankoop op afstand + bedenktijd;
+  // ontbrekend (oude documenten) = oude tekst, geen nieuw bedenktijd-artikel.
+  var heeftBezichtigdVlag = Object.prototype.hasOwnProperty.call(o, 'bezichtigd');
+  var bezichtigd = !!o.bezichtigd;
+  var toonBedenktijd = heeftBezichtigdVlag && !bezichtigd;
   function specsVoor(machine){
     return [
       ['Bouwjaar', machine.bouwjaar],
@@ -275,7 +280,15 @@
 
     <div class="artikel">
       <h3><span class="anr">Artikel <%= ++nr %></span>Verkoop en staat van de <%= machineWoord %></h3>
-      <p>Verkoper verkoopt en levert aan koper de hierboven omschreven <%= machineWoord %><% if (meervoud) { %> (<%= machineNamen(o) %>)<% } %>. Verkoper verklaart bevoegd te zijn tot deze verkoop en dat <%= meervoud ? 'de machines vrij zijn' : 'de machine vrij is' %> van beslag en van niet-gemelde financiële lasten. Verkoper heeft de herkomst en historie van <%= meervoud ? 'de machines' : 'de machine' %> naar beste weten volledig en transparant aan koper kenbaar gemaakt; <%= meervoud ? 'de machines zijn' : 'de machine is' %> vóór verkoop technisch gecontroleerd. Koper is in de gelegenheid gesteld <%= meervoud ? 'de machines' : 'de machine' %> te bezichtigen en te beproeven, dan wel doet dit uiterlijk bij de aflevering.</p>
+      <p>Verkoper verkoopt en levert aan koper de hierboven omschreven <%= machineWoord %><% if (meervoud) { %> (<%= machineNamen(o) %>)<% } %>. Verkoper verklaart bevoegd te zijn tot deze verkoop en dat <%= meervoud ? 'de machines vrij zijn' : 'de machine vrij is' %> van beslag en van niet-gemelde financiële lasten. Verkoper heeft de herkomst en historie van <%= meervoud ? 'de machines' : 'de machine' %> naar beste weten volledig en transparant aan koper kenbaar gemaakt; <%= meervoud ? 'de machines zijn' : 'de machine is' %> vóór verkoop technisch gecontroleerd.
+      <% if (!heeftBezichtigdVlag) { %>
+        Koper is in de gelegenheid gesteld <%= meervoud ? 'de machines' : 'de machine' %> te bezichtigen en te beproeven, dan wel doet dit uiterlijk bij de aflevering.
+      <% } else if (bezichtigd) { %>
+        Koper heeft <%= meervoud ? 'de machines' : 'de machine' %> vóór het aangaan van deze overeenkomst bezichtigd en/of beproefd.
+      <% } else { %>
+        Koper koopt zonder voorafgaande bezichtiging of beproeving. Voor koper geldt daarom de bedenktijd van <b>14 dagen na levering</b>, zoals opgenomen in het artikel “Bedenktijd bij aankoop zonder bezichtiging”.
+      <% } %>
+      </p>
     </div>
 
     <div class="artikel">
@@ -329,6 +342,19 @@
       </ol>
       <div class="kleine">Deze garantie doet niets af aan de wettelijke rechten van koper — die blijven onverkort gelden, naast en bovenop deze Agroria-garantie.</div>
     </div>
+
+    <% if (toonBedenktijd) { %>
+    <div class="artikel garantie-artikel">
+      <h3><span class="anr">Artikel <%= ++nr %></span>Bedenktijd bij aankoop zonder bezichtiging — 14 dagen na levering</h3>
+      <ol>
+        <li><b>14 dagen bedenktijd.</b> Omdat koper <%= meervoud ? 'de machines' : 'de machine' %> vóór de koop niet heeft bezichtigd of beproefd, mag koper binnen <b>14 dagen na de feitelijke aflevering</b> deze overeenkomst zonder opgaaf van reden ontbinden. Bij meerdere machines in deze overeenkomst geldt dezelfde bedenktijd voor <%= meervoud ? 'alle machines samen' : 'de machine' %>.</li>
+        <li><b>Maximaal 20 werkuren.</b> Gedurende de bedenktijd mag koper <%= meervoud ? 'de machines' : 'de machine' %> beproeven en normaal gebruiken, tot maximaal <b>20 werkuren</b><% if (meervoud) { %> per machine<% } %> sinds aflevering. Bij meer dan 20 werkuren<% if (meervoud) { %> op een machine<% } %> vervalt het recht op ontbinding op grond van dit artikel<% if (meervoud) { %> voor die machine; voor de overige machines binnen de 20 werkuren blijft de bedenktijd gelden<% } %>.</li>
+        <li><b>Hoe ontbinden.</b> Ontbinding dient schriftelijk aan verkoper te worden gemeld; e-mail volstaat. Vermeld het overeenkomstnummer en de leveringsdatum.</li>
+        <li><b>Kosteloos retourtransport en volledige terugbetaling.</b> Verkoper haalt <%= meervoud ? 'de machines' : 'de machine' %> <b>kosteloos</b> retour — het retourtransport is voor rekening van verkoper. Na ontvangst in dezelfde staat als bij aflevering (normale sporen van een korte beproeving daargelaten) ontvangt koper binnen 14 dagen het <b>volledige aankoopbedrag</b> retour, inclusief eventuele aanbetaling.</li>
+      </ol>
+      <div class="kleine">Deze bedenktijd geldt alleen wanneer koper <%= meervoud ? 'de machines' : 'de machine' %> niet vooraf heeft bezichtigd of beproefd. De Agroria-garantie en de wettelijke rechten van koper blijven in alle gevallen onverkort gelden.</div>
+    </div>
+    <% } %>
 
     <div class="artikel">
       <h3><span class="anr">Artikel <%= ++nr %></span>Niet-nakoming en ontbinding</h3>
