@@ -12,7 +12,9 @@
     klant: {}, machine: {}, machines: [], regels: [],
     prijsType: 'marge', aanbetaling: 0, aanbetalingVervalt: '',
     betalingMoment: 'bij_levering', betalingUiterlijk: '',
-    leverdatum: '', levering: '', bezichtigd: false, importLand: '', bijzonderheden: '',
+    leverdatum: '', levering: '', bezichtigd: false,
+    inruil: { actief: false },
+    importLand: '', bijzonderheden: '',
     bank: bank || {}
   };
   if (!overeenkomst && vanFactuur) {
@@ -39,6 +41,7 @@
   var machines = documentMachines(o);
   if (!machines.length) machines = [{ naam:'', bouwjaar:'', uren:'', pk:'', transmissie:'', serienummer:'', kenteken:'' }];
   var ob = o.bank || bank || {};
+  var inruil = o.inruil || { actief: false };
   function invoerBedrag(n){
     n = Number(n || 0);
     if (!n) return '';
@@ -144,7 +147,7 @@
 
 <div class="panel" style="padding:28px;margin-bottom:20px">
   <h3 style="font-family:var(--display);font-weight:600;margin-bottom:6px">Koopsom</h3>
-  <div class="hint" style="margin-bottom:16px">Per trekker komt er automatisch een regel bij. Een inruil of korting vul je in als <b>negatief</b> bedrag, bijv. <code>-12500</code>.</div>
+  <div class="hint" style="margin-bottom:16px">Per trekker komt er automatisch een regel bij. Een korting vul je in als <b>negatief</b> bedrag, bijv. <code>-1500</code>. Voor een <b>inruil</b> gebruik je het aparte blok hieronder — die waarde wordt automatisch van de koopsom afgetrokken.</div>
   <div id="regels">
     <% (o.regels.length ? o.regels : [{omschrijving:'',bedrag:''}]).forEach(function(r){ %>
       <div class="regel" style="display:flex;gap:12px;margin-bottom:10px">
@@ -186,6 +189,31 @@
     <div class="field"><label>IBAN</label><input name="bank_iban" value="<%= ob.iban || '' %>" placeholder="NL00 BANK 0123 4567 89"></div>
     <div class="field"><label>BIC — optioneel</label><input name="bank_bic" value="<%= ob.bic || '' %>" placeholder="INGBNL2A"></div>
     <div class="field"><label>Ten name van</label><input name="bank_tnv" value="<%= ob.tnv || '' %>" placeholder="Agroria Landbouwvoertuigen"></div>
+  </div>
+</div>
+
+<div class="panel" style="padding:28px;margin-bottom:20px">
+  <h3 style="font-family:var(--display);font-weight:600;margin-bottom:6px">Inruil</h3>
+  <div class="hint" style="margin-bottom:16px">Heeft de klant een trekker in te ruilen? Zet dit op <b>Ja</b>, vul de machine in en de overeengekomen inruilwaarde. Die waarde wordt van de koopsom afgehaald en komt apart op de overeenkomst te staan.</div>
+  <div class="formgrid">
+    <div class="field full"><label>Met inruil?</label>
+      <select name="inruil_actief" id="inruilActief">
+        <option value="nee" <%= !inruil.actief ? 'selected':'' %>>Nee — geen inruil</option>
+        <option value="ja" <%= inruil.actief ? 'selected':'' %>>Ja — klant ruilt een trekker in</option>
+      </select>
+    </div>
+  </div>
+  <div id="inruilVelden" style="<%= inruil.actief ? '' : 'display:none' %>">
+    <div class="formgrid" style="margin-top:8px">
+      <div class="field"><label>Merk en model inruiltrekker</label><input name="inruil_naam" value="<%= inruil.naam || '' %>" placeholder="Bijv. John Deere 6920"></div>
+      <div class="field"><label>Inruilwaarde (€)</label><input name="inruil_waarde" value="<%= inruil.waarde ? invoerBedrag(inruil.waarde) : '' %>" placeholder="Bijv. 12500"><div class="hint">Vul een positief bedrag in — wij trekken dit automatisch van de koopsom af.</div></div>
+      <div class="field"><label>Bouwjaar</label><input name="inruil_bouwjaar" value="<%= inruil.bouwjaar || '' %>" placeholder="2004"></div>
+      <div class="field"><label>Draaiuren</label><input name="inruil_uren" value="<%= inruil.uren || '' %>" placeholder="8450"></div>
+      <div class="field"><label>Vermogen (pk)</label><input name="inruil_pk" value="<%= inruil.pk || '' %>" placeholder="160"></div>
+      <div class="field"><label>Transmissie</label><input name="inruil_transmissie" value="<%= inruil.transmissie || '' %>" placeholder="Powershift / Vario …"></div>
+      <div class="field"><label>Serie-/chassisnummer — optioneel</label><input name="inruil_serienummer" value="<%= inruil.serienummer || '' %>"></div>
+      <div class="field"><label>Kenteken — optioneel</label><input name="inruil_kenteken" value="<%= inruil.kenteken || '' %>"></div>
+    </div>
   </div>
 </div>
 
@@ -367,6 +395,18 @@
     if (!keuze || !veld) return;
     function sync(){
       veld.style.display = keuze.value === 'voor_levering' ? '' : 'none';
+    }
+    keuze.addEventListener('change', sync);
+    sync();
+  })();
+</script>
+<script>
+  (function(){
+    var keuze = document.getElementById('inruilActief');
+    var velden = document.getElementById('inruilVelden');
+    if (!keuze || !velden) return;
+    function sync(){
+      velden.style.display = keuze.value === 'ja' ? '' : 'none';
     }
     keuze.addEventListener('change', sync);
     sync();
