@@ -21,7 +21,19 @@
     f.klant = vanOvereenkomst.klant || {};
     f.machines = documentMachines(vanOvereenkomst);
     f.machine = f.machines[0] || {};
-    f.regels = vanOvereenkomst.regels || [];
+    f.regels = (vanOvereenkomst.regels || []).slice();
+    // Inruil uit de overeenkomst als aftrekregel op de factuur zetten.
+    var ovInruil = vanOvereenkomst.inruil || {};
+    if (ovInruil.actief && ovInruil.naam && Number(ovInruil.waarde) > 0) {
+      var inruilDelen = [ovInruil.naam];
+      if (ovInruil.bouwjaar) inruilDelen.push('bouwjaar ' + ovInruil.bouwjaar);
+      if (ovInruil.uren) inruilDelen.push(ovInruil.uren + ' u');
+      if (ovInruil.kenteken) inruilDelen.push('kenteken ' + ovInruil.kenteken);
+      f.regels.push({
+        omschrijving: 'Inruil ' + inruilDelen.join(', '),
+        bedrag: -Math.abs(Number(ovInruil.waarde))
+      });
+    }
     f.prijsType = vanOvereenkomst.prijsType || 'marge';
     f.aanbetaling = vanOvereenkomst.aanbetaling || 0;
     f.aanbetalingVervalt = vanOvereenkomst.aanbetalingVervalt || '';

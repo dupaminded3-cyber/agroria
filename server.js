@@ -930,10 +930,56 @@ function volgendFactuurnummer(data) {
   return prefix + String(hoogste + 1).padStart(4, '0');
 }
 
-// Rekent de totalen van een factuur uit (subtotaal, evt. BTW, restant).
+// Inruilwaarde (positief getal) die van de koopsom af gaat, of 0.
+function inruilWaarde(doc) {
+  const i = doc && doc.inruil;
+  if (!i || !i.actief || !i.naam) return 0;
+  const w = Number(i.waarde || 0);
+  return w > 0 ? w : 0;
+}
+
+// Lees het inruilblok uit het overeenkomstformulier.
+function parseInruil(body) {
+  const b = body || {};
+  const actief = b.inruil_actief === 'ja';
+  if (!actief) return { actief: false };
+  const naam = String(b.inruil_naam || '').trim();
+  const waarde = parseBedrag(b.inruil_waarde);
+  if (!naam || !(waarde > 0)) return { actief: false };
+  return {
+    actief: true,
+    naam,
+    bouwjaar: String(b.inruil_bouwjaar || '').trim(),
+    uren: String(b.inruil_uren || '').trim(),
+    pk: String(b.inruil_pk || '').trim(),
+    transmissie: String(b.inruil_transmissie || '').trim(),
+    serienummer: String(b.inruil_serienummer || '').trim(),
+    kenteken: String(b.inruil_kenteken || '').trim(),
+    waarde
+  };
+}
+
+// Omschrijving + negatief bedrag voor factuurregels vanuit inruil.
+function inruilAlsRegel(inruil) {
+  if (!inruil || !inruil.actief || !inruil.naam || !(Number(inruil.waarde) > 0)) return null;
+  const delen = [inruil.naam];
+  if (inruil.bouwjaar) delen.push('bouwjaar ' + inruil.bouwjaar);
+  if (inruil.uren) delen.push(inruil.uren + ' u');
+  if (inruil.kenteken) delen.push('kenteken ' + inruil.kenteken);
+  if (inruil.serienummer) delen.push('serienr. ' + inruil.serienummer);
+  return {
+    omschrijving: 'Inruil ' + delen.join(', '),
+    bedrag: -Math.abs(Number(inruil.waarde))
+  };
+}
+
+// Rekent de totalen van een factuur/overeenkomst uit (subtotaal, evt. BTW, restant).
+// Een actieve inruil wordt hier in mindering gebracht op de koopsom.
 function factuurTotalen(f) {
   const regels = f.regels || [];
-  const subtotaal = regels.reduce((som, r) => som + Number(r.bedrag || 0), 0);
+  let subtotaal = regels.reduce((som, r) => som + Number(r.bedrag || 0), 0);
+  const aftrek = inruilWaarde(f);
+  if (aftrek) subtotaal = Math.round((subtotaal - aftrek) * 100) / 100;
   let btw = 0, totaal = subtotaal;
   if (f.prijsType === 'btw') {
     btw = Math.round(subtotaal * 0.21 * 100) / 100;
@@ -941,9 +987,10 @@ function factuurTotalen(f) {
   }
   const aanbetaling = Number(f.aanbetaling || 0);
   const restant = Math.round((totaal - aanbetaling) * 100) / 100;
-  return { subtotaal, btw, totaal, aanbetaling, restant };
+  return { subtotaal, btw, totaal, aanbetaling, restant, inruil: aftrek };
 }
 app.locals.factuurTotalen = factuurTotalen;
+app.locals.inruilWaarde = inruilWaarde;
 
 // Machines uit het factuur-/overeenkomstformulier lezen (meerdere blokken).
 // Lege blokken (zonder merk/model) worden overgeslagen. Voor oude templates
@@ -1230,6 +1277,8 @@ app.post('/uadmin/overeenkomsten/:id?', requireAuth, (req, res) => {
     // true = koper heeft vooraf bezichtigd (geen bedenktijd);
     // false/ontbrekend = aankoop zonder bezichtiging → 14 dagen bedenktijd.
     bezichtigd: b.bezichtigd === 'ja',
+    // Optionele inruil: trekker van de koper, waarde gaat van de koopsom af.
+    inruil: parseInruil(b),
     // Herkomst ('' = al in NL) + bestemmingsland voor registratieartikel.
     importLand: HERKOMST.includes((b.import_land || '').trim())
       ? (b.import_land || '').trim()
