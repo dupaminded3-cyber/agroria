@@ -194,7 +194,7 @@
 
 <div class="panel" style="padding:28px;margin-bottom:20px">
   <h3 style="font-family:var(--display);font-weight:600;margin-bottom:6px">Inruil</h3>
-  <div class="hint" style="margin-bottom:16px">Heeft de klant een trekker in te ruilen? Zet dit op <b>Ja</b>, vul de machine in en de overeengekomen inruilwaarde. Die waarde wordt van de koopsom afgehaald en komt apart op de overeenkomst te staan.</div>
+  <div class="hint" style="margin-bottom:16px">Heeft de klant een trekker in te ruilen? Zet dit op <b>Ja</b>, vul de machine in en de overeengekomen inruilwaarde. Die waarde wordt van de koopsom afgehaald. Bij <b>BTW-regeling</b> kies je of de inruil incl. of excl. BTW is — standaard incl., zodat de eindprijs klopt.</div>
   <div class="formgrid">
     <div class="field full"><label>Met inruil?</label>
       <select name="inruil_actief" id="inruilActief">
@@ -207,6 +207,14 @@
     <div class="formgrid" style="margin-top:8px">
       <div class="field"><label>Merk en model inruiltrekker</label><input name="inruil_naam" value="<%= inruil.naam || '' %>" placeholder="Bijv. John Deere 6920"></div>
       <div class="field"><label>Inruilwaarde (€)</label><input name="inruil_waarde" value="<%= inruil.waarde ? invoerBedrag(inruil.waarde) : '' %>" placeholder="Bijv. 12500"><div class="hint">Vul een positief bedrag in — wij trekken dit automatisch van de koopsom af.</div></div>
+      <div class="field" id="inruilBtwVeld">
+        <label>Inruil t.o.v. BTW</label>
+        <select name="inruil_btw" id="inruilBtw">
+          <option value="incl" <%= inruil.btw !== 'excl' ? 'selected':'' %>>Inclusief BTW — van de eindprijs af (aanbevolen)</option>
+          <option value="excl" <%= inruil.btw === 'excl' ? 'selected':'' %>>Exclusief BTW — van het bedrag excl. BTW af</option>
+        </select>
+        <div class="hint">Alleen bij prijsregeling <b>BTW</b>. Kies “Inclusief BTW” als de afgesproken inruilwaarde van de eindprijs (incl. BTW) af moet. Bij marge/netto maakt dit niet uit.</div>
+      </div>
       <div class="field"><label>Bouwjaar</label><input name="inruil_bouwjaar" value="<%= inruil.bouwjaar || '' %>" placeholder="2004"></div>
       <div class="field"><label>Draaiuren</label><input name="inruil_uren" value="<%= inruil.uren || '' %>" placeholder="8450"></div>
       <div class="field"><label>Vermogen (pk)</label><input name="inruil_pk" value="<%= inruil.pk || '' %>" placeholder="160"></div>
@@ -404,11 +412,19 @@
   (function(){
     var keuze = document.getElementById('inruilActief');
     var velden = document.getElementById('inruilVelden');
+    var prijsType = document.getElementById('prijsType');
+    var btwVeld = document.getElementById('inruilBtwVeld');
     if (!keuze || !velden) return;
     function sync(){
-      velden.style.display = keuze.value === 'ja' ? '' : 'none';
+      var aan = keuze.value === 'ja';
+      velden.style.display = aan ? '' : 'none';
+      if (btwVeld) {
+        var toonBtw = aan && prijsType && prijsType.value === 'btw';
+        btwVeld.style.display = toonBtw ? '' : 'none';
+      }
     }
     keuze.addEventListener('change', sync);
+    if (prijsType) prijsType.addEventListener('change', sync);
     sync();
   })();
 </script>
