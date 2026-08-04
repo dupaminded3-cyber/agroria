@@ -1227,6 +1227,9 @@ app.post('/uadmin/overeenkomsten/:id?', requireAuth, (req, res) => {
     betalingUiterlijk: b.betaling_uiterlijk || '',
     leverdatum: b.leverdatum || '',
     levering: (b.levering || '').trim(),
+    // true = koper heeft vooraf bezichtigd (geen bedenktijd);
+    // false/ontbrekend = aankoop zonder bezichtiging → 14 dagen bedenktijd.
+    bezichtigd: b.bezichtigd === 'ja',
     // Herkomst ('' = al in NL) + bestemmingsland voor registratieartikel.
     importLand: HERKOMST.includes((b.import_land || '').trim())
       ? (b.import_land || '').trim()
