@@ -11,7 +11,7 @@ const bcrypt = require('bcryptjs');
 const sharp = require('sharp');
 const db = require('./lib/db');
 const { omschrijvingHtml, omschrijvingText } = require('./lib/format');
-const { prijsInfo } = require('./lib/prijs');
+const { prijsInfo, btwVanExcl } = require('./lib/prijs');
 const { registratieArtikel, HERKOMST, BESTEMMING } = require('./lib/registratie');
 const { maakSlug, uniekeSlug } = require('./lib/slug');
 const {
@@ -1015,14 +1015,16 @@ function factuurTotalen(f) {
   if (f.prijsType === 'btw') {
     if (aftrek && modus === 'incl') {
       // Eerst BTW over de machine(s), daarna inruil van de eindprijs aftrekken.
-      btw = Math.round(subtotaal * 0.21 * 100) / 100;
-      const voorInruil = Math.round((subtotaal + btw) * 100) / 100;
-      totaal = Math.round((voorInruil - aftrek) * 100) / 100;
+      // Incl. op hele euro's (zelfde als website); BTW = restant zodat de som klopt.
+      const bruto = btwVanExcl(subtotaal);
+      btw = bruto.btw;
+      totaal = Math.round((bruto.totaal - aftrek) * 100) / 100;
       inruilNaBtw = true;
     } else {
       if (aftrek) subtotaal = Math.round((subtotaal - aftrek) * 100) / 100;
-      btw = Math.round(subtotaal * 0.21 * 100) / 100;
-      totaal = Math.round((subtotaal + btw) * 100) / 100;
+      const berekend = btwVanExcl(subtotaal);
+      btw = berekend.btw;
+      totaal = berekend.totaal;
     }
   } else if (aftrek) {
     subtotaal = Math.round((subtotaal - aftrek) * 100) / 100;
